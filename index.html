@@ -1,0 +1,311 @@
+---
+layout: null
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invio — Invoice Generator</title>
+  <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/main.css">
+  <script defer src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+  <div class="invio-container" x-data="invioApp()" x-init="init()">
+    <header class="invio-header">
+      <div class="invio-logo">invio</div>
+      <h1 class="invio-title" x-text="currentStepLabel"></h1>
+      <div>
+        <button type="button" class="invio-btn invio-btn-secondary" @click="save()" title="Save">Save</button>
+        <button type="button" class="invio-btn invio-btn-secondary" @click="close()" title="Close">×</button>
+      </div>
+    </header>
+
+    <template x-if="step === 'details'">
+      <div class="invio-form-group">
+        <div class="invio-form-group">
+          <label class="invio-label">Invoice number</label>
+          <input type="text" class="invio-input" :class="{ 'invio-invalid': errors.header?.invoiceNumber }" x-model="draft.header.invoiceNumber" placeholder="e.g. INV-001">
+          <span class="invio-error-text" x-show="errors.header?.invoiceNumber" x-text="errors.header?.invoiceNumber"></span>
+        </div>
+        <div class="invio-form-group">
+          <label class="invio-label">Invoice date</label>
+          <input type="date" class="invio-input" :class="{ 'invio-invalid': errors.header?.issueDate }" x-model="draft.header.issueDate">
+          <span class="invio-error-text" x-show="errors.header?.issueDate" x-text="errors.header?.issueDate"></span>
+        </div>
+        <div class="invio-form-group">
+          <label class="invio-label">Due date</label>
+          <input type="date" class="invio-input" x-model="draft.header.dueDate">
+        </div>
+        <div class="invio-form-group">
+          <label class="invio-label">Currency</label>
+          <select class="invio-select" x-model="draft.header.currencyCode">
+            <option value="EUR">EUR</option>
+            <option value="USD">USD</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </div>
+        <div class="invio-form-group">
+          <label class="invio-label">Reference</label>
+          <input type="text" class="invio-input" x-model="draft.header.buyerReference" placeholder="Optional reference">
+        </div>
+        <div class="invio-form-group">
+          <label class="invio-label">Invoice type</label>
+          <select class="invio-select" x-model="draft.header.typeCode">
+            <option value="380">Commercial Invoice</option>
+            <option value="381">Credit note</option>
+          </select>
+        </div>
+        <div class="invio-form-group">
+          <label class="invio-label">Note</label>
+          <textarea class="invio-textarea" x-model="draft.header.note" placeholder="Optional note"></textarea>
+        </div>
+      </div>
+    </template>
+
+    <template x-if="step === 'items'">
+      <div>
+        <div class="invio-form-group">
+          <template x-for="(line, i) in draft.lines" :key="line.id">
+            <div class="invio-form-group" style="border: 1px solid var(--invio-grey-300); padding: var(--invio-space-3); border-radius: var(--invio-radius); margin-bottom: var(--invio-space-3);">
+              <label class="invio-label">Description</label>
+              <input type="text" class="invio-input" x-model="draft.lines[i].itemName" placeholder="Item name">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--invio-space-2); margin-top: var(--invio-space-2);">
+                <div>
+                  <label class="invio-label">Qty</label>
+                  <input type="number" step="any" min="0.001" class="invio-input" x-model.number="draft.lines[i].quantity">
+                </div>
+                <div>
+                  <label class="invio-label">Unit</label>
+                  <select class="invio-select" x-model="draft.lines[i].unitCode">
+                    <template x-for="opt in unitCodeOptions" :key="opt.value">
+                      <option :value="opt.value" x-text="opt.label"></option>
+                    </template>
+                  </select>
+                </div>
+                <div>
+                  <label class="invio-label">Price</label>
+                  <input type="number" step="0.01" min="0" class="invio-input" x-model.number="draft.lines[i].netPrice">
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--invio-space-2); margin-top: var(--invio-space-2);">
+                <div>
+                  <label class="invio-label">VAT category</label>
+                  <select class="invio-select" x-model="draft.lines[i].vatCategoryCode">
+                    <template x-for="opt in vatCategoryOptions" :key="opt.value">
+                      <option :value="opt.value" x-text="opt.label"></option>
+                    </template>
+                  </select>
+                </div>
+                <div>
+                  <label class="invio-label">VAT %</label>
+                  <input type="number" step="0.01" min="0" max="100" class="invio-input" x-model.number="draft.lines[i].vatRate">
+                </div>
+              </div>
+              <p style="font-size: var(--invio-text-sm); color: var(--invio-grey-500); margin-top: var(--invio-space-2);" x-text="'Line total: ' + (lineNet(draft.lines[i]) || 0).toFixed(2) + ' ' + draft.header.currencyCode"></p>
+              <button type="button" class="invio-btn invio-btn-secondary" style="margin-top: var(--invio-space-2);" x-show="draft.lines.length > 1" @click="removeLine(i)">Remove line</button>
+            </div>
+          </template>
+          <button type="button" class="invio-btn invio-btn-primary" @click="addLine()">Add Item</button>
+        </div>
+      </div>
+    </template>
+
+    <template x-if="step === 'seller'">
+      <div>
+        <div class="invio-form-group"><label class="invio-label">Name</label><input type="text" class="invio-input" x-model="draft.seller.name"></div>
+        <div class="invio-form-group"><label class="invio-label">Legal / Trade name</label><input type="text" class="invio-input" x-model="draft.seller.tradeName"></div>
+        <div class="invio-form-group"><label class="invio-label">Registration number</label><input type="text" class="invio-input" x-model="draft.seller.legalRegistrationId"></div>
+        <div class="invio-form-group"><label class="invio-label">VAT number</label><input type="text" class="invio-input" x-model="draft.seller.vatId"></div>
+        <div class="invio-form-group"><label class="invio-label">E-mail</label><input type="email" class="invio-input" x-model="draft.seller.contact.email"></div>
+        <div class="invio-form-group"><label class="invio-label">Phone</label><input type="text" class="invio-input" x-model="draft.seller.contact.phone"></div>
+        <div class="invio-form-group"><label class="invio-label">Address</label><input type="text" class="invio-input" x-model="draft.seller.address.line1"></div>
+        <div class="invio-form-group"><label class="invio-label">City</label><input type="text" class="invio-input" x-model="draft.seller.address.city"></div>
+        <div class="invio-form-group"><label class="invio-label">Postal code</label><input type="text" class="invio-input" x-model="draft.seller.address.postalCode"></div>
+        <div class="invio-form-group"><label class="invio-label">Country</label>
+          <select class="invio-select" x-model="draft.seller.address.countryCode">
+            <option value="">—</option>
+            <template x-for="opt in countryOptions" :key="opt.value">
+              <option :value="opt.value" x-text="opt.label"></option>
+            </template>
+          </select>
+        </div>
+      </div>
+    </template>
+
+    <template x-if="step === 'buyer'">
+      <div>
+        <div class="invio-form-group"><label class="invio-label">Name</label><input type="text" class="invio-input" x-model="draft.buyer.name"></div>
+        <div class="invio-form-group"><label class="invio-label">Legal / Trade name</label><input type="text" class="invio-input" x-model="draft.buyer.tradeName"></div>
+        <div class="invio-form-group"><label class="invio-label">Registration number</label><input type="text" class="invio-input" x-model="draft.buyer.legalRegistrationId"></div>
+        <div class="invio-form-group"><label class="invio-label">VAT number</label><input type="text" class="invio-input" x-model="draft.buyer.vatId"></div>
+        <div class="invio-form-group"><label class="invio-label">E-mail</label><input type="email" class="invio-input" x-model="draft.buyer.contact.email"></div>
+        <div class="invio-form-group"><label class="invio-label">Phone</label><input type="text" class="invio-input" x-model="draft.buyer.contact.phone"></div>
+        <div class="invio-form-group"><label class="invio-label">Address</label><input type="text" class="invio-input" x-model="draft.buyer.address.line1"></div>
+        <div class="invio-form-group"><label class="invio-label">City</label><input type="text" class="invio-input" x-model="draft.buyer.address.city"></div>
+        <div class="invio-form-group"><label class="invio-label">Postal code</label><input type="text" class="invio-input" x-model="draft.buyer.address.postalCode"></div>
+        <div class="invio-form-group"><label class="invio-label">Country</label>
+          <select class="invio-select" x-model="draft.buyer.address.countryCode">
+            <option value="">—</option>
+            <template x-for="opt in countryOptions" :key="opt.value">
+              <option :value="opt.value" x-text="opt.label"></option>
+            </template>
+          </select>
+        </div>
+      </div>
+    </template>
+
+    <template x-if="step === 'payment'">
+      <div>
+        <div class="invio-form-group"><label class="invio-label">Payment type</label>
+          <select class="invio-select" x-model="draft.payment.meansTypeCode">
+            <option value="30">Credit Transfer</option>
+            <option value="48">Bank transfer</option>
+          </select>
+        </div>
+        <div class="invio-form-group"><label class="invio-label">Bank name</label><input type="text" class="invio-input" x-model="draft.payment.bankName" placeholder="Bank name (related to IBAN)"></div>
+        <div class="invio-form-group"><label class="invio-label">SWIFT/BIC</label><input type="text" class="invio-input" x-model="draft.payment.bic"></div>
+        <div class="invio-form-group"><label class="invio-label">IBAN</label><input type="text" class="invio-input" x-model="draft.payment.accountId" placeholder="e.g. LV80BANK0000435195001"></div>
+        <div class="invio-form-group"><label class="invio-label">Additional payment notes</label><textarea class="invio-textarea" x-model="draft.payment.notes"></textarea></div>
+      </div>
+    </template>
+
+    <template x-if="step === 'summary'">
+      <div>
+        <div class="invio-summary-row"><span>Invoice lines subtotal</span><span x-text="(totals && totals.lineNetSum != null ? totals.lineNetSum.toFixed(2) : '—') + ' ' + (draft.header.currencyCode || 'EUR')"></span></div>
+        <div class="invio-summary-row"><span>Document discount</span><span x-text="'-' + (totals && totals.allowanceSum != null ? totals.allowanceSum.toFixed(2) : '0.00') + ' ' + (draft.header.currencyCode || 'EUR')"></span></div>
+        <div class="invio-summary-row"><span>Total net amount</span><span x-text="(totals && totals.taxExclusive != null ? totals.taxExclusive.toFixed(2) : '—') + ' ' + (draft.header.currencyCode || 'EUR')"></span></div>
+        <template x-for="vb in (totals && totals.vatBreakdown) || []" :key="vb.categoryCode + vb.rate">
+          <div class="invio-summary-row"><span x-text="'VAT (' + vb.rate + '%)'"></span><span x-text="vb.taxAmount.toFixed(2) + ' ' + (draft.header.currencyCode || 'EUR')"></span></div>
+        </template>
+        <div class="invio-summary-row invio-total"><span>Total amount</span><span x-text="(totals && totals.taxInclusive != null ? totals.taxInclusive.toFixed(2) : '—') + ' ' + (draft.header.currencyCode || 'EUR')"></span></div>
+        <div class="invio-summary-row invio-total"><span>Amount payable</span><span x-text="(totals && totals.payable != null ? totals.payable.toFixed(2) : '—') + ' ' + (draft.header.currencyCode || 'EUR')"></span></div>
+        <p class="invio-summary-error" x-show="summaryError" x-text="summaryError"></p>
+      </div>
+    </template>
+
+    <footer class="invio-footer-nav">
+      <button type="button" class="invio-btn invio-btn-secondary" x-show="stepIndex > 0" @click="prevStep()">Previous Step</button>
+      <button type="button" class="invio-btn invio-btn-primary" x-show="step !== 'summary'" @click="nextStep()">Next Step</button>
+      <button type="button" class="invio-btn invio-btn-primary" x-show="step === 'summary'" @click="exportAll()">Generate XML &amp; PDF</button>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('invioApp', () => ({
+        draft: null,
+        step: 'details',
+        errors: {},
+        summaryError: '',
+        totals: null,
+        unitCodeOptions: [
+          { value: 'C62', label: 'pcs' }, { value: 'DAY', label: 'days' }, { value: 'HUR', label: 'hours' },
+          { value: 'KGM', label: 'kg' }, { value: 'LTR', label: 'l' }, { value: 'MTR', label: 'm' }, { value: 'PCE', label: 'piece' }
+        ],
+        vatCategoryOptions: [
+          { value: 'S', label: 'Standard rate' }, { value: 'Z', label: 'Zero rate' }, { value: 'E', label: 'Exempt' },
+          { value: 'G', label: 'Free export' }, { value: 'O', label: 'Not subject to VAT' }
+        ],
+        countryOptions: [
+          { value: 'LV', label: 'Latvia' }, { value: 'EE', label: 'Estonia' }, { value: 'LT', label: 'Lithuania' },
+          { value: 'DE', label: 'Germany' }, { value: 'PL', label: 'Poland' }, { value: 'GB', label: 'United Kingdom' },
+          { value: 'FR', label: 'France' }, { value: 'IT', label: 'Italy' }, { value: 'ES', label: 'Spain' },
+          { value: 'NL', label: 'Netherlands' }, { value: 'SE', label: 'Sweden' }, { value: 'FI', label: 'Finland' }
+        ],
+
+        get steps() { return ['details','items','seller','buyer','payment','summary']; },
+        get stepIndex() { return this.steps.indexOf(this.step); },
+        get currentStepLabel() {
+          const labels = window.InvioUI && window.InvioUI.stepLabels;
+          return (labels && labels[this.step]) || this.step;
+        },
+
+        init() {
+          const State = window.InvioState;
+          const Storage = window.InvioStorage;
+          if (!State) return;
+          this.draft = State.createDefaultDraft();
+          if (Storage && Storage.loadDraft) {
+            Storage.loadDraft().then(saved => {
+              if (saved && saved.header) this.draft = saved;
+            });
+          }
+        },
+
+        lineNet(line) {
+          const Calc = window.InvioCalc;
+          const cc = this.draft && this.draft.header && this.draft.header.currencyCode || 'EUR';
+          return Calc ? Calc.lineNet(line, cc) : 0;
+        },
+
+        addLine() {
+          const State = window.InvioState;
+          if (State) this.draft = State.addLine(this.draft);
+        },
+        removeLine(i) {
+          const State = window.InvioState;
+          if (State) this.draft = State.removeLine(this.draft, i);
+        },
+
+        nextStep() {
+          if (this.step === 'summary') return;
+          const idx = this.stepIndex + 1;
+          if (idx < this.steps.length) this.step = this.steps[idx];
+          if (this.step === 'summary') this.refreshTotals();
+        },
+        prevStep() {
+          const idx = this.stepIndex - 1;
+          if (idx >= 0) this.step = this.steps[idx];
+        },
+        refreshTotals() {
+          const Calc = window.InvioCalc;
+          this.summaryError = '';
+          if (Calc) {
+            this.totals = Calc.computeTotals(this.draft);
+            const recon = Calc.checkReconciliation(this.draft);
+            if (!recon.ok) this.summaryError = 'Calculations mismatch! Review your data.';
+          }
+        },
+
+        save() {
+          const Storage = window.InvioStorage;
+          if (Storage && Storage.saveDraft) Storage.saveDraft(this.draft);
+        },
+        close() { window.close(); },
+
+        exportAll() {
+          this.refreshTotals();
+          const Validation = window.InvioValidation;
+          const XML = window.InvioXML;
+          const PDF = window.InvioPDF;
+          if (!Validation || !XML || !PDF) return;
+          const result = Validation.validateForExport(this.draft);
+          if (!result.valid) {
+            this.summaryError = result.errors && result.errors[0] || 'Validation failed';
+            return;
+          }
+          const xmlResult = XML.generateAndDownloadXML(this.draft);
+          if (!xmlResult.ok) {
+            this.summaryError = xmlResult.errors && xmlResult.errors[0] || 'XML export failed';
+            return;
+          }
+          PDF.generateAndDownloadPDF(this.draft).then(pdfResult => {
+            if (!pdfResult.ok) this.summaryError = pdfResult.error || pdfResult.errors && pdfResult.errors[0] || 'PDF export failed';
+          });
+        }
+      }));
+    });
+  </script>
+
+  <script src="{{ site.baseurl }}/assets/js/state.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/storage.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/calc.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/validation.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/xml.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/pdf.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/ui.js"></script>
+</body>
+</html>
