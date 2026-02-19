@@ -19,7 +19,11 @@ PEPPOL BIS Billing 3.0 / EN 16931-1 compliant invoice generator. Browser-only: c
    ```
    Or use any static server that serves the repo root (e.g. `npx serve .`). Note: without Jekyll, `{{ site.baseurl }}` in `index.html` will not be replaced; for local dev you can run Jekyll or replace baseurl manually in the HTML.
 
-2. Open `http://localhost:4000` (or the URL your server prints).
+2. Open `http://localhost:4000` (or the URL your server prints). With default `baseurl: "/invoice-app"` use `http://localhost:4000/invoice-app/`.
+
+**GitHub Pages:** Set `baseurl` in `_config.yml` to your repo path (e.g. `"/invoice-app"`) so asset and script URLs resolve correctly.
+
+**Optional security:** CDN scripts use `crossorigin="anonymous"`. To add [SRI](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) integrity hashes, generate them (e.g. `openssl dgst -sha384 -binary < script.js | openssl base64 -A`) and add `integrity="sha384-..."` to each script tag.
 
 ## Usage
 

@@ -77,6 +77,12 @@ body {
   margin: 0;
 }
 
+.invio-save-status {
+  font-size: var(--invio-text-sm);
+  color: var(--invio-grey-500);
+  margin-right: var(--invio-space-2);
+}
+
 .invio-form-group {
   margin-bottom: var(--invio-space-4);
 }

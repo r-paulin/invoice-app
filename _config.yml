@@ -1,6 +1,6 @@
 # Jekyll config for Invio (GitHub Pages compatible)
 title: Invio
 description: PEPPOL BIS Billing 3.0 / EN 16931-1 compliant invoice generator
-baseurl: ""  # set to "/invoice-app" or repo name if hosted under subpath
+baseurl: "/invoice-app"  # repo name for GitHub Pages project site (use "" if serving from root)
 url: ""
 markdown: kramdown

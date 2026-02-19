@@ -38,7 +38,7 @@ async function saveDraftToIDB(draft) {
     const req = store.put(record);
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
-    tx.complete = () => db.close();
+    tx.oncomplete = () => db.close();
   });
 }
 
@@ -57,7 +57,7 @@ async function loadDraftFromIDB() {
         resolve(row && row.draft ? row.draft : null);
       };
       req.onerror = () => reject(req.error);
-      tx.complete = () => db.close();
+      tx.oncomplete = () => db.close();
     });
   } catch (_) {
     return null;
@@ -65,12 +65,15 @@ async function loadDraftFromIDB() {
 }
 
 /**
- * Save to localStorage (fallback)
+ * Save to localStorage (fallback). Returns { ok: true } or { ok: false, error: string }.
  */
 function saveDraftToLocal(draft) {
   try {
     localStorage.setItem(INVIO_LOCAL_KEY, JSON.stringify(draft));
-  } catch (_) {}
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e && e.message ? e.message : 'localStorage failed' };
+  }
 }
 
 /**
@@ -86,13 +89,16 @@ function loadDraftFromLocal() {
 }
 
 /**
- * Save draft: try IndexedDB first, then localStorage
+ * Save draft: try IndexedDB first, then localStorage.
+ * Returns { ok: true } or { ok: false, error: string }.
  */
 async function saveDraft(draft) {
   try {
     await saveDraftToIDB(draft);
+    return { ok: true };
   } catch (_) {
-    saveDraftToLocal(draft);
+    const local = saveDraftToLocal(draft);
+    return local;
   }
 }
 

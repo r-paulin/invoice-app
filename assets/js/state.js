@@ -144,10 +144,31 @@ function createDefaultDraft() {
 }
 
 /**
- * Deep clone draft for immutability where needed
+ * Ensure loaded draft has full shape (seller/buyer contact & address, etc.) for templates.
+ * Call after loadDraft() when applying saved data.
  */
-function cloneDraft(draft) {
-  return JSON.parse(JSON.stringify(draft));
+function normalizeDraft(draft) {
+  if (!draft || typeof draft !== 'object') return createDefaultDraft();
+  const def = createDefaultDraft();
+  const h = { ...def.header, ...(draft.header || {}) };
+  const seller = draft.seller || {};
+  const buyer = draft.buyer || {};
+  const pay = { ...def.payment, ...(draft.payment || {}) };
+  const sellerAddr = { ...defaultAddress(), ...(seller.address || {}) };
+  const sellerContact = { ...defaultContact(), ...(seller.contact || {}) };
+  const buyerAddr = { ...defaultAddress(), ...(buyer.address || {}) };
+  const buyerContact = { ...defaultContact(), ...(buyer.contact || {}) };
+  const lines = Array.isArray(draft.lines) && draft.lines.length
+    ? draft.lines.map((l, i) => ({ ...defaultLine(i + 1), ...l }))
+    : def.lines;
+  return {
+    ...draft,
+    header: h,
+    seller: { ...defaultSeller(), ...seller, address: sellerAddr, contact: sellerContact },
+    buyer: { ...defaultBuyer(), ...buyer, address: buyerAddr, contact: buyerContact },
+    payment: pay,
+    lines
+  };
 }
 
 /**
@@ -184,7 +205,7 @@ function updateLine(draft, index, updates) {
 if (typeof window !== 'undefined') {
   window.InvioState = {
     createDefaultDraft,
-    cloneDraft,
+    normalizeDraft,
     addLine,
     removeLine,
     updateLine,

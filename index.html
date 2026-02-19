@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invio — Invoice Generator</title>
-  <link rel="stylesheet" href="/assets/css/main.css">
-  <script defer src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js"></script>
-  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/main.css">
+  <script defer src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <div class="invio-container" x-data="invioApp()" x-init="init()">
@@ -14,6 +14,7 @@
       <div class="invio-logo">invio</div>
       <h1 class="invio-title" x-text="currentStepLabel"></h1>
       <div>
+        <span class="invio-save-status" x-show="saveStatus" x-text="saveStatus"></span>
         <button type="button" class="invio-btn invio-btn-secondary" @click="save()" title="Save">Save</button>
         <button type="button" class="invio-btn invio-btn-secondary" @click="close()" title="Close">×</button>
       </div>
@@ -196,6 +197,7 @@
         step: 'details',
         errors: {},
         summaryError: '',
+        saveStatus: '',
         totals: null,
         unitCodeOptions: [
           { value: 'C62', label: 'pcs' }, { value: 'DAY', label: 'days' }, { value: 'HUR', label: 'hours' },
@@ -225,9 +227,11 @@
           if (!State) return;
           this.draft = State.createDefaultDraft();
           if (Storage && Storage.loadDraft) {
-            Storage.loadDraft().then(saved => {
-              if (saved && saved.header) this.draft = saved;
-            });
+            Storage.loadDraft()
+              .then(saved => {
+                if (saved && saved.header) this.draft = State.normalizeDraft(saved);
+              })
+              .catch(() => { this.summaryError = 'Could not load saved draft.'; });
           }
         },
 
@@ -266,42 +270,57 @@
           }
         },
 
-        save() {
+        async save() {
           const Storage = window.InvioStorage;
-          if (Storage && Storage.saveDraft) Storage.saveDraft(this.draft);
+          this.saveStatus = '';
+          if (!Storage || !Storage.saveDraft) return;
+          try {
+            const result = await Storage.saveDraft(this.draft);
+            this.saveStatus = result.ok ? 'Saved' : (result.error || 'Save failed');
+            if (this.saveStatus === 'Saved') setTimeout(() => { this.saveStatus = ''; }, 2000);
+          } catch (_) {
+            this.saveStatus = 'Save failed';
+          }
         },
         close() { window.close(); },
 
         exportAll() {
           this.refreshTotals();
+          this.summaryError = '';
           const Validation = window.InvioValidation;
           const XML = window.InvioXML;
           const PDF = window.InvioPDF;
           if (!Validation || !XML || !PDF) return;
-          const result = Validation.validateForExport(this.draft);
-          if (!result.valid) {
-            this.summaryError = result.errors && result.errors[0] || 'Validation failed';
-            return;
+          try {
+            const result = Validation.validateForExport(this.draft);
+            if (!result.valid) {
+              this.summaryError = result.errors && result.errors[0] || 'Validation failed';
+              return;
+            }
+            const xmlResult = XML.generateAndDownloadXML(this.draft);
+            if (!xmlResult.ok) {
+              this.summaryError = xmlResult.errors && xmlResult.errors[0] || 'XML export failed';
+              return;
+            }
+            PDF.generateAndDownloadPDF(this.draft)
+              .then(pdfResult => {
+                if (!pdfResult.ok) this.summaryError = pdfResult.error || (pdfResult.errors && pdfResult.errors[0]) || 'PDF export failed';
+              })
+              .catch(err => { this.summaryError = (err && err.message) || 'PDF export failed'; });
+          } catch (err) {
+            this.summaryError = (err && err.message) || 'Export failed';
           }
-          const xmlResult = XML.generateAndDownloadXML(this.draft);
-          if (!xmlResult.ok) {
-            this.summaryError = xmlResult.errors && xmlResult.errors[0] || 'XML export failed';
-            return;
-          }
-          PDF.generateAndDownloadPDF(this.draft).then(pdfResult => {
-            if (!pdfResult.ok) this.summaryError = pdfResult.error || pdfResult.errors && pdfResult.errors[0] || 'PDF export failed';
-          });
         }
       }));
     });
   </script>
 
-  <script src="/assets/js/state.js"></script>
-  <script src="/assets/js/storage.js"></script>
-  <script src="/assets/js/calc.js"></script>
-  <script src="/assets/js/validation.js"></script>
-  <script src="/assets/js/xml.js"></script>
-  <script src="/assets/js/pdf.js"></script>
-  <script src="/assets/js/ui.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/state.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/storage.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/calc.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/validation.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/xml.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/pdf.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/ui.js"></script>
 </body>
 </html>
