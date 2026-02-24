@@ -1,161 +1,164 @@
----
-layout: default
-title: Invoice Generator
----
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page.title }} - {{ site.title }}</title>
+  <title>Invoice Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
-  <header class="top">
-    <div class="top-inner">
-      <img class="logo" src="{{ site.baseurl }}/assets/logo-invio.svg" alt="invio" width="114" height="42">
-      <button class="lang" type="button" aria-label="Language">
-        English
-        <span class="lang-chevron">⌄</span>
-      </button>
-    </div>
-    <div class="hero">
-      <h1>Free online invoice generator</h1>
-      <p>Generate downloadable PDF invoices and compliant e-invoices directly in your browser.</p>
-    </div>
-    <nav class="tabs" aria-label="Invoice tabs">
-      <button type="button" class="tab active" data-target="invoice-data">Invoice data</button>
-      <button type="button" class="tab" data-target="invoice-settings">Invoice settings</button>
-    </nav>
-  </header>
-
-  <main class="main">
-    <section class="panel panel-invoice-data active" data-panel="invoice-data">
-    <section class="section">
-      <h2>Basic details</h2>
-      <div class="section-content">
-        <label class="field">
-          <span>Invoice number <em>*</em></span>
-          <input type="text" placeholder="Enter invoice number">
-        </label>
-        <label class="field">
-          <span>Payment reference <em>*</em></span>
-          <input type="text" placeholder="Enter payment reference">
-        </label>
-        <div class="field-row">
-          <label class="field">
-            <span>Issue date <em>*</em></span>
-            <span class="fake-input">
-              19/02/2026
-              <span class="calendar">📅</span>
-            </span>
-          </label>
-          <label class="field">
-            <span>Due date <em>*</em></span>
-            <span class="fake-input">
-              01/03/2026
-              <span class="calendar">📅</span>
-            </span>
-          </label>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <h2>Seller</h2>
-      <div class="section-content">
-        <div class="card">
-          <div class="card-icon">💼</div>
-          <p>Enter you business details</p>
-          <button type="button" class="green-btn">+&nbsp;&nbsp;Add details</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <h2>Buyer</h2>
-      <div class="section-content">
-        <div class="card">
-          <div class="card-icon">💼</div>
-          <p>Enter your customer details</p>
-          <button type="button" class="green-btn">+&nbsp;&nbsp;Add details</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="section items">
-      <h2>Items</h2>
-      <div class="section-content">
-        <div class="chips">
-          <span class="chips-title">Add fields:</span>
-          <button type="button" class="chip">+&nbsp;Tax rate</button>
-          <button type="button" class="chip">+&nbsp;Discount</button>
-          <button type="button" class="chip">+&nbsp;ID code</button>
-          <button type="button" class="chip">+&nbsp;Note</button>
-        </div>
-        <div class="line-head">
-          <span>Service / Product</span>
-          <span>Quantity</span>
-          <span>Unit price</span>
-          <span>Total</span>
-        </div>
-        <div class="line-row">
-          <input type="text" placeholder="Enter name">
-          <button type="button" class="mini-select">1 pcs ⌄</button>
-          <span class="price">0.00 EUR</span>
-          <div class="line-total">
-            <span>0.00 EUR</span>
-            <button type="button" class="minus">—</button>
+  <div class="grid-wrapper">
+    <div class="grid-background"></div>
+    <div class="page-surface">
+      <div class="page-content">
+        <header class="top">
+          <div class="top-inner">
+            <img class="logo" src="assets/logo-invio.svg" alt="invio" width="114" height="42">
+            <button class="lang" type="button" aria-label="Language">
+              English
+              <span class="lang-chevron">⌄</span>
+            </button>
           </div>
-        </div>
-        <button type="button" class="green-btn left">+&nbsp;&nbsp;Add item</button>
-        <div class="sum">
-          <div><span>Subtotal</span><span>0.00 EUR</span></div>
-          <div class="sum-total"><span>Total</span><span>0.00 EUR</span></div>
-        </div>
+          <div class="hero">
+            <h1>Free online invoice generator</h1>
+            <p>Generate downloadable PDF invoices and compliant e-invoices directly in your browser.</p>
+          </div>
+          <nav class="tabs" aria-label="Invoice tabs">
+            <button type="button" class="tab active" data-target="invoice-data">Invoice data</button>
+            <button type="button" class="tab" data-target="invoice-settings">Invoice settings</button>
+          </nav>
+        </header>
+
+        <main class="main">
+          <section class="panel panel-invoice-data active" data-panel="invoice-data">
+            <section class="section">
+              <h2>Basic details</h2>
+              <div class="section-content">
+                <label class="field">
+                  <span>Invoice number <em>*</em></span>
+                  <input type="text" placeholder="Enter invoice number">
+                </label>
+                <label class="field">
+                  <span>Payment reference <em>*</em></span>
+                  <input type="text" placeholder="Enter payment reference">
+                </label>
+                <div class="field-row">
+                  <label class="field">
+                    <span>Issue date <em>*</em></span>
+                    <span class="fake-input">
+                      19/02/2026
+                      <span class="calendar">📅</span>
+                    </span>
+                  </label>
+                  <label class="field">
+                    <span>Due date <em>*</em></span>
+                    <span class="fake-input">
+                      01/03/2026
+                      <span class="calendar">📅</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h2>Seller</h2>
+              <div class="section-content">
+                <div class="card">
+                  <div class="card-icon">💼</div>
+                  <p>Enter you business details</p>
+                  <button type="button" class="green-btn">+&nbsp;&nbsp;Add details</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h2>Buyer</h2>
+              <div class="section-content">
+                <div class="card">
+                  <div class="card-icon">💼</div>
+                  <p>Enter your customer details</p>
+                  <button type="button" class="green-btn">+&nbsp;&nbsp;Add details</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="section items">
+              <h2>Items</h2>
+              <div class="section-content">
+                <div class="chips">
+                  <span class="chips-title">Add fields:</span>
+                  <button type="button" class="chip">+&nbsp;Tax rate</button>
+                  <button type="button" class="chip">+&nbsp;Discount</button>
+                  <button type="button" class="chip">+&nbsp;ID code</button>
+                  <button type="button" class="chip">+&nbsp;Note</button>
+                </div>
+                <div class="line-head">
+                  <span>Service / Product</span>
+                  <span>Quantity</span>
+                  <span>Unit price</span>
+                  <span>Total</span>
+                </div>
+                <div class="line-row">
+                  <input type="text" placeholder="Enter name">
+                  <button type="button" class="mini-select">1 pcs ⌄</button>
+                  <span class="price">0.00 EUR</span>
+                  <div class="line-total">
+                    <span>0.00 EUR</span>
+                    <button type="button" class="minus">—</button>
+                  </div>
+                </div>
+                <button type="button" class="green-btn left">+&nbsp;&nbsp;Add item</button>
+                <div class="sum">
+                  <div><span>Subtotal</span><span>0.00 EUR</span></div>
+                  <div class="sum-total"><span>Total</span><span>0.00 EUR</span></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="ready">
+              <p>Invoice ready?</p>
+              <button type="button" class="green-btn big">Create a invoice</button>
+            </section>
+          </section>
+
+          <section class="panel panel-invoice-settings" data-panel="invoice-settings" hidden>
+            <section class="section">
+              <h2>Invoice settings</h2>
+              <div class="section-content">
+                <label class="field">
+                  <span>Document language</span>
+                  <input type="text" placeholder="English">
+                </label>
+                <label class="field">
+                  <span>Currency</span>
+                  <input type="text" placeholder="EUR">
+                </label>
+                <label class="field">
+                  <span>Template note</span>
+                  <input type="text" placeholder="Enter note">
+                </label>
+              </div>
+            </section>
+          </section>
+        </main>
+
+        <footer class="foot">
+          <img class="logo footer-logo" src="assets/logo-invio.svg" alt="invio" width="114" height="42">
+          <a href="#privacy">Privacy policy</a>
+          <a href="#terms">Terms and conditions</a>
+        </footer>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <section class="ready">
-      <p>Invoice ready?</p>
-      <button type="button" class="green-btn big">Create a invoice</button>
-    </section>
-    </section>
-
-    <section class="panel panel-invoice-settings" data-panel="invoice-settings" hidden>
-      <section class="section">
-        <h2>Invoice settings</h2>
-        <div class="section-content">
-          <label class="field">
-            <span>Document language</span>
-            <input type="text" placeholder="English">
-          </label>
-          <label class="field">
-            <span>Currency</span>
-            <input type="text" placeholder="EUR">
-          </label>
-          <label class="field">
-            <span>Template note</span>
-            <input type="text" placeholder="Enter note">
-          </label>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <footer class="foot">
-    <img class="logo footer-logo" src="https://www.figma.com/api/mcp/asset/284fac04-8f80-40ce-9d5d-002af95bac66" alt="invio">
-    <a href="#privacy">Privacy policy</a>
-    <a href="#terms">Terms and conditions</a>
-  </footer>
-
-  <script src="{{ site.baseurl }}/assets/js/state.js"></script>
-  <script src="{{ site.baseurl }}/assets/js/calc.js"></script>
-  <script src="{{ site.baseurl }}/assets/js/validation.js"></script>
-  <script src="{{ site.baseurl }}/assets/js/xml.js"></script>
-  <script src="{{ site.baseurl }}/assets/js/app.js"></script>
+  <script src="assets/js/state.js"></script>
+  <script src="assets/js/calc.js"></script>
+  <script src="assets/js/validation.js"></script>
+  <script src="assets/js/xml.js"></script>
+  <script src="assets/js/app.js"></script>
 </body>
 </html>
