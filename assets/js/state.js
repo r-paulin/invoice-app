@@ -82,7 +82,7 @@ function defaultBuyer() {
 }
 
 /**
- * Default payment (BT-81, BT-84, bank name)
+ * Default payment (BT-81, BT-84, bank name). accounts[] for multiple IBANs; first used for export.
  */
 function defaultPayment() {
   return {
@@ -90,7 +90,8 @@ function defaultPayment() {
     bankName: null,
     accountId: null,
     bic: null,
-    paymentId: null
+    paymentId: null,
+    accounts: []
   };
 }
 
@@ -153,7 +154,22 @@ function normalizeDraft(draft) {
   const h = { ...def.header, ...(draft.header || {}) };
   const seller = draft.seller || {};
   const buyer = draft.buyer || {};
-  const pay = { ...def.payment, ...(draft.payment || {}) };
+  const pay = draft.payment || {};
+  const payDef = def.payment;
+  const accounts = Array.isArray(pay.accounts) && pay.accounts.length
+    ? pay.accounts
+    : pay.accountId
+      ? [{ accountId: pay.accountId, bankName: pay.bankName || null }]
+      : payDef.accounts;
+  const payment = {
+    ...payDef,
+    ...pay,
+    accounts: accounts || []
+  };
+  if (payment.accounts.length && !payment.accountId) {
+    payment.accountId = payment.accounts[0].accountId;
+    payment.bankName = payment.accounts[0].bankName;
+  }
   const sellerAddr = { ...defaultAddress(), ...(seller.address || {}) };
   const sellerContact = { ...defaultContact(), ...(seller.contact || {}) };
   const buyerAddr = { ...defaultAddress(), ...(buyer.address || {}) };
@@ -166,7 +182,7 @@ function normalizeDraft(draft) {
     header: h,
     seller: { ...defaultSeller(), ...seller, address: sellerAddr, contact: sellerContact },
     buyer: { ...defaultBuyer(), ...buyer, address: buyerAddr, contact: buyerContact },
-    payment: pay,
+    payment,
     lines
   };
 }

@@ -2,6 +2,8 @@
   --bg: #f5f5f4;
   --white: #ffffff;
   --container-max: 1160px;
+  --grey-100: #f5f5f4;
+  --grey-50: #fafaf9;
   --grey-800: #292524;
   --grey-700: #44403b;
   --grey-600: #57534d;
@@ -40,7 +42,6 @@ body {
   font-family: "Source Sans 3", sans-serif;
 }
 
-/* From Uiverse.io by Gautammsharma – header grid */
 .top {
   overflow: hidden;
   position: relative;
@@ -62,17 +63,17 @@ body {
   bottom: 0;
   left: 0;
   z-index: 0;
-  background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+  background-image: linear-gradient(to right, #D6D3D175 1px, transparent 1px),
+    linear-gradient(to bottom, #D6D3D175 1px, transparent 1px);
   background-size: 20px 30px;
   -webkit-mask-image: radial-gradient(
     ellipse 70% 60% at 50% 0%,
-    #000 60%,
+    #222 60%,
     transparent 100%
   );
   mask-image: radial-gradient(
     ellipse 70% 60% at 50% 0%,
-    #000 60%,
+    #222 60%,
     transparent 100%
   );
 }
@@ -106,25 +107,59 @@ body {
   width: 114px;
 }
 
-.lang {
+.lang-wrap {
   align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.lang-select {
+  appearance: none;
   background: transparent;
   border: 0;
   color: var(--grey-800);
-  cursor: default;
-  display: inline-flex;
-  font-size: 0.75rem;
-  font-weight: 700;
-  gap: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
   line-height: 1;
   padding: 0;
+  min-width: 0;
 }
 
-.lang-chevron {
-  color: var(--green-700);
-  font-size: 0.75rem;
-  transform: translateY(-1px);
+.lang-select:focus {
+  outline: 2px solid var(--green-600);
+  outline-offset: 2px;
 }
+
+.lang-icon-chevron {
+  color: var(--green-700);
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
+/* Material Symbols – translate & keyboard_arrow_down (https://developers.google.com/fonts/docs/material_symbols) */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'liga';
+}
+
+.lang-wrap .material-symbols-outlined.lang-icon-translate {
+  color: var(--green-700);
+  font-size: 1.25rem;
+}
+
 
 .hero {
   padding: 74px 25px 0;
@@ -264,7 +299,7 @@ input::placeholder {
 
 .field-helper {
   color: var(--grey-500);
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   font-weight: 500;
   line-height: 1.4;
   margin-top: 2px;
@@ -308,7 +343,7 @@ input::placeholder {
   box-shadow: 0 1px 2px rgba(18, 18, 23, 0.05);
   color: var(--grey-700);
   display: flex;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 400;
   justify-content: space-between;
   line-height: 1.4;
@@ -317,7 +352,7 @@ input::placeholder {
 
 .calendar {
   color: var(--green-700);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   line-height: 1;
 }
 
@@ -363,8 +398,8 @@ input::placeholder {
   color: #fafaf9;
   display: inline-flex;
   font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 600;
   line-height: 1;
   min-height: 32px;
   padding: 8px 12px;
@@ -396,7 +431,7 @@ input::placeholder {
   color: var(--grey-800);
   display: inline-flex;
   font-family: inherit;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 600;
   height: 32px;
   line-height: 1.4;
@@ -406,7 +441,7 @@ input::placeholder {
 .line-head {
   color: var(--grey-800);
   display: grid;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   font-weight: 600;
   grid-template-columns: 2.2fr 1fr 1fr 1fr;
   line-height: 1.4;
@@ -424,7 +459,7 @@ input::placeholder {
 .mini-select,
 .price {
   border-radius: 0;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   height: 40px;
 }
 
@@ -438,6 +473,7 @@ input::placeholder {
   border-right: 0;
   color: var(--grey-700);
   font-family: inherit;
+  font-weight: 600;
 }
 
 .price {
@@ -456,7 +492,7 @@ input::placeholder {
   border: 1px solid var(--grey-200);
   color: var(--grey-600);
   display: flex;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   justify-content: space-between;
   padding: 0 6px 0 8px;
 }
@@ -466,6 +502,7 @@ input::placeholder {
   border: 0;
   color: #a8a29e;
   font-size: 1.375rem;
+  font-weight: 600;
   line-height: 1;
   padding: 0;
 }
@@ -528,7 +565,7 @@ input::placeholder {
 
 .foot a {
   color: var(--green-700);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 600;
   line-height: 1.4;
   text-decoration: underline;
@@ -548,14 +585,14 @@ input::placeholder {
   }
 
   .line-head {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
   }
 
   .line-row input,
   .mini-select,
   .price,
   .line-total {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
   }
 
   .sum {
@@ -577,4 +614,324 @@ input::placeholder {
   .ready p {
     text-align: left;
   }
+}
+
+/* Seller modal – side sheet (Material UI–style drawer) */
+body.seller-sheet-open {
+  overflow: hidden;
+  height: 100%;
+}
+
+.seller-modal:not([open]) {
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.seller-modal {
+  position: fixed;
+  inset: 0;
+  border: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  background: transparent;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.seller-modal::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+  transition: opacity 0.3s ease-out;
+}
+
+.seller-modal-inner {
+  width: 100%;
+  max-width: 768px;
+  height: 100%;
+  margin-left: auto;
+  background: var(--grey-100);
+  border: none;
+  border-left: 1px solid var(--grey-200);
+  border-radius: 8px 0 0 8px;
+  box-shadow: -4px 0 24px rgba(12, 12, 13, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateX(100%);
+  transition: none;
+  will-change: transform;
+}
+
+.seller-modal.seller-sheet-open .seller-modal-inner {
+  transform: translateX(0);
+  transition: transform 0.3s ease-out;
+}
+
+.seller-modal-header {
+  align-items: flex-end;
+  display: flex;
+  gap: 12px;
+  padding: 24px 24px 12px 24px;
+  background: var(--white);
+}
+
+.seller-modal-title {
+  flex: 1 1 0;
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--grey-800);
+}
+
+.seller-modal-close {
+  align-items: center;
+  background: var(--white);
+  border: 1px solid var(--grey-200);
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(18, 18, 23, 0.05);
+  cursor: pointer;
+  display: flex;
+  flex-shrink: 0;
+  height: 40px;
+  justify-content: center;
+  padding: 10px;
+  width: 40px;
+  color: var(--grey-800);
+}
+
+.seller-modal-close:hover {
+  background: var(--grey-200);
+}
+
+.seller-modal-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 12px 0 24px;
+  background: var(--white);
+}
+
+.seller-tab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--grey-500);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  height: 50px;
+  line-height: 1.5;
+  padding: 12px;
+  position: relative;
+}
+
+.seller-tab.active {
+  border-bottom-color: var(--green-600);
+  color: var(--grey-800);
+}
+
+.seller-tab:hover:not(.active) {
+  color: var(--grey-700);
+}
+
+.seller-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.seller-modal-section {
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  align-items: flex-start;
+}
+
+.seller-section-title {
+  flex: 1 1 0;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.25px;
+  line-height: 1.2;
+  color: var(--grey-800);
+  min-width: 0;
+}
+
+.seller-section-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 408px;
+  max-width: 100%;
+}
+
+.seller-section-fields .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.seller-section-fields .field span {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--grey-800);
+}
+
+.seller-section-fields .field input {
+  background: var(--white);
+  border: 1px solid var(--grey-200);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(18, 18, 23, 0.05);
+  padding: 8px 12px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--grey-800);
+  font-family: inherit;
+}
+
+.seller-section-fields .field input::placeholder {
+  color: var(--grey-400);
+}
+
+.seller-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.seller-form .field-error {
+  color: #dc2626;
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+
+.seller-form .payment-means {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.seller-form .payment-means legend {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.seller-form .radio-label {
+  align-items: center;
+  display: flex;
+  font-weight: 400;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.seller-form .link-add-iban {
+  color: var(--green-700);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.seller-form .link-add-iban:hover {
+  color: var(--green-800);
+}
+
+.seller-form .link-remove-iban {
+  color: var(--grey-500);
+  font-size: 0.9rem;
+  margin-top: 4px;
+  text-decoration: underline;
+}
+
+.seller-form .link-remove-iban:hover {
+  color: var(--grey-700);
+}
+
+.seller-form .iban-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.seller-form .iban-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.seller-form .iban-item .field-helper {
+  color: var(--grey-500);
+  font-size: 0.9rem;
+}
+
+.seller-form .iban-item .iban-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.seller-modal-actions {
+  background: var(--white);
+  border-top: 1px solid var(--grey-200);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 24px;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
+
+.seller-modal-actions .btn-secondary {
+  min-height: 40px;
+  min-width: 90px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  box-shadow: 0 1px 2px rgba(18, 18, 23, 0.05);
+}
+
+.seller-modal-actions .green-btn {
+  min-height: 40px;
+  min-width: 90px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  box-shadow: 0 1px 2px rgba(18, 18, 23, 0.05);
+}
+
+.btn-secondary {
+  background: var(--white);
+  border: 1px solid var(--grey-300);
+  border-radius: 4px;
+  color: var(--grey-800);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 16px;
+}
+
+.btn-secondary:hover {
+  background: var(--grey-200);
+}
+
+.payment-display {
+  color: var(--grey-700);
+  font-size: 0.9rem;
+  margin: 0;
 }

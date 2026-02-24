@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&display=block" />
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
@@ -17,10 +18,36 @@
         </div>
         <div class="container top-inner">
             <img class="logo" src="assets/logo-invio.svg" alt="invio" width="114" height="42">
-            <button class="lang" type="button" aria-label="Language">
-              English
-              <span class="lang-chevron">⌄</span>
-            </button>
+            <div class="lang-wrap">
+              <span class="material-symbols-outlined lang-icon lang-icon-translate" aria-hidden="true">translate</span>
+              <select class="lang-select" id="lang-select" aria-label="Language">
+                <option value="bg">Bulgarian</option>
+                <option value="hr">Croatian</option>
+                <option value="cs">Czech</option>
+                <option value="da">Danish</option>
+                <option value="nl">Dutch</option>
+                <option value="en" selected>English</option>
+                <option value="et">Estonian</option>
+                <option value="fi">Finnish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="el">Greek</option>
+                <option value="hu">Hungarian</option>
+                <option value="ga">Irish</option>
+                <option value="it">Italian</option>
+                <option value="lv">Latvian</option>
+                <option value="lt">Lithuanian</option>
+                <option value="mt">Maltese</option>
+                <option value="pl">Polish</option>
+                <option value="pt">Portuguese</option>
+                <option value="ro">Romanian</option>
+                <option value="sk">Slovak</option>
+                <option value="sl">Slovenian</option>
+                <option value="es">Spanish</option>
+                <option value="sv">Swedish</option>
+              </select>
+              <span class="material-symbols-outlined lang-icon lang-icon-chevron" aria-hidden="true">keyboard_arrow_down</span>
+            </div>
           </div>
           <div class="container hero">
             <h1>Free online invoice generator</h1>
@@ -64,16 +91,100 @@
               </div>
             </section>
 
-            <section class="section">
+            <section class="section" id="seller-section">
               <h2>Seller</h2>
               <div class="section-content">
-                <div class="card">
+                <div class="card" id="seller-card">
                   <div class="card-icon">💼</div>
-                  <p>Enter you business details</p>
-                  <button type="button" class="green-btn">+&nbsp;&nbsp;Add details</button>
+                  <p id="seller-card-summary">Enter you business details</p>
+                  <button type="button" class="green-btn" data-seller-modal-trigger>+&nbsp;&nbsp;Add details</button>
                 </div>
               </div>
             </section>
+
+            <dialog id="seller-dialog" class="seller-modal" aria-labelledby="seller-dialog-title" aria-modal="true">
+              <div class="seller-modal-inner">
+                <header class="seller-modal-header">
+                  <h2 id="seller-dialog-title" class="seller-modal-title">Seller</h2>
+                  <button type="button" class="seller-modal-close" id="seller-close" aria-label="Close">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </header>
+                <div class="seller-modal-tabs" role="tablist">
+                  <button type="button" class="seller-tab active" role="tab" aria-selected="true" id="seller-tab-organisation" data-seller-tab="organisation">Organisation</button>
+                  <button type="button" class="seller-tab" role="tab" aria-selected="false" id="seller-tab-individual" data-seller-tab="individual">Individual</button>
+                </div>
+                <form id="seller-form" class="seller-form" novalidate>
+                  <div class="seller-modal-section">
+                    <div class="seller-section-title">Basic details</div>
+                    <div class="seller-section-fields">
+                      <label class="field">
+                        <span>Country <em>*</em></span>
+                        <input type="text" name="seller-country" id="seller-country" list="seller-country-list" required placeholder="Select or type country" aria-label="Country" autocomplete="off">
+                        <datalist id="seller-country-list"></datalist>
+                      </label>
+                      <label class="field">
+                        <span>Legal name <em>*</em></span>
+                        <input type="text" name="seller-name" id="seller-name" required placeholder="Enter legal name of company / person" maxlength="200">
+                      </label>
+                      <label class="field">
+                        <span>Registration number <em>*</em></span>
+                        <input type="text" name="seller-registration" id="seller-registration" required placeholder="Enter registration number">
+                        <span class="field-error" id="seller-registration-error" hidden></span>
+                      </label>
+                      <label class="field">
+                        <span>Tax number (optional)</span>
+                        <input type="text" name="seller-vat" id="seller-vat" placeholder="Enter tax number">
+                        <span class="field-error" id="seller-vat-error" hidden></span>
+                      </label>
+                      <label class="field">
+                        <span>Address <em>*</em></span>
+                        <input type="text" name="seller-street" id="seller-street" required placeholder="Enter address">
+                      </label>
+                      <div class="seller-field-row">
+                        <label class="field">
+                          <span>City <em>*</em></span>
+                          <input type="text" name="seller-city" id="seller-city" required placeholder="Enter city">
+                        </label>
+                        <label class="field">
+                          <span>Postal code <em>*</em></span>
+                          <input type="text" name="seller-postal" id="seller-postal" required placeholder="Enter postal code">
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="seller-modal-section">
+                    <div class="seller-section-title">Payment details</div>
+                    <div class="seller-section-fields">
+                      <div class="iban-block" id="seller-iban-block">
+                        <span class="field-error" id="seller-iban-error" hidden></span>
+                        <div class="iban-list" id="seller-iban-list"></div>
+                        <a href="#" role="button" class="link-add-iban" id="seller-add-iban">Add bank account number</a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="seller-modal-section">
+                    <div class="seller-section-title">Contacts</div>
+                    <div class="seller-section-fields">
+                      <label class="field">
+                        <span>Email address (optional)</span>
+                        <input type="email" name="seller-email" id="seller-email" placeholder="Enter email address">
+                        <span class="field-error" id="seller-email-error" hidden></span>
+                      </label>
+                      <label class="field">
+                        <span>Phone number (optional)</span>
+                        <input type="tel" name="seller-phone" id="seller-phone" placeholder="Phone number">
+                        <span class="field-error" id="seller-phone-error" hidden></span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="seller-modal-actions">
+                    <button type="button" class="btn-secondary" id="seller-cancel">Cancel</button>
+                    <button type="submit" class="green-btn" id="seller-save">Add details</button>
+                  </div>
+                </form>
+              </div>
+            </dialog>
 
             <section class="section">
               <h2>Buyer</h2>
@@ -129,6 +240,12 @@
             <section class="section">
               <h2>Invoice settings</h2>
               <div class="section-content">
+                <fieldset class="field payment-means">
+                  <legend>Payment</legend>
+                  <label class="radio-label"><input type="radio" name="payment-means" value="30" checked> Credit transfer</label>
+                  <label class="radio-label"><input type="radio" name="payment-means" value="10"> Cash</label>
+                  <label class="radio-label"><input type="radio" name="payment-means" value="48"> Credit card</label>
+                </fieldset>
                 <label class="field">
                   <span>Document language</span>
                   <input type="text" placeholder="English">
@@ -155,6 +272,9 @@
   </div>
 
   <script src="assets/js/state.js"></script>
+  <script src="assets/js/eu-countries.js"></script>
+  <script src="assets/js/temp-email-domains.js"></script>
+  <script src="assets/js/iban-bank.js"></script>
   <script src="assets/js/calc.js"></script>
   <script src="assets/js/validation.js"></script>
   <script src="assets/js/xml.js"></script>

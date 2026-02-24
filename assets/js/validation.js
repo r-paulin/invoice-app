@@ -9,6 +9,68 @@ const IBAN = /^[A-Z]{2}\d{2}[A-Z0-9]{4}\d{7}([A-Z0-9]?){0,16}$/;
 const VAT_CATEGORY_CODES = ['S', 'Z', 'E', 'G', 'O', 'K', 'L', 'M', 'N', 'A'];
 const UNIT_CODES = ['C62', 'DAY', 'HUR', 'KGM', 'LTR', 'MTR', 'MTK', 'MTQ', 'PCE', 'KMT'];
 
+/** MVP: per-country registration ID regex (alphanumeric + hyphen, reasonable length) */
+const REGISTRATION_REGEX = {
+  LV: /^[0-9]{11}$/,
+  LT: /^[0-9]{9}$/,
+  EE: /^[0-9]{8}$/,
+  DE: /^[A-Z0-9]{1,12}$/i,
+  AT: /^[0-9]{6,9}$/,
+  NL: /^[0-9]{8}$/,
+  BE: /^[0-9]{10}$/,
+  FR: /^[0-9]{9}$/,
+  ES: /^[A-Z0-9]{8,12}$/i,
+  IT: /^[0-9]{11}$/,
+  PL: /^[0-9]{10}$/,
+  CZ: /^[0-9]{8}$/,
+  SK: /^[0-9]{8}$/,
+  HU: /^[0-9]{8}$/,
+  RO: /^[0-9]{2,10}$/,
+  BG: /^[0-9]{9,13}$/,
+  GR: /^[0-9]{9}$/,
+  PT: /^[0-9]{9}$/,
+  SE: /^[0-9]{6}-[0-9]{4}$/,
+  DK: /^[0-9]{8}$/,
+  FI: /^[0-9]{7}-[0-9]{1}$/,
+  IE: /^[0-9]{7}[A-Z]{1,2}$/i,
+  LU: /^[0-9]{8}$/,
+  MT: /^[A-Z0-9]{1,8}$/i,
+  CY: /^[0-9]{8}[A-Z]$/i,
+  SI: /^[0-9]{8}$/,
+  HR: /^[0-9]{11}$/
+};
+
+/** EU VAT: country prefix + digits (MVP simplified) */
+const VAT_REGEX = {
+  LV: /^LV[0-9]{11}$/i,
+  LT: /^LT[0-9]{9,12}$/i,
+  EE: /^EE[0-9]{9}$/i,
+  DE: /^DE[0-9]{9}$/i,
+  AT: /^ATU[0-9]{8}$/i,
+  NL: /^NL[0-9]{9}B[0-9]{2}$/i,
+  BE: /^BE[0-9]{10}$/i,
+  FR: /^FR[A-Z0-9]{2}[0-9]{9}$/i,
+  ES: /^ES[A-Z0-9][0-9]{7}[A-Z0-9]$/i,
+  IT: /^IT[0-9]{11}$/i,
+  PL: /^PL[0-9]{10}$/i,
+  CZ: /^CZ[0-9]{8,10}$/i,
+  SK: /^SK[0-9]{10}$/i,
+  HU: /^HU[0-9]{8}$/i,
+  RO: /^RO[0-9]{2,10}$/i,
+  BG: /^BG[0-9]{9,10}$/i,
+  GR: /^EL[0-9]{9}$/i,
+  PT: /^PT[0-9]{9}$/i,
+  SE: /^SE[0-9]{12}$/i,
+  DK: /^DK[0-9]{8}$/i,
+  FI: /^FI[0-9]{8}$/i,
+  IE: /^IE[0-9][A-Z0-9][0-9]{5}[A-Z]$/i,
+  LU: /^LU[0-9]{8}$/i,
+  MT: /^MT[0-9]{8}$/i,
+  CY: /^CY[0-9]{8}[A-Z]$/i,
+  SI: /^SI[0-9]{8}$/i,
+  HR: /^HR[0-9]{11}$/i
+};
+
 function nonEmpty(s) {
   return typeof s === 'string' && s.trim().length > 0;
 }
@@ -34,6 +96,48 @@ function validVatCategory(code) {
 
 function validUnitCode(code) {
   return code && UNIT_CODES.includes(String(code));
+}
+
+function validRegistrationId(value, countryCode) {
+  if (!nonEmpty(value) || !countryCode) return false;
+  var re = REGISTRATION_REGEX[countryCode.toUpperCase()];
+  if (!re) return value.trim().length >= 4 && value.trim().length <= 25;
+  return re.test(value.trim());
+}
+
+function validVatId(value, countryCode) {
+  if (!value || !value.trim()) return true;
+  var re = VAT_REGEX[countryCode.toUpperCase()];
+  if (!re) return value.trim().length >= 10 && value.trim().length <= 20;
+  return re.test(value.trim().replace(/\s/g, ''));
+}
+
+function validPhone(value, countryCode) {
+  if (!value || !value.trim()) return true;
+  var s = value.trim().replace(/[\s\-\(\)]/g, '');
+  return /^\+?[0-9]{6,15}$/.test(s);
+}
+
+function getTempEmailDenylist() {
+  if (typeof window !== 'undefined' && window.InvioTempEmailDomains) {
+    return window.InvioTempEmailDomains;
+  }
+  return [];
+}
+
+function isTempEmailDomain(domain) {
+  if (!domain || typeof domain !== 'string') return false;
+  var d = domain.toLowerCase().trim();
+  var list = getTempEmailDenylist();
+  return list.indexOf(d) !== -1;
+}
+
+function validEmailRejectTemp(s) {
+  if (!s || !s.trim()) return true;
+  if (!validEmail(s)) return false;
+  var parts = s.trim().split('@');
+  if (parts.length !== 2) return false;
+  return !isTempEmailDomain(parts[1]);
 }
 
 /**
@@ -87,18 +191,34 @@ function validateDraft(draft) {
     if (!validVatCategory(line.vatCategoryCode)) errors.push(`Line ${idx}: VAT category code (BT-151) is required and must be one of: ${VAT_CATEGORY_CODES.join(', ')}`);
   });
 
-  // Optional but format checks
-  if (seller.contact && seller.contact.email && !validEmail(seller.contact.email)) {
-    errors.push('Seller email must be a valid email address');
+  // Optional but format checks (reject temp email domains)
+  if (seller.contact && seller.contact.email) {
+    if (!validEmail(seller.contact.email)) errors.push('Seller email must be a valid email address');
+    else if (!validEmailRejectTemp(seller.contact.email)) errors.push('Seller email must not use a temporary email domain');
   }
-  if (buyer.contact && buyer.contact.email && !validEmail(buyer.contact.email)) {
-    errors.push('Buyer email must be a valid email address');
+  if (buyer.contact && buyer.contact.email) {
+    if (!validEmail(buyer.contact.email)) errors.push('Buyer email must be a valid email address');
+    else if (!validEmailRejectTemp(buyer.contact.email)) errors.push('Buyer email must not use a temporary email domain');
   }
 
-  // Payment: if credit transfer (30), IBAN recommended/required per BR-61
+  // Payment: if credit transfer (30), at least one valid IBAN required
   const meansCode = payment.meansTypeCode || '';
-  if (meansCode === '30' && nonEmpty(payment.accountId) && !validIban(payment.accountId)) {
-    errors.push('IBAN (BT-84) must be a valid IBAN when payment is by credit transfer');
+  if (meansCode === '30') {
+    var accounts = payment.accounts || [];
+    if (accounts.length) {
+      accounts.forEach(function (acc, i) {
+        if (nonEmpty(acc.accountId) && !validIban(acc.accountId)) {
+          errors.push('IBAN (BT-84) #' + (i + 1) + ' must be a valid IBAN');
+        }
+      });
+      if (accounts.every(function (acc) { return !nonEmpty(acc.accountId); })) {
+        errors.push('At least one bank account (IBAN) is required for credit transfer');
+      }
+    } else if (nonEmpty(payment.accountId) && !validIban(payment.accountId)) {
+      errors.push('IBAN (BT-84) must be a valid IBAN when payment is by credit transfer');
+    } else if (!nonEmpty(payment.accountId)) {
+      errors.push('At least one bank account (IBAN) is required for credit transfer');
+    }
   }
 
   // Due date if present
@@ -136,9 +256,14 @@ if (typeof window !== 'undefined') {
     validateForExport,
     validIsoDate,
     validEmail,
+    validEmailRejectTemp,
     validIban,
     validVatCategory,
     validUnitCode,
+    validRegistrationId,
+    validVatId,
+    validPhone,
+    isTempEmailDomain,
     VAT_CATEGORY_CODES,
     UNIT_CODES
   };
