@@ -32,6 +32,7 @@ body {
 
 .top {
   background: var(--white);
+  width: 100%;
 }
 
 .top-inner {
@@ -39,12 +40,13 @@ body {
   display: flex;
   justify-content: space-between;
   padding: 45px 25px 0;
+  width: 100%;
 }
 
 .logo {
   display: block;
   height: auto;
-  width: 76px;
+  width: 114px;
 }
 
 .lang {
@@ -69,6 +71,7 @@ body {
 
 .hero {
   padding: 74px 25px 0;
+  text-align: left;
 }
 
 .hero h1 {
@@ -78,6 +81,7 @@ body {
   line-height: 1.1;
   margin: 0 0 12px;
   max-width: 360px;
+  text-align: left;
 }
 
 .hero p {
@@ -88,6 +92,7 @@ body {
   line-height: 1.25;
   margin: 0;
   max-width: 360px;
+  text-align: left;
 }
 
 .tabs {
@@ -96,7 +101,8 @@ body {
   gap: 4px;
   margin-top: 56px;
   overflow-x: auto;
-  padding: 0 13px;
+  padding: 0 25px;
+  width: 100%;
 }
 
 .tab {
@@ -114,6 +120,10 @@ body {
 .tab.active {
   border-bottom: 3px solid var(--green-600);
   color: var(--grey-800);
+}
+
+.panel {
+  width: 100%;
 }
 
 .main {
@@ -421,23 +431,12 @@ input::placeholder {
 }
 
 @media (min-width: 900px) {
-  .top-inner,
-  .hero,
-  .tabs,
   .main,
   .foot {
     margin-left: auto;
     margin-right: auto;
     max-width: 1160px;
     width: 100%;
-  }
-
-  .top-inner {
-    padding: 45px 0 0;
-  }
-
-  .hero {
-    padding: 74px 0 0;
   }
 
   .hero h1 {
@@ -448,10 +447,6 @@ input::placeholder {
   .hero p {
     font-size: 22px;
     max-width: none;
-  }
-
-  .tabs {
-    padding: 0;
   }
 
   .main {
