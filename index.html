@@ -10,12 +10,14 @@
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
-  <div class="grid-wrapper">
-    <div class="grid-background"></div>
-    <div class="page-surface">
-      <div class="page-content">
-        <header class="top">
-          <div class="top-inner">
+  <div class="page-surface">
+    <div class="page-content">
+      <header class="top">
+        <!-- From Uiverse.io by Gautammsharma -->
+        <div class="grid-wrapper">
+          <div class="grid-background"></div>
+        </div>
+        <div class="top-inner">
             <img class="logo" src="assets/logo-invio.svg" alt="invio" width="114" height="42">
             <button class="lang" type="button" aria-label="Language">
               English
@@ -30,9 +32,9 @@
             <button type="button" class="tab active" data-target="invoice-data">Invoice data</button>
             <button type="button" class="tab" data-target="invoice-settings">Invoice settings</button>
           </nav>
-        </header>
+      </header>
 
-        <main class="main">
+      <main class="main">
           <section class="panel panel-invoice-data active" data-panel="invoice-data">
             <section class="section">
               <h2>Basic details</h2>
@@ -150,8 +152,7 @@
           <img class="logo footer-logo" src="assets/logo-invio.svg" alt="invio" width="114" height="42">
           <a href="#privacy">Privacy policy</a>
           <a href="#terms">Terms and conditions</a>
-        </footer>
-      </div>
+      </footer>
     </div>
   </div>
 

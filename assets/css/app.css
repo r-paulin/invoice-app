@@ -31,15 +31,22 @@ body {
   font-family: "Source Sans 3", sans-serif;
 }
 
-/* From Uiverse.io by Gautammsharma */
-.grid-wrapper {
-  min-height: 100%;
-  width: 100%;
+/* From Uiverse.io by Gautammsharma – header grid */
+.top {
+  overflow: hidden;
   position: relative;
-  background-color: #f8fafc;
+  width: 100%;
 }
 
-.grid-background {
+.top .grid-wrapper {
+  background-color: #f8fafc;
+  inset: 0;
+  min-height: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.top .grid-background {
   position: absolute;
   top: 0;
   right: 0;
@@ -61,11 +68,17 @@ body {
   );
 }
 
+.top-inner,
+.hero,
+.tabs {
+  position: relative;
+  z-index: 1;
+}
+
 .page-surface {
-  background: var(--white);
+  background: var(--bg);
   position: relative;
   width: 100%;
-  z-index: 1;
 }
 
 .page-content {
@@ -74,9 +87,6 @@ body {
   width: 100%;
 }
 
-.top {
-  width: 100%;
-}
 
 .top-inner {
   align-items: center;
