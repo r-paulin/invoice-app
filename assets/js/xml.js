@@ -140,12 +140,12 @@ function buildInvoiceXML(draft, totals) {
 
   // TaxTotal (BG-23)
   const taxTotal = elCac(doc, 'TaxTotal');
-  const taxAmountEl = elCbc(doc, 'TaxAmount', String(totals.totalVat).replace('.', ','), { currencyID: cc });
+  const taxAmountEl = elCbc(doc, 'TaxAmount', totals.totalVat.toFixed(2), { currencyID: cc });
   addChild(taxTotal, taxAmountEl);
   (totals.vatBreakdown || []).forEach(vb => {
     const sub = elCac(doc, 'TaxSubtotal');
-    addChild(sub, elCbc(doc, 'TaxableAmount', String(vb.taxableAmount).replace('.', ','), { currencyID: cc }));
-    addChild(sub, elCbc(doc, 'TaxAmount', String(vb.taxAmount).replace('.', ','), { currencyID: cc }));
+    addChild(sub, elCbc(doc, 'TaxableAmount', vb.taxableAmount.toFixed(2), { currencyID: cc }));
+    addChild(sub, elCbc(doc, 'TaxAmount', vb.taxAmount.toFixed(2), { currencyID: cc }));
     const cat = elCac(doc, 'TaxCategory');
     addChild(cat, elCbc(doc, 'ID', vb.categoryCode));
     if (vb.rate != null) addChild(cat, elCbc(doc, 'Percent', String(vb.rate)));
@@ -159,13 +159,13 @@ function buildInvoiceXML(draft, totals) {
 
   // LegalMonetaryTotal (BG-22)
   const monetary = elCac(doc, 'LegalMonetaryTotal');
-  addChild(monetary, elCbc(doc, 'LineExtensionAmount', String(totals.lineNetSum).replace('.', ','), { currencyID: cc }));
+  addChild(monetary, elCbc(doc, 'LineExtensionAmount', totals.lineNetSum.toFixed(2), { currencyID: cc }));
   if (totals.allowanceSum > 0) {
-    addChild(monetary, elCbc(doc, 'AllowanceTotalAmount', String(totals.allowanceSum).replace('.', ','), { currencyID: cc }));
+    addChild(monetary, elCbc(doc, 'AllowanceTotalAmount', totals.allowanceSum.toFixed(2), { currencyID: cc }));
   }
-  addChild(monetary, elCbc(doc, 'TaxExclusiveAmount', String(totals.taxExclusive).replace('.', ','), { currencyID: cc }));
-  addChild(monetary, elCbc(doc, 'TaxInclusiveAmount', String(totals.taxInclusive).replace('.', ','), { currencyID: cc }));
-  addChild(monetary, elCbc(doc, 'PayableAmount', String(totals.payable).replace('.', ','), { currencyID: cc }));
+  addChild(monetary, elCbc(doc, 'TaxExclusiveAmount', totals.taxExclusive.toFixed(2), { currencyID: cc }));
+  addChild(monetary, elCbc(doc, 'TaxInclusiveAmount', totals.taxInclusive.toFixed(2), { currencyID: cc }));
+  addChild(monetary, elCbc(doc, 'PayableAmount', totals.payable.toFixed(2), { currencyID: cc }));
   addChild(root, monetary);
 
   // InvoiceLine (BG-25)
@@ -177,21 +177,21 @@ function buildInvoiceXML(draft, totals) {
     const qty = elCbc(doc, 'InvoicedQuantity', String(line.quantity));
     qty.setAttribute('unitCode', line.unitCode || 'C62');
     addChild(lineEl, qty);
-    addChild(lineEl, elCbc(doc, 'LineExtensionAmount', String(lineNetsMap[line.id] ?? 0).replace('.', ','), { currencyID: cc }));
+    addChild(lineEl, elCbc(doc, 'LineExtensionAmount', (lineNetsMap[line.id] ?? 0).toFixed(2), { currencyID: cc }));
     const item = elCac(doc, 'Item');
     addChild(item, elCbc(doc, 'Name', line.itemName));
     if (line.itemDescription) addChild(item, elCbc(doc, 'Description', line.itemDescription));
-    addChild(lineEl, item);
-    const price = elCac(doc, 'Price');
-    addChild(price, elCbc(doc, 'PriceAmount', String(line.netPrice).replace('.', ','), { currencyID: cc }));
-    addChild(lineEl, price);
-    const taxCat = elCac(doc, 'TaxCategory');
+    const taxCat = elCac(doc, 'ClassifiedTaxCategory');
     addChild(taxCat, elCbc(doc, 'ID', line.vatCategoryCode || 'S'));
     if (line.vatRate != null) addChild(taxCat, elCbc(doc, 'Percent', String(line.vatRate)));
     const lineTaxScheme = elCac(doc, 'TaxScheme');
     addChild(lineTaxScheme, elCbc(doc, 'ID', 'VAT'));
     addChild(taxCat, lineTaxScheme);
-    addChild(lineEl, taxCat);
+    addChild(item, taxCat);
+    addChild(lineEl, item);
+    const price = elCac(doc, 'Price');
+    addChild(price, elCbc(doc, 'PriceAmount', line.netPrice.toFixed(2), { currencyID: cc }));
+    addChild(lineEl, price);
     addChild(root, lineEl);
   });
 
