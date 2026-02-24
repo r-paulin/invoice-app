@@ -5,182 +5,135 @@ title: Invoice Generator
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title }} - {{ site.title }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/app.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }} - {{ site.title }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/app.css">
 </head>
 <body>
-    <!-- Header -->
-    <header class="app-header">
-        <div class="header-container">
-            <div class="logo">invio</div>
-            <div class="language-selector">
-                <select id="language">
-                    <option value="en">English</option>
-                </select>
-            </div>
-        </div>
-    </header>
+  <header class="top">
+    <div class="top-inner">
+      <img class="logo" src="https://www.figma.com/api/mcp/asset/284fac04-8f80-40ce-9d5d-002af95bac66" alt="invio">
+      <button class="lang" type="button" aria-label="Language">
+        English
+        <span class="lang-chevron">⌄</span>
+      </button>
+    </div>
+    <div class="hero">
+      <h1>Free online invoice generator</h1>
+      <p>Generate downloadable PDF invoices and compliant e-invoices directly in your browser.</p>
+    </div>
+    <nav class="tabs" aria-label="Invoice tabs">
+      <button type="button" class="tab active">Invoice data</button>
+      <button type="button" class="tab">Settings</button>
+    </nav>
+  </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-container">
-            <h1 class="hero-title">Free online invoice generator</h1>
-            <p class="hero-description">Generate downloadable PDF invoices and compliant e-invoices directly in your browser.</p>
+  <main class="main">
+    <section class="section">
+      <h2>Basic details</h2>
+      <div class="section-content">
+        <label class="field">
+          <span>Invoice number <em>*</em></span>
+          <input type="text" placeholder="Enter invoice number">
+        </label>
+        <label class="field">
+          <span>Payment reference <em>*</em></span>
+          <input type="text" placeholder="Enter payment reference">
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span>Issue date <em>*</em></span>
+            <span class="fake-input">
+              19/02/2026
+              <span class="calendar">📅</span>
+            </span>
+          </label>
+          <label class="field">
+            <span>Due date <em>*</em></span>
+            <span class="fake-input">
+              01/03/2026
+              <span class="calendar">📅</span>
+            </span>
+          </label>
         </div>
+      </div>
     </section>
 
-    <!-- Tabs -->
-    <section class="tabs-section">
-        <div class="tabs-container">
-            <div class="tabs">
-                <button class="tab tab-active" data-tab="invoice-data">Invoice data</button>
-                <button class="tab" data-tab="settings">Settings</button>
-            </div>
+    <section class="section">
+      <h2>Seller</h2>
+      <div class="section-content">
+        <div class="card">
+          <div class="card-icon">💼</div>
+          <p>Enter you business details</p>
+          <button type="button" class="green-btn">+&nbsp;&nbsp;Add details</button>
         </div>
+      </div>
     </section>
 
-    <!-- Main Form -->
-    <main class="main-content">
-        <div class="form-container">
-            <!-- Section: Basic details -->
-            <section class="form-section">
-                <h2 class="section-title">Basic details</h2>
-                <div class="section-content">
-                    <div class="form-group">
-                        <label for="invoice-number">Invoice number *</label>
-                        <input type="text" id="invoice-number" placeholder="Enter invoice number" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="payment-reference">Payment reference *</label>
-                        <input type="text" id="payment-reference" placeholder="Enter payment reference" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="issue-date">Issue date *</label>
-                            <input type="date" id="issue-date" value="19/02/2026" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="due-date">Due date *</label>
-                            <input type="date" id="due-date" value="01/03/2026" required>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section: Seller -->
-            <section class="form-section">
-                <h2 class="section-title">Seller</h2>
-                <div class="section-content">
-                    <div class="upload-box">
-                        <div class="upload-icon">👋</div>
-                        <div class="upload-text">
-                            <p class="upload-title">Enter you business details</p>
-                        </div>
-                        <button class="btn btn-primary btn-with-icon">
-                            <span class="btn-icon">+</span>
-                            Add details
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section: Buyer -->
-            <section class="form-section">
-                <h2 class="section-title">Buyer</h2>
-                <div class="section-content">
-                    <div class="upload-box">
-                        <div class="upload-icon">👋</div>
-                        <div class="upload-text">
-                            <p class="upload-title">Enter your customer details</p>
-                        </div>
-                        <button class="btn btn-primary btn-with-icon">
-                            <span class="btn-icon">+</span>
-                            Add details
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section: Items -->
-            <section class="form-section">
-                <h2 class="section-title">Items</h2>
-                <div class="section-content">
-                    <div class="items-toolbar">
-                        <span class="toolbar-label">Add fields:</span>
-                        <button class="btn-toolbar">+ Tax rate</button>
-                        <button class="btn-toolbar">+ Discount</button>
-                        <button class="btn-toolbar">+ ID code</button>
-                        <button class="btn-toolbar">+ Note</button>
-                    </div>
-                    <div class="items-table">
-                        <div class="table-header">
-                            <div class="table-col col-service">Service / Product</div>
-                            <div class="table-col col-quantity">Quantity</div>
-                            <div class="table-col col-price">Unit price</div>
-                            <div class="table-col col-total">Total</div>
-                        </div>
-                        <div class="table-row">
-                            <input type="text" class="table-input" placeholder="Enter name">
-                            <select class="table-input">
-                                <option>1 pcs</option>
-                            </select>
-                            <input type="text" class="table-input" value="0.00 EUR">
-                            <div class="table-total">
-                                <span>0.00 EUR</span>
-                                <button class="btn-remove">—</button>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary btn-with-icon">
-                        <span class="btn-icon">+</span>
-                        Add item
-                    </button>
-                    <div class="totals">
-                        <div class="total-row">
-                            <span>Subtotal</span>
-                            <span>0.00 EUR</span>
-                        </div>
-                        <div class="total-row total-final">
-                            <span>Total</span>
-                            <span>0.00 EUR</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Section: Call to Action -->
-            <section class="cta-section">
-                <div class="cta-content">
-                    <p class="cta-text">Invoice ready?</p>
-                    <button class="btn btn-primary btn-large">Create a invoice</button>
-                </div>
-            </section>
+    <section class="section">
+      <h2>Buyer</h2>
+      <div class="section-content">
+        <div class="card">
+          <div class="card-icon">💼</div>
+          <p>Enter your customer details</p>
+          <button type="button" class="green-btn">+&nbsp;&nbsp;Add details</button>
         </div>
-    </main>
+      </div>
+    </section>
 
-    <!-- Footer -->
-    <footer class="app-footer">
-        <div class="footer-container">
-            <div class="footer-logo">invio</div>
-            <div class="footer-links">
-                <a href="#privacy">Privacy policy</a>
-                <a href="#terms">Terms and conditions</a>
-            </div>
+    <section class="section items">
+      <h2>Items</h2>
+      <div class="section-content">
+        <div class="chips">
+          <span class="chips-title">Add fields:</span>
+          <button type="button" class="chip">+&nbsp;Tax rate</button>
+          <button type="button" class="chip">+&nbsp;Discount</button>
+          <button type="button" class="chip">+&nbsp;ID code</button>
+          <button type="button" class="chip">+&nbsp;Note</button>
         </div>
-    </footer>
+        <div class="line-head">
+          <span>Service / Product</span>
+          <span>Quantity</span>
+          <span>Unit price</span>
+          <span>Total</span>
+        </div>
+        <div class="line-row">
+          <input type="text" placeholder="Enter name">
+          <button type="button" class="mini-select">1 pcs ⌄</button>
+          <span class="price">0.00 EUR</span>
+          <div class="line-total">
+            <span>0.00 EUR</span>
+            <button type="button" class="minus">—</button>
+          </div>
+        </div>
+        <button type="button" class="green-btn left">+&nbsp;&nbsp;Add item</button>
+        <div class="sum">
+          <div><span>Subtotal</span><span>0.00 EUR</span></div>
+          <div class="sum-total"><span>Total</span><span>0.00 EUR</span></div>
+        </div>
+      </div>
+    </section>
 
-    <!-- Core modules -->
-    <script src="{{ site.baseurl }}/assets/js/state.js"></script>
-    <script src="{{ site.baseurl }}/assets/js/calc.js"></script>
-    <script src="{{ site.baseurl }}/assets/js/validation.js"></script>
-    <script src="{{ site.baseurl }}/assets/js/xml.js"></script>
-    
-    <!-- Main application -->
-    <script src="{{ site.baseurl }}/assets/js/app.js"></script>
+    <section class="ready">
+      <p>Invoice ready?</p>
+      <button type="button" class="green-btn big">Create a invoice</button>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <img class="logo footer-logo" src="https://www.figma.com/api/mcp/asset/284fac04-8f80-40ce-9d5d-002af95bac66" alt="invio">
+    <a href="#privacy">Privacy policy</a>
+    <a href="#terms">Terms and conditions</a>
+  </footer>
+
+  <script src="{{ site.baseurl }}/assets/js/state.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/calc.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/validation.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/xml.js"></script>
+  <script src="{{ site.baseurl }}/assets/js/app.js"></script>
 </body>
 </html>
