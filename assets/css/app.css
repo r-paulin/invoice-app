@@ -253,7 +253,21 @@ input::placeholder {
 .field-row {
   display: grid;
   gap: 20px;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+  .field-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.field-helper {
+  color: var(--grey-500);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-top: 2px;
 }
 
 .date-field {
