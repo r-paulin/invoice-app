@@ -48,17 +48,16 @@
                 <div class="field-row">
                   <label class="field">
                     <span>Issue date <em>*</em></span>
-                    <span class="fake-input">
-                      19/02/2026
-                      <span class="calendar">📅</span>
-                    </span>
+                    <div class="date-field">
+                      <input type="date" id="issue-date" name="issue-date" required aria-label="Invoice issue date (YYYY-MM-DD)">
+                    </div>
                   </label>
                   <label class="field">
                     <span>Due date <em>*</em></span>
-                    <span class="fake-input">
-                      01/03/2026
-                      <span class="calendar">📅</span>
-                    </span>
+                    <div class="date-field" id="due-date-field">
+                      <span class="date-updating" id="due-date-updating" aria-live="polite" hidden>Updating…</span>
+                      <input type="date" id="due-date" name="due-date" required aria-label="Due date (YYYY-MM-DD)">
+                    </div>
                   </label>
                 </div>
               </div>

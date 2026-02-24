@@ -256,6 +256,36 @@ input::placeholder {
   grid-template-columns: 1fr 1fr;
 }
 
+.date-field {
+  align-items: center;
+  display: flex;
+  gap: 0;
+  position: relative;
+}
+
+.date-field input[type="date"] {
+  flex: 1;
+  min-width: 0;
+}
+
+.date-updating {
+  align-items: center;
+  background: var(--white);
+  border-radius: 4px;
+  color: var(--grey-500);
+  display: flex;
+  font-size: 16px;
+  inset: 0;
+  justify-content: flex-start;
+  padding: 8px 12px;
+  pointer-events: none;
+  position: absolute;
+}
+
+.date-updating[hidden] {
+  display: none;
+}
+
 .fake-input {
   align-items: center;
   background: var(--white);

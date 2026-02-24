@@ -11,7 +11,7 @@ const INVIO_SPECIFICATION_ID = 'urn:cen.eu:en16931:2017';
 function defaultHeader() {
   const today = new Date().toISOString().slice(0, 10);
   const due = new Date();
-  due.setDate(due.getDate() + 7);
+  due.setDate(due.getDate() + 14);
   return {
     invoiceNumber: '',
     issueDate: today,
