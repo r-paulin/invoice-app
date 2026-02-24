@@ -31,7 +31,7 @@ function defaultAddress() {
   return {
     line1: '',
     line2: null,
-    city: null,
+    city: '',
     postalCode: null,
     countrySubdivision: null,
     countryCode: ''
