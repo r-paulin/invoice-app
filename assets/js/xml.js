@@ -190,7 +190,7 @@ function buildInvoiceXML(draft, totals) {
     addChild(item, taxCat);
     addChild(lineEl, item);
     const price = elCac(doc, 'Price');
-    addChild(price, elCbc(doc, 'PriceAmount', line.netPrice.toFixed(2), { currencyID: cc }));
+    addChild(price, elCbc(doc, 'PriceAmount', Number(line.netPrice).toFixed(2), { currencyID: cc }));
     addChild(lineEl, price);
     addChild(root, lineEl);
   });
