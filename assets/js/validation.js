@@ -65,10 +65,12 @@ function validateDraft(draft) {
 
   // Seller BT-27, BG-5, BT-40
   if (!nonEmpty(seller.name)) errors.push('Seller name (BT-27) is required');
+  if (!nonEmpty(addrS.city)) errors.push('Seller city is required');
   if (!nonEmpty(addrS.countryCode)) errors.push('Seller country (BT-40) is required');
 
   // Buyer BT-44, BG-8, BT-55
   if (!nonEmpty(buyer.name)) errors.push('Buyer name (BT-44) is required');
+  if (!nonEmpty(addrB.city)) errors.push('Buyer city is required');
   if (!nonEmpty(addrB.countryCode)) errors.push('Buyer country (BT-55) is required');
 
   // At least one line (BG-25)
