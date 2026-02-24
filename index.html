@@ -8,31 +8,171 @@ title: Invoice Generator
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page.title }} - {{ site.title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/app.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>{{ site.title }}</h1>
-            <p>{{ site.description }}</p>
-        </header>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">invio</div>
+            <div class="language-selector">
+                <select id="language">
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </div>
+    </header>
 
-        <main>
-            <section class="invoice-form">
-                <h2>Create Invoice</h2>
-                <p>PEPPOL BIS Billing 3.0 compliant invoice generator</p>
-                
-                <div id="app">
-                    <!-- Invoice form will be rendered here -->
-                    <p>Loading invoice application...</p>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <h1 class="hero-title">Free online invoice generator</h1>
+            <p class="hero-description">Generate downloadable PDF invoices and compliant e-invoices directly in your browser.</p>
+        </div>
+    </section>
+
+    <!-- Tabs -->
+    <section class="tabs-section">
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab tab-active" data-tab="invoice-data">Invoice data</button>
+                <button class="tab" data-tab="settings">Settings</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Form -->
+    <main class="main-content">
+        <div class="form-container">
+            <!-- Section: Basic details -->
+            <section class="form-section">
+                <h2 class="section-title">Basic details</h2>
+                <div class="section-content">
+                    <div class="form-group">
+                        <label for="invoice-number">Invoice number *</label>
+                        <input type="text" id="invoice-number" placeholder="Enter invoice number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment-reference">Payment reference *</label>
+                        <input type="text" id="payment-reference" placeholder="Enter payment reference" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="issue-date">Issue date *</label>
+                            <input type="date" id="issue-date" value="19/02/2026" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="due-date">Due date *</label>
+                            <input type="date" id="due-date" value="01/03/2026" required>
+                        </div>
+                    </div>
                 </div>
             </section>
-        </main>
 
-        <footer>
-            <p>&copy; 2026 Invoice App - EN 16931-1 Compliant</p>
-        </footer>
-    </div>
+            <!-- Section: Seller -->
+            <section class="form-section">
+                <h2 class="section-title">Seller</h2>
+                <div class="section-content">
+                    <div class="upload-box">
+                        <div class="upload-icon">👋</div>
+                        <div class="upload-text">
+                            <p class="upload-title">Enter you business details</p>
+                        </div>
+                        <button class="btn btn-primary btn-with-icon">
+                            <span class="btn-icon">+</span>
+                            Add details
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Buyer -->
+            <section class="form-section">
+                <h2 class="section-title">Buyer</h2>
+                <div class="section-content">
+                    <div class="upload-box">
+                        <div class="upload-icon">👋</div>
+                        <div class="upload-text">
+                            <p class="upload-title">Enter your customer details</p>
+                        </div>
+                        <button class="btn btn-primary btn-with-icon">
+                            <span class="btn-icon">+</span>
+                            Add details
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Items -->
+            <section class="form-section">
+                <h2 class="section-title">Items</h2>
+                <div class="section-content">
+                    <div class="items-toolbar">
+                        <span class="toolbar-label">Add fields:</span>
+                        <button class="btn-toolbar">+ Tax rate</button>
+                        <button class="btn-toolbar">+ Discount</button>
+                        <button class="btn-toolbar">+ ID code</button>
+                        <button class="btn-toolbar">+ Note</button>
+                    </div>
+                    <div class="items-table">
+                        <div class="table-header">
+                            <div class="table-col col-service">Service / Product</div>
+                            <div class="table-col col-quantity">Quantity</div>
+                            <div class="table-col col-price">Unit price</div>
+                            <div class="table-col col-total">Total</div>
+                        </div>
+                        <div class="table-row">
+                            <input type="text" class="table-input" placeholder="Enter name">
+                            <select class="table-input">
+                                <option>1 pcs</option>
+                            </select>
+                            <input type="text" class="table-input" value="0.00 EUR">
+                            <div class="table-total">
+                                <span>0.00 EUR</span>
+                                <button class="btn-remove">—</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-with-icon">
+                        <span class="btn-icon">+</span>
+                        Add item
+                    </button>
+                    <div class="totals">
+                        <div class="total-row">
+                            <span>Subtotal</span>
+                            <span>0.00 EUR</span>
+                        </div>
+                        <div class="total-row total-final">
+                            <span>Total</span>
+                            <span>0.00 EUR</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Call to Action -->
+            <section class="cta-section">
+                <div class="cta-content">
+                    <p class="cta-text">Invoice ready?</p>
+                    <button class="btn btn-primary btn-large">Create a invoice</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-logo">invio</div>
+            <div class="footer-links">
+                <a href="#privacy">Privacy policy</a>
+                <a href="#terms">Terms and conditions</a>
+            </div>
+        </div>
+    </footer>
 
     <!-- Core modules -->
     <script src="{{ site.baseurl }}/assets/js/state.js"></script>
