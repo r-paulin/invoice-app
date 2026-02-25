@@ -14,3 +14,9 @@ alwaysApply: true
 - **Formatting:** - Use numerals for counts ("8 deployments" vs "eight").
   - Use the ellipsis character (…) instead of three periods (...).
   - Use curly quotes (“ ”) instead of straight quotes (" ").
+
+# Icon Standards
+- **Material Symbols Only:** Use Material Symbols for UI icons.
+- **Style:** Use the rounded set (`Material Symbols Rounded`).
+- **Default Axes:** Use `opsz=20`, `wght=400`, `FILL=0`, `GRAD=0` unless a design explicitly requires otherwise.
+- **Consistency:** Keep icon style/axes consistent across buttons, inputs, and navigation controls.

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24,400&display=block" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,0,0&display=block">
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
@@ -20,7 +20,7 @@
         <div class="container top-inner">
             <img class="logo" src="assets/logo-invio.svg" alt="invio" width="114" height="42">
             <div class="lang-wrap">
-              <span class="material-symbols-outlined lang-icon lang-icon-translate" aria-hidden="true">translate</span>
+              <span class="material-symbols-rounded lang-icon lang-icon-translate" aria-hidden="true">translate</span>
               <select class="lang-select" id="lang-select" aria-label="Language">
                 <option value="bg">Bulgarian</option>
                 <option value="hr">Croatian</option>
@@ -47,7 +47,7 @@
                 <option value="es">Spanish</option>
                 <option value="sv">Swedish</option>
               </select>
-              <span class="material-symbols-outlined lang-icon lang-icon-chevron" aria-hidden="true">keyboard_arrow_down</span>
+              <span class="material-symbols-rounded lang-icon lang-icon-chevron" aria-hidden="true">keyboard_arrow_down</span>
             </div>
           </div>
           <div class="container hero">
@@ -55,8 +55,8 @@
             <p>Generate downloadable PDF invoices and compliant e-invoices directly in your browser.</p>
           </div>
           <nav class="container tabs" aria-label="Invoice tabs">
-            <button type="button" class="tab active" data-target="invoice-data">Invoice data</button>
-            <button type="button" class="tab" data-target="invoice-settings">Invoice settings</button>
+            <button type="button" class="btn btn--tab tab active" data-target="invoice-data">Invoice data</button>
+            <button type="button" class="btn btn--tab tab" data-target="invoice-settings">Invoice settings</button>
           </nav>
       </header>
     <div class="container page-content">
@@ -98,7 +98,7 @@
                 <div class="card" id="seller-card">
                   <div class="card-icon">💼</div>
                   <p id="seller-card-summary">Enter you business details</p>
-                  <button type="button" class="green-btn" data-seller-modal-trigger>+&nbsp;&nbsp;Add details</button>
+                  <button type="button" class="btn btn--primary btn--icon-left" data-seller-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button>
                 </div>
               </div>
             </section>
@@ -107,13 +107,13 @@
               <div class="seller-modal-inner">
                 <header class="seller-modal-header">
                   <h2 id="seller-dialog-title" class="seller-modal-title">Seller</h2>
-                  <button type="button" class="seller-modal-close" id="seller-close" aria-label="Close">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M15 5L5 15M5 5l10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <button type="button" class="btn btn--secondary btn--icon-only seller-modal-close" id="seller-close" aria-label="Close seller modal">
+                    <span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span>
                   </button>
                 </header>
                 <div class="seller-modal-tabs" role="tablist">
-                  <button type="button" class="seller-tab active" role="tab" aria-selected="true" id="seller-tab-organisation" data-seller-tab="organisation">Organisation</button>
-                  <button type="button" class="seller-tab" role="tab" aria-selected="false" id="seller-tab-individual" data-seller-tab="individual">Individual</button>
+                  <button type="button" class="btn btn--tab seller-tab active" role="tab" aria-selected="true" id="seller-tab-organisation" data-seller-tab="organisation">Organisation</button>
+                  <button type="button" class="btn btn--tab seller-tab" role="tab" aria-selected="false" id="seller-tab-individual" data-seller-tab="individual">Individual</button>
                 </div>
                 <form id="seller-form" class="seller-form" novalidate>
                   <div class="seller-modal-section">
@@ -160,7 +160,7 @@
                       <div class="iban-block" id="seller-iban-block">
                         <span class="field-error form-error" id="seller-iban-error" hidden></span>
                         <div class="iban-list" id="seller-iban-list"></div>
-                        <a href="#" role="button" class="link-add-iban" id="seller-add-iban">Add bank account number</a>
+                        <a href="#" role="button" class="btn btn--transparent btn--icon-left link-add-iban" id="seller-add-iban"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add bank account number</span></a>
                       </div>
                     </div>
                   </div>
@@ -180,8 +180,8 @@
                     </div>
                   </div>
                   <div class="seller-modal-actions">
-                    <button type="button" class="btn-secondary" id="seller-cancel">Cancel</button>
-                    <button type="submit" class="green-btn" id="seller-save">Add details</button>
+                    <button type="button" class="btn btn--secondary" id="seller-cancel">Cancel</button>
+                    <button type="submit" class="btn btn--primary" id="seller-save">Add details</button>
                   </div>
                 </form>
               </div>
@@ -193,7 +193,7 @@
                 <div class="card">
                   <div class="card-icon">💼</div>
                   <p>Enter your customer details</p>
-                  <button type="button" class="green-btn">+&nbsp;&nbsp;Add details</button>
+                  <button type="button" class="btn btn--primary btn--icon-left"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button>
                 </div>
               </div>
             </section>
@@ -203,10 +203,10 @@
               <div class="section-content">
                 <div class="chips">
                   <span class="chips-title">Add fields:</span>
-                  <button type="button" class="chip">+&nbsp;Tax rate</button>
-                  <button type="button" class="chip">+&nbsp;Discount</button>
-                  <button type="button" class="chip">+&nbsp;ID code</button>
-                  <button type="button" class="chip">+&nbsp;Note</button>
+                  <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left chip"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Tax rate</span></button>
+                  <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left chip"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Discount</span></button>
+                  <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left chip"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">ID code</span></button>
+                  <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left chip"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Note</span></button>
                 </div>
                 <div class="line-head">
                   <span>Service / Product</span>
@@ -216,14 +216,14 @@
                 </div>
                 <div class="line-row">
                   <input class="form-control" type="text" placeholder="Enter name" aria-label="Service or product name">
-                  <button type="button" class="mini-select">1 pcs ⌄</button>
+                  <button type="button" class="btn btn--secondary btn--sm btn--icon-right mini-select"><span class="btn__label">1 pcs</span><span class="material-symbols-rounded btn__icon" aria-hidden="true">keyboard_arrow_down</span></button>
                   <span class="price">0.00 EUR</span>
                   <div class="line-total">
                     <span>0.00 EUR</span>
-                    <button type="button" class="minus">—</button>
+                    <button type="button" class="btn btn--transparent btn--icon-only btn--sm minus" aria-label="Remove line item"><span class="material-symbols-rounded btn__icon" aria-hidden="true">remove</span></button>
                   </div>
                 </div>
-                <button type="button" class="green-btn left">+&nbsp;&nbsp;Add item</button>
+                <button type="button" class="btn btn--primary btn--icon-left"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add item</span></button>
                 <div class="sum">
                   <div><span>Subtotal</span><span>0.00 EUR</span></div>
                   <div class="sum-total"><span>Total</span><span>0.00 EUR</span></div>
@@ -233,7 +233,7 @@
 
             <section class="ready">
               <p>Invoice ready?</p>
-              <button type="button" class="green-btn big">Create a invoice</button>
+              <button type="button" class="btn btn--primary btn--full">Create a invoice</button>
             </section>
           </section>
 

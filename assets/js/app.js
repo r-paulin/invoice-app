@@ -234,7 +234,7 @@ console.log('hello');
         '<input class="form-control" type="text" name="iban-bank-' + index + '" id="' + bankId + '" placeholder="Bank name or notes" aria-label="Bank name or notes">' +
         '</label>' +
         '<div class="iban-row-actions">' +
-        '<a href="#" role="button" class="link-remove-iban" data-iban-index="' + index + '">Remove</a>' +
+        '<a href="#" role="button" class="btn btn--transparent link-remove-iban" data-iban-index="' + index + '"><span class="btn__label">Remove</span></a>' +
         '</div>';
       sellerIbanList.appendChild(div);
       var input = document.getElementById(id);
@@ -268,7 +268,7 @@ console.log('hello');
       '<input class="form-control" type="text" name="iban-bank-' + index + '" id="' + bankId + '" placeholder="Bank name or notes" aria-label="Bank name or notes">' +
       '</label>' +
       '<div class="iban-row-actions">' +
-      '<a href="#" role="button" class="link-remove-iban" data-iban-index="' + index + '">Remove</a>' +
+      '<a href="#" role="button" class="btn btn--transparent link-remove-iban" data-iban-index="' + index + '"><span class="btn__label">Remove</span></a>' +
       '</div>';
     sellerIbanList.appendChild(div);
     var removeLink = div.querySelector('.link-remove-iban');
