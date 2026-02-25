@@ -14,50 +14,50 @@
 <body>
   <div class="page-surface">
      <header class="top">
-        <div class="grid-wrapper">
-          <div class="grid-background"></div>
-        </div>
-        <div class="container top-inner">
-            <img class="logo" src="assets/logo-invio.svg" alt="invio" width="114" height="42">
-            <div class="lang-wrap">
-              <span class="material-symbols-rounded lang-icon lang-icon-translate" aria-hidden="true">translate</span>
-              <select class="lang-select" id="lang-select" aria-label="Language">
-                <option value="bg">Bulgarian</option>
-                <option value="hr">Croatian</option>
-                <option value="cs">Czech</option>
-                <option value="da">Danish</option>
-                <option value="nl">Dutch</option>
-                <option value="en" selected>English</option>
-                <option value="et">Estonian</option>
-                <option value="fi">Finnish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <option value="el">Greek</option>
-                <option value="hu">Hungarian</option>
-                <option value="ga">Irish</option>
-                <option value="it">Italian</option>
-                <option value="lv">Latvian</option>
-                <option value="lt">Lithuanian</option>
-                <option value="mt">Maltese</option>
-                <option value="pl">Polish</option>
-                <option value="pt">Portuguese</option>
-                <option value="ro">Romanian</option>
-                <option value="sk">Slovak</option>
-                <option value="sl">Slovenian</option>
-                <option value="es">Spanish</option>
-                <option value="sv">Swedish</option>
-              </select>
-              <span class="material-symbols-rounded lang-icon lang-icon-chevron" aria-hidden="true">keyboard_arrow_down</span>
-            </div>
+        <div class="header-grid container">
+          <img class="logo header-grid__logo" src="assets/logo-invio.svg" alt="Invio" width="114" height="42">
+          <div class="lang-wrap btn btn--secondary header-grid__lang">
+            <span class="material-symbols-rounded lang-icon lang-icon-translate" aria-hidden="true">translate</span>
+            <select class="lang-select" id="lang-select" aria-label="Language">
+              <option value="bg">Bulgarian</option>
+              <option value="hr">Croatian</option>
+              <option value="cs">Czech</option>
+              <option value="da">Danish</option>
+              <option value="nl">Dutch</option>
+              <option value="en" selected>English</option>
+              <option value="et">Estonian</option>
+              <option value="fi">Finnish</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+              <option value="el">Greek</option>
+              <option value="hu">Hungarian</option>
+              <option value="ga">Irish</option>
+              <option value="it">Italian</option>
+              <option value="lv">Latvian</option>
+              <option value="lt">Lithuanian</option>
+              <option value="mt">Maltese</option>
+              <option value="pl">Polish</option>
+              <option value="pt">Portuguese</option>
+              <option value="ro">Romanian</option>
+              <option value="sk">Slovak</option>
+              <option value="sl">Slovenian</option>
+              <option value="es">Spanish</option>
+              <option value="sv">Swedish</option>
+            </select>
+            <span class="material-symbols-rounded lang-icon lang-icon-chevron" aria-hidden="true">keyboard_arrow_down</span>
           </div>
-          <div class="container hero">
+          <div class="header-decoration-wrap header-grid__decoration">
+            <img class="header-decoration" src="assets/paper-stack-flying.png" alt="" fetchpriority="high">
+          </div>
+          <div class="hero header-grid__hero">
             <h1>Free online invoice generator</h1>
             <p>Generate downloadable PDF invoices and compliant e-invoices directly in your browser.</p>
           </div>
-          <nav class="container tabs" aria-label="Invoice tabs">
+          <nav class="tabs header-grid__tabs" aria-label="Invoice tabs">
             <button type="button" class="btn btn--tab tab active" data-target="invoice-data">Invoice data</button>
             <button type="button" class="btn btn--tab tab" data-target="invoice-settings">Invoice settings</button>
           </nav>
+        </div>
       </header>
     <div class="container page-content">
       <main class="main">
@@ -119,11 +119,14 @@
                   <div class="seller-modal-section">
                     <div class="seller-section-title">Basic details</div>
                     <div class="seller-section-fields">
-                      <label class="field form-field" for="seller-country" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                      <div class="field form-field native-country-select-wrap">
                         <span class="form-label">Country <span class="required-mark">*</span></span>
-                        <input class="form-control" type="text" name="seller-country" id="seller-country" list="seller-country-list" required placeholder="Select or type country" aria-label="Country" autocomplete="off">
-                        <datalist id="seller-country-list"></datalist>
-                      </label>
+                        <label class="select native-select" for="seller-country">
+                          <select class="form-select native-select__control" name="seller-country" id="seller-country" required aria-label="Country">
+                            <option value="">Select country</option>
+                          </select>
+                        </label>
+                      </div>
                       <label class="field form-field" for="seller-name" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
                         <span class="form-label">Legal name <span class="required-mark">*</span></span>
                         <input class="form-control" type="text" name="seller-name" id="seller-name" required placeholder="Enter legal name of company / person" maxlength="200">
@@ -172,11 +175,20 @@
                         <input class="form-control" type="email" name="seller-email" id="seller-email" placeholder="Enter email address" aria-describedby="seller-email-error">
                         <span class="field-error form-error" id="seller-email-error" hidden></span>
                       </label>
-                      <label class="field form-field" for="seller-phone" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <span class="form-label">Phone number (optional)</span>
-                        <input class="form-control" type="tel" name="seller-phone" id="seller-phone" placeholder="Phone number" aria-describedby="seller-phone-error">
-                        <span class="field-error form-error" id="seller-phone-error" hidden></span>
-                      </label>
+                      <div class="field form-field phone-field-group" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                        <span class="form-label" id="seller-phone-label">Phone number (optional)</span>
+                        <div class="phone-input-row">
+                          <div class="phone-country-box">
+                            <span class="phone-country-display" id="seller-phone-country-display" aria-hidden="true"><span class="phone-country-emoji"></span><span class="phone-country-dial" id="seller-phone-country-dial"></span></span>
+                            <select class="form-control form-select phone-country-select" id="seller-phone-country" name="seller-phone-country" aria-label="Phone country code">
+                              <option value="">Select</option>
+                            </select>
+                            <span class="material-symbols-rounded phone-country-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                          </div>
+                          <input class="form-control phone-number-input" type="tel" inputmode="tel" name="seller-phone" id="seller-phone" placeholder="Phone number" aria-labelledby="seller-phone-label" aria-describedby="seller-phone-error" autocomplete="tel-national">
+                        </div>
+                        <span class="field-error form-error" id="seller-phone-error" role="alert" hidden></span>
+                      </div>
                     </div>
                   </div>
                   <div class="seller-modal-actions">

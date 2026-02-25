@@ -99,6 +99,169 @@ console.log('hello');
 
   }
 
+  // --- Native country selector dataset + helpers ---
+  var worldCountriesPromise = null;
+  var worldCountriesCache = [];
+
+  function loadWorldCountries() {
+    if (worldCountriesPromise) return worldCountriesPromise;
+    worldCountriesPromise = fetch('assets/data/countries.json')
+      .then(function (res) {
+        if (!res.ok) throw new Error('Failed to load countries.json');
+        return res.json();
+      })
+      .then(function (countries) {
+        worldCountriesCache = (countries || []).map(function (country) {
+          return {
+            name: (country.name || '').trim(),
+            iso2: (country.iso2 || '').toUpperCase(),
+            dialCode: (country.dialCode || '').trim()
+          };
+        }).filter(function (country) {
+          return country.name && country.iso2 && country.dialCode;
+        });
+        return worldCountriesCache;
+      })
+      .catch(function () {
+        worldCountriesCache = [];
+        return worldCountriesCache;
+      });
+    return worldCountriesPromise;
+  }
+
+  function normalizePhoneValue(value) {
+    return (value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function applyDialCodeToPhoneInput(dialCode) {
+    var phoneInput = document.getElementById('seller-phone');
+    if (!phoneInput || !dialCode) return;
+    var current = normalizePhoneValue(phoneInput.value);
+    var localPart = current.replace(/^\+\d+\s*/, '');
+    phoneInput.value = localPart ? (dialCode + ' ' + localPart) : (dialCode + ' ');
+  }
+
+  function updatePhoneCountryDisplay(iso2) {
+    var dialEl = document.getElementById('seller-phone-country-dial');
+    var displayEl = document.getElementById('seller-phone-country-display');
+    if (!displayEl) return;
+    var emojiEl = displayEl.querySelector('.phone-country-emoji');
+    var country = findCountryByIso2(iso2);
+    if (emojiEl) emojiEl.textContent = country ? countryEmojiFromIso2(country.iso2) : '';
+    if (dialEl) dialEl.textContent = country ? country.dialCode : '';
+  }
+
+  function detectCountryByPhone(phoneValue) {
+    var phone = normalizePhoneValue(phoneValue);
+    if (!phone || phone.charAt(0) !== '+' || !worldCountriesCache.length) return null;
+    var matches = worldCountriesCache.filter(function (country) {
+      return phone.indexOf(country.dialCode) === 0;
+    });
+    if (!matches.length) return null;
+    matches.sort(function (a, b) {
+      return b.dialCode.length - a.dialCode.length;
+    });
+    return matches[0];
+  }
+
+  function countryEmojiFromIso2(iso2) {
+    if (!iso2 || iso2.length !== 2) return '';
+    var code = iso2.toUpperCase();
+    var first = code.charCodeAt(0);
+    var second = code.charCodeAt(1);
+    if (first < 65 || first > 90 || second < 65 || second > 90) return '';
+    return String.fromCodePoint(first + 127397, second + 127397);
+  }
+
+  function findCountryByIso2(iso2) {
+    var code = (iso2 || '').toUpperCase();
+    if (!code) return null;
+    for (var i = 0; i < worldCountriesCache.length; i += 1) {
+      if (worldCountriesCache[i].iso2 === code) return worldCountriesCache[i];
+    }
+    return null;
+  }
+
+  function inferIso2FromLocale() {
+    var localeCandidates = [];
+    if (Array.isArray(navigator.languages)) localeCandidates = localeCandidates.concat(navigator.languages);
+    if (navigator.language) localeCandidates.push(navigator.language);
+    try {
+      localeCandidates.push(Intl.DateTimeFormat().resolvedOptions().locale);
+    } catch (_error) {
+      // Locale lookup best-effort only.
+    }
+
+    for (var i = 0; i < localeCandidates.length; i += 1) {
+      var locale = (localeCandidates[i] || '').trim();
+      if (!locale) continue;
+      var regionMatch = locale.match(/[-_]([A-Za-z]{2})\b/);
+      if (regionMatch) {
+        var iso2 = regionMatch[1].toUpperCase();
+        if (findCountryByIso2(iso2)) return iso2;
+      }
+      if (locale.length === 2) {
+        var twoLetter = locale.toUpperCase();
+        if (findCountryByIso2(twoLetter)) return twoLetter;
+      }
+    }
+    return '';
+  }
+
+  function fillNativeCountrySelects() {
+    var addressSelect = document.getElementById('seller-country');
+    var phoneSelect = document.getElementById('seller-phone-country');
+    if (!addressSelect || !phoneSelect) return;
+
+    addressSelect.length = 1;
+    phoneSelect.length = 1;
+
+    worldCountriesCache.forEach(function (country) {
+      var addressOption = document.createElement('option');
+      addressOption.value = country.iso2;
+      addressOption.textContent = countryEmojiFromIso2(country.iso2) + ' ' + country.name + ' (' + country.iso2 + ')';
+      addressSelect.appendChild(addressOption);
+
+      var phoneOption = document.createElement('option');
+      phoneOption.value = country.iso2;
+      phoneOption.textContent = countryEmojiFromIso2(country.iso2) + ' ' + country.name + ' (' + country.dialCode + ')';
+      phoneSelect.appendChild(phoneOption);
+    });
+    updatePhoneCountryDisplay(phoneSelect.value);
+  }
+
+  function applyGeoPrefillIfEmpty() {
+    var addressSelect = document.getElementById('seller-country');
+    var phoneSelect = document.getElementById('seller-phone-country');
+    if (!addressSelect || !phoneSelect) return;
+    if (addressSelect.value || phoneSelect.value) return;
+
+    var guessedIso2 = inferIso2FromLocale();
+    if (!guessedIso2) return;
+    if (findCountryByIso2(guessedIso2)) {
+      addressSelect.value = guessedIso2;
+      phoneSelect.value = guessedIso2;
+      updatePhoneCountryDisplay(guessedIso2);
+    }
+  }
+
+  function bindNativeCountrySelectEvents() {
+    var addressSelect = document.getElementById('seller-country');
+    var phoneSelect = document.getElementById('seller-phone-country');
+    if (!addressSelect || !phoneSelect) return;
+
+    phoneSelect.addEventListener('change', function () {
+      updatePhoneCountryDisplay(phoneSelect.value);
+    });
+  }
+
+  window.InvioCountries = window.InvioCountries || {};
+  window.InvioCountries.loadCountries = loadWorldCountries;
+  window.InvioCountries.getCachedCountries = function () { return worldCountriesCache; };
+  window.InvioCountries.detectCountryByPhone = detectCountryByPhone;
+  window.InvioCountries.applyDialCodeToPhoneInput = applyDialCodeToPhoneInput;
+  window.InvioCountries.findByIso2 = findCountryByIso2;
+
   // --- Seller modal: dialog, focus trap, form bindings, Save/Cancel ---
   var draft = (typeof window !== 'undefined' && window.__invioDraft) ? window.__invioDraft : (window.InvioState && window.InvioState.createDefaultDraft());
   if (typeof window !== 'undefined') window.__invioDraft = draft;
@@ -108,7 +271,6 @@ console.log('hello');
   var sellerForm = null;
   var sellerTrigger = document.querySelector('[data-seller-modal-trigger]');
   var sellerCountryInput = null;
-  var sellerCountryList = null;
   var sellerIbanList = null;
   var sellerAddIbanLink = null;
   var sellerIbanBlock = null;
@@ -119,7 +281,6 @@ console.log('hello');
   function cacheSellerElements() {
     sellerForm = document.getElementById('seller-form');
     sellerCountryInput = document.getElementById('seller-country');
-    sellerCountryList = document.getElementById('seller-country-list');
     sellerIbanList = document.getElementById('seller-iban-list');
     sellerAddIbanLink = document.getElementById('seller-add-iban');
     sellerIbanBlock = document.getElementById('seller-iban-block');
@@ -147,6 +308,8 @@ console.log('hello');
     sellerBottomSheet.mount();
     cacheSellerElements();
     initSellerSheetAlpine();
+    var sheetRoot = document.querySelector('.seller-bottom-sheet');
+    if (sheetRoot) sheetRoot.setAttribute('inert', '');
   }
 
   function getFocusables() {
@@ -173,13 +336,23 @@ console.log('hello');
     document.getElementById('seller-city').value = a.city || '';
     document.getElementById('seller-postal').value = a.postalCode || '';
     document.getElementById('seller-phone').value = c.phone || '';
+    var sellerPhoneCountryInput = document.getElementById('seller-phone-country');
     document.getElementById('seller-email').value = c.email || '';
     var countryCode = (a.countryCode || '').toUpperCase();
-    if (sellerCountryInput && window.InvioEuCountries && window.InvioEuCountries.getEuCountries) {
-      var listForDisplay = window.InvioEuCountries.getEuCountries();
-      var found = listForDisplay.filter(function (x) { return x.code === countryCode; })[0];
-      sellerCountryInput.value = found ? found.name + ' (' + found.code + ')' : countryCode || '';
+    if (sellerCountryInput) sellerCountryInput.value = countryCode || '';
+
+    if (sellerPhoneCountryInput) {
+      var phoneCountry = detectCountryByPhone(c.phone || '');
+      sellerPhoneCountryInput.value = phoneCountry ? phoneCountry.iso2 : '';
+      if (!sellerPhoneCountryInput.value && countryCode) sellerPhoneCountryInput.value = countryCode;
+      updatePhoneCountryDisplay(sellerPhoneCountryInput.value);
     }
+
+    applyGeoPrefillIfEmpty();
+
+    var sheetRoot = document.querySelector('.seller-bottom-sheet');
+    if (sheetRoot) sheetRoot.removeAttribute('inert');
+
     var means = (p.meansTypeCode || '30').toString();
     var radio = document.querySelector('input[name="payment-means"][value="' + means + '"]');
     if (radio) radio.checked = true;
@@ -200,6 +373,8 @@ console.log('hello');
   function closeSellerModal() {
     if (!sellerBottomSheet) return;
     sellerBottomSheet.close();
+    var sheetRoot = document.querySelector('.seller-bottom-sheet');
+    if (sheetRoot) sheetRoot.setAttribute('inert', '');
   }
 
   function parseCountryCodeFromInput(val) {
@@ -208,7 +383,7 @@ console.log('hello');
     var match = trimmed.match(/\(([A-Z]{2})\)$/i);
     if (match) return match[1].toUpperCase();
     if (trimmed.length === 2) return trimmed.toUpperCase();
-    return trimmed;
+    return trimmed.toUpperCase();
   }
 
   function renderIbanList(accounts) {
@@ -479,13 +654,10 @@ console.log('hello');
     });
   }
 
-  // Populate country datalist (EU) with name + (CODE)
-  if (sellerCountryList && window.InvioEuCountries && window.InvioEuCountries.getEuCountries) {
-    var countries = window.InvioEuCountries.getEuCountries();
-    countries.forEach(function (c) {
-      var opt = document.createElement('option');
-      opt.value = c.name + ' (' + c.code + ')';
-      sellerCountryList.appendChild(opt);
-    });
-  }
+  // Initialize native selects with local country dataset.
+  loadWorldCountries().then(function () {
+    fillNativeCountrySelects();
+    bindNativeCountrySelectEvents();
+    applyGeoPrefillIfEmpty();
+  });
 })();

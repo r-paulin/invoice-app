@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 240" fill="none" aria-hidden="true">
+  <title>Decorative paper stack</title>
+  <!-- Placeholder: replace with your paper stack image -->
+  <rect width="200" height="160" x="40" y="40" rx="4" fill="#e7e5e4" opacity="0.9"/>
+  <rect width="200" height="160" x="45" y="35" rx="4" fill="#f5f5f4" opacity="0.95"/>
+  <rect width="200" height="160" x="50" y="30" rx="4" fill="#ffffff" stroke="#d6d3d1" stroke-width="1"/>
+  <line x1="70" y1="70" x2="210" y2="70" stroke="#e7e5e4" stroke-width="1"/>
+  <line x1="70" y1="95" x2="180" y2="95" stroke="#e7e5e4" stroke-width="1"/>
+  <line x1="70" y1="120" x2="190" y2="120" stroke="#e7e5e4" stroke-width="1"/>
+</svg>
