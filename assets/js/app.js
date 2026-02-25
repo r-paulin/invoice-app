@@ -1,5 +1,3 @@
-console.log('hello');
-
 (function () {
   const tabs = document.querySelectorAll('.tab[data-target]');
   const panels = document.querySelectorAll('.panel[data-panel]');
@@ -23,6 +21,88 @@ console.log('hello');
   });
 
   setActive('invoice-data');
+
+  // --- Header language picker: button trigger + native select ---
+  const langButton = document.getElementById('lang-button');
+  const langButtonLabel = document.getElementById('lang-button-label');
+  const langButtonFlag = document.getElementById('lang-button-flag');
+  const langSelect = document.getElementById('lang-select');
+
+  if (langButton && langSelect && langButtonLabel && langButtonFlag) {
+    const languageToFlag = {
+      bg: '🇧🇬',
+      hr: '🇭🇷',
+      cs: '🇨🇿',
+      da: '🇩🇰',
+      nl: '🇳🇱',
+      en: '🇬🇧',
+      et: '🇪🇪',
+      fi: '🇫🇮',
+      fr: '🇫🇷',
+      de: '🇩🇪',
+      el: '🇬🇷',
+      hu: '🇭🇺',
+      ga: '🇮🇪',
+      it: '🇮🇹',
+      lv: '🇱🇻',
+      lt: '🇱🇹',
+      mt: '🇲🇹',
+      pl: '🇵🇱',
+      pt: '🇵🇹',
+      ro: '🇷🇴',
+      sk: '🇸🇰',
+      sl: '🇸🇮',
+      es: '🇪🇸',
+      sv: '🇸🇪'
+    };
+
+    function syncLangButtonLabel() {
+      const selectedOption = langSelect.options[langSelect.selectedIndex];
+      if (selectedOption) {
+        langButtonLabel.textContent = selectedOption.textContent || 'English';
+        langButtonFlag.textContent = languageToFlag[langSelect.value] || '🇪🇺';
+      }
+    }
+
+    function openNativeLanguagePicker() {
+      if (langSelect.disabled) return;
+      langButton.setAttribute('aria-expanded', 'true');
+      langSelect.focus();
+      if (typeof langSelect.showPicker === 'function') {
+        try {
+          langSelect.showPicker();
+          return;
+        } catch (_error) {
+          // Fallback below for browsers that block showPicker.
+        }
+      }
+      langSelect.click();
+    }
+
+    langButton.addEventListener('click', function (event) {
+      event.preventDefault();
+      openNativeLanguagePicker();
+    });
+
+    langButton.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openNativeLanguagePicker();
+      }
+    });
+
+    langSelect.addEventListener('change', function () {
+      syncLangButtonLabel();
+      langButton.setAttribute('aria-expanded', 'false');
+      langButton.focus();
+    });
+
+    langSelect.addEventListener('blur', function () {
+      langButton.setAttribute('aria-expanded', 'false');
+    });
+
+    syncLangButtonLabel();
+  }
 
   // --- Basic details: issue date & due date (ISO 8601, 14-day rule, no past due) ---
   const issueDateInput = document.getElementById('issue-date');
@@ -103,6 +183,10 @@ console.log('hello');
   var worldCountriesPromise = null;
   var worldCountriesCache = [];
 
+  /**
+   * Load country list from assets/data/countries.json.
+   * On failure the promise rejects; worldCountriesCache is set to [] so callers can still run with an empty list.
+   */
   function loadWorldCountries() {
     if (worldCountriesPromise) return worldCountriesPromise;
     worldCountriesPromise = fetch('assets/data/countries.json')
@@ -122,9 +206,9 @@ console.log('hello');
         });
         return worldCountriesCache;
       })
-      .catch(function () {
+      .catch(function (err) {
         worldCountriesCache = [];
-        return worldCountriesCache;
+        throw err;
       });
     return worldCountriesPromise;
   }
@@ -320,6 +404,11 @@ console.log('hello');
     return Array.prototype.slice.call(el.querySelectorAll(sel));
   }
 
+  function setFormValue(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.value = value || '';
+  }
+
   function openSellerModal() {
     if (!sellerBottomSheet) return;
     if (!sellerForm) cacheSellerElements();
@@ -329,15 +418,15 @@ console.log('hello');
     var a = s.address || {};
     var c = s.contact || {};
     var p = draft.payment || {};
-    document.getElementById('seller-name').value = s.name || '';
-    document.getElementById('seller-registration').value = s.legalRegistrationId || '';
-    document.getElementById('seller-vat').value = s.vatId || '';
-    document.getElementById('seller-street').value = a.line1 || '';
-    document.getElementById('seller-city').value = a.city || '';
-    document.getElementById('seller-postal').value = a.postalCode || '';
-    document.getElementById('seller-phone').value = c.phone || '';
+    setFormValue('seller-name', s.name);
+    setFormValue('seller-registration', s.legalRegistrationId);
+    setFormValue('seller-vat', s.vatId);
+    setFormValue('seller-street', a.line1);
+    setFormValue('seller-city', a.city);
+    setFormValue('seller-postal', a.postalCode);
+    setFormValue('seller-phone', c.phone);
+    setFormValue('seller-email', c.email);
     var sellerPhoneCountryInput = document.getElementById('seller-phone-country');
-    document.getElementById('seller-email').value = c.email || '';
     var countryCode = (a.countryCode || '').toUpperCase();
     if (sellerCountryInput) sellerCountryInput.value = countryCode || '';
 
@@ -354,9 +443,9 @@ console.log('hello');
     if (sheetRoot) sheetRoot.removeAttribute('inert');
 
     var means = (p.meansTypeCode || '30').toString();
-    var radio = document.querySelector('input[name="payment-means"][value="' + means + '"]');
-    if (radio) radio.checked = true;
-    sellerIbanBlock.hidden = means !== '30';
+    var paymentRadios = document.querySelectorAll('input[name="payment-means"]');
+    paymentRadios.forEach(function (r) { r.checked = r.value === means; });
+    if (sellerIbanBlock) sellerIbanBlock.hidden = means !== '30';
     renderIbanList(p.accounts && p.accounts.length ? p.accounts : (p.accountId ? [{ accountId: p.accountId, bankName: p.bankName || null }] : [{ accountId: '', bankName: null }]));
     hideFieldErrors();
     var ibanErrEl = document.getElementById('seller-iban-error');
@@ -386,25 +475,69 @@ console.log('hello');
     return trimmed.toUpperCase();
   }
 
+  function createIbanRowDom(index) {
+    var id = 'seller-iban-' + String(index);
+    var bankId = 'seller-iban-bank-' + String(index);
+    var div = document.createElement('div');
+    div.className = 'iban-item';
+
+    var labelIban = document.createElement('label');
+    labelIban.className = 'field form-field';
+    var spanIban = document.createElement('span');
+    spanIban.className = 'form-label';
+    spanIban.textContent = 'IBAN';
+    var inputIban = document.createElement('input');
+    inputIban.className = 'form-control';
+    inputIban.type = 'text';
+    inputIban.name = 'iban-' + String(index);
+    inputIban.id = id;
+    inputIban.placeholder = 'e.g. LV80BANK0000435195001';
+    inputIban.setAttribute('aria-label', 'IBAN');
+    inputIban.setAttribute('aria-invalid', 'false');
+    labelIban.appendChild(spanIban);
+    labelIban.appendChild(inputIban);
+    div.appendChild(labelIban);
+
+    var labelBank = document.createElement('label');
+    labelBank.className = 'field form-field';
+    var spanBank = document.createElement('span');
+    spanBank.className = 'form-label';
+    spanBank.textContent = 'Bank name or notes';
+    var inputBank = document.createElement('input');
+    inputBank.className = 'form-control';
+    inputBank.type = 'text';
+    inputBank.name = 'iban-bank-' + String(index);
+    inputBank.id = bankId;
+    inputBank.placeholder = 'Bank name or notes';
+    inputBank.setAttribute('aria-label', 'Bank name or notes');
+    labelBank.appendChild(spanBank);
+    labelBank.appendChild(inputBank);
+    div.appendChild(labelBank);
+
+    var actions = document.createElement('div');
+    actions.className = 'iban-row-actions';
+    var removeLink = document.createElement('a');
+    removeLink.href = '#';
+    removeLink.setAttribute('role', 'button');
+    removeLink.className = 'btn btn--transparent link-remove-iban';
+    removeLink.setAttribute('data-iban-index', String(index));
+    var removeLabel = document.createElement('span');
+    removeLabel.className = 'btn__label';
+    removeLabel.textContent = 'Remove';
+    removeLink.appendChild(removeLabel);
+    actions.appendChild(removeLink);
+    div.appendChild(actions);
+
+    return div;
+  }
+
   function renderIbanList(accounts) {
     if (!sellerIbanList) return;
     sellerIbanList.innerHTML = '';
     (accounts || [{ accountId: '', bankName: null }]).forEach(function (acc, index) {
-      var div = document.createElement('div');
-      div.className = 'iban-item';
-      var id = 'seller-iban-' + index;
-      var bankId = 'seller-iban-bank-' + index;
-      div.innerHTML = '<label class="field form-field">' +
-        '<span class="form-label">IBAN</span>' +
-        '<input class="form-control" type="text" name="iban-' + index + '" id="' + id + '" placeholder="e.g. LV80BANK0000435195001" aria-label="IBAN" aria-invalid="false">' +
-        '</label>' +
-        '<label class="field form-field">' +
-        '<span class="form-label">Bank name or notes</span>' +
-        '<input class="form-control" type="text" name="iban-bank-' + index + '" id="' + bankId + '" placeholder="Bank name or notes" aria-label="Bank name or notes">' +
-        '</label>' +
-        '<div class="iban-row-actions">' +
-        '<a href="#" role="button" class="btn btn--transparent link-remove-iban" data-iban-index="' + index + '"><span class="btn__label">Remove</span></a>' +
-        '</div>';
+      var id = 'seller-iban-' + String(index);
+      var bankId = 'seller-iban-bank-' + String(index);
+      var div = createIbanRowDom(index);
       sellerIbanList.appendChild(div);
       var input = document.getElementById(id);
       var bankInput = document.getElementById(bankId);
@@ -422,23 +555,10 @@ console.log('hello');
 
   function addIbanRow(e) {
     if (e) e.preventDefault();
-    var items = sellerIbanList ? sellerIbanList.querySelectorAll('.iban-item') : [];
+    if (!sellerIbanList) return;
+    var items = sellerIbanList.querySelectorAll('.iban-item');
     var index = items.length;
-    var div = document.createElement('div');
-    div.className = 'iban-item';
-    var id = 'seller-iban-' + index;
-    var bankId = 'seller-iban-bank-' + index;
-    div.innerHTML = '<label class="field form-field">' +
-      '<span class="form-label">IBAN</span>' +
-      '<input class="form-control" type="text" name="iban-' + index + '" id="' + id + '" placeholder="e.g. LV80BANK0000435195001" aria-label="IBAN" aria-invalid="false">' +
-      '</label>' +
-      '<label class="field form-field">' +
-      '<span class="form-label">Bank name or notes</span>' +
-      '<input class="form-control" type="text" name="iban-bank-' + index + '" id="' + bankId + '" placeholder="Bank name or notes" aria-label="Bank name or notes">' +
-      '</label>' +
-      '<div class="iban-row-actions">' +
-      '<a href="#" role="button" class="btn btn--transparent link-remove-iban" data-iban-index="' + index + '"><span class="btn__label">Remove</span></a>' +
-      '</div>';
+    var div = createIbanRowDom(index);
     sellerIbanList.appendChild(div);
     var removeLink = div.querySelector('.link-remove-iban');
     if (removeLink) {
@@ -616,7 +736,7 @@ console.log('hello');
     if (name) {
       summaryEl.textContent = country ? name + ', ' + country : name;
     } else {
-      summaryEl.textContent = 'Enter you business details';
+      summaryEl.textContent = 'Enter your business details';
     }
   }
 
@@ -656,6 +776,10 @@ console.log('hello');
 
   // Initialize native selects with local country dataset.
   loadWorldCountries().then(function () {
+    fillNativeCountrySelects();
+    bindNativeCountrySelectEvents();
+    applyGeoPrefillIfEmpty();
+  }).catch(function () {
     fillNativeCountrySelects();
     bindNativeCountrySelectEvents();
     applyGeoPrefillIfEmpty();
