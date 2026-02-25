@@ -14,6 +14,43 @@
   --green-700: #008236;
   --green-800: #016630;
   --green-600: #00a63e;
+  --red-800: #a50036;
+  --red-700: #dc2626;
+
+  /* Shared form tokens (Figma-aligned) */
+  --color-text: var(--grey-800);
+  --color-text-muted: var(--grey-600);
+  --color-placeholder: var(--grey-400);
+  --color-surface: var(--white);
+  --color-border: var(--grey-200);
+  --color-border-hover: var(--grey-300);
+  --color-border-focus: var(--green-700);
+  --color-error: var(--red-800);
+  --color-error-border: var(--red-700);
+  --color-disabled-bg: var(--grey-50);
+  --color-disabled-text: var(--grey-500);
+
+  --radius-input: 0.25rem;
+  --border-width-input: 0.0625rem;
+  --shadow-input: 0 0.0625rem 0.125rem rgba(18, 18, 23, 0.05);
+
+  --space-2xs: 0.125rem;
+  --space-xs: 0.25rem;
+  --space-sm: 0.375rem;
+  --space-md: 0.5rem;
+  --space-lg: 0.75rem;
+  --space-xl: 1rem;
+  --space-2xl: 1.25rem;
+
+  --font-size-label: 1rem;
+  --font-size-value: 1rem;
+  --font-size-help: 0.875rem;
+  --line-height-label: 1.5;
+  --line-height-value: 1.5;
+  --line-height-help: 1.4;
+  --font-weight-label: 600;
+  --font-weight-value: 400;
+  --font-weight-help: 400;
 }
 
 /* Global layout utility */
@@ -252,17 +289,17 @@ body {
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-sm);
 }
 
 .field > span {
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.5;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  line-height: var(--line-height-label);
 }
 
 .field em {
-  color: #dc2626;
+  color: var(--color-error-border);
   font-style: normal;
 }
 
@@ -282,7 +319,7 @@ input {
 }
 
 input::placeholder {
-  color: var(--grey-400);
+  color: var(--color-placeholder);
 }
 
 .field-row {
@@ -298,11 +335,165 @@ input::placeholder {
 }
 
 .field-helper {
-  color: var(--grey-500);
-  font-size: 0.9rem;
-  font-weight: 500;
-  line-height: 1.4;
-  margin-top: 2px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-help);
+  font-weight: var(--font-weight-help);
+  line-height: var(--line-height-help);
+  margin-top: var(--space-2xs);
+}
+
+/* Shared form control system */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.form-label {
+  color: var(--color-text);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-label);
+  line-height: var(--line-height-label);
+}
+
+.required-mark {
+  color: var(--color-error-border);
+  font-style: normal;
+}
+
+.form-help {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-help);
+  font-weight: var(--font-weight-help);
+  line-height: var(--line-height-help);
+}
+
+.form-error {
+  color: var(--color-error);
+  font-size: var(--font-size-help);
+  font-weight: var(--font-weight-help);
+  line-height: var(--line-height-help);
+}
+
+.form-error[hidden] {
+  display: none;
+}
+
+.form-control,
+.form-select,
+.form-textarea {
+  background: var(--color-surface);
+  border: var(--border-width-input) solid var(--color-border);
+  border-radius: var(--radius-input);
+  box-shadow: var(--shadow-input);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-value);
+  font-weight: var(--font-weight-value);
+  letter-spacing: -0.0125em;
+  line-height: var(--line-height-value);
+  min-height: 2.5rem;
+  outline: none;
+  padding: var(--space-md) var(--space-lg);
+  transition: border-color 0.12s ease;
+}
+
+.form-control::placeholder,
+.form-select::placeholder,
+.form-textarea::placeholder {
+  color: var(--color-placeholder);
+}
+
+.form-select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--green-700) 50%),
+    linear-gradient(135deg, var(--green-700) 50%, transparent 50%);
+  background-position:
+    calc(100% - 0.8125rem) calc(50% - 0.0625rem),
+    calc(100% - 0.5625rem) calc(50% - 0.0625rem);
+  background-repeat: no-repeat;
+  background-size: 0.3125rem 0.3125rem, 0.3125rem 0.3125rem;
+  padding-right: 2rem;
+}
+
+.form-textarea {
+  min-height: 7.75rem;
+  resize: vertical;
+}
+
+.form-field:hover .form-control:not(:disabled),
+.form-field:hover .form-select:not(:disabled),
+.form-field:hover .form-textarea:not(:disabled) {
+  border-color: var(--color-border-hover);
+}
+
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-textarea:focus-visible,
+.form-field.is-focused .form-control,
+.form-field.is-focused .form-select,
+.form-field.is-focused .form-textarea {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 0.125rem rgba(0, 130, 54, 0.15);
+}
+
+.form-field.has-error .form-control,
+.form-field.has-error .form-select,
+.form-field.has-error .form-textarea {
+  border-color: var(--color-error-border);
+}
+
+.iban-block.has-error .form-control {
+  border-color: var(--color-error-border);
+}
+
+.form-control:disabled,
+.form-select:disabled,
+.form-textarea:disabled {
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.form-radio-group {
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+}
+
+.form-radio {
+  align-items: center;
+  color: var(--color-text);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--space-md);
+  line-height: var(--line-height-value);
+}
+
+.form-radio input[type="radio"] {
+  accent-color: var(--green-700);
+  min-height: 1rem;
+  min-width: 1rem;
+}
+
+.form-checkbox {
+  align-items: center;
+  color: var(--color-text);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--space-md);
+  line-height: var(--line-height-value);
+}
+
+.form-checkbox input[type="checkbox"] {
+  accent-color: var(--green-700);
+  min-height: 1rem;
+  min-width: 1rem;
 }
 
 .date-field {
@@ -787,7 +978,7 @@ body.seller-sheet-open {
   color: var(--grey-800);
 }
 
-.seller-section-fields .field input {
+.seller-section-fields .field input:not(.form-control) {
   background: var(--white);
   border: 1px solid var(--grey-200);
   border-radius: 4px;
@@ -799,14 +990,20 @@ body.seller-sheet-open {
   font-family: inherit;
 }
 
-.seller-section-fields .field input::placeholder {
+.seller-section-fields .field input:not(.form-control)::placeholder {
   color: var(--grey-400);
 }
 
 .seller-field-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 20px;
+}
+
+@media (min-width: 600px) {
+  .seller-field-row {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .seller-form .field-error {

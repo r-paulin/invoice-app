@@ -225,13 +225,13 @@ console.log('hello');
       div.className = 'iban-item';
       var id = 'seller-iban-' + index;
       var bankId = 'seller-iban-bank-' + index;
-      div.innerHTML = '<label class="field">' +
-        '<span>IBAN</span>' +
-        '<input type="text" name="iban-' + index + '" id="' + id + '" placeholder="e.g. LV80BANK0000435195001" aria-label="IBAN">' +
+      div.innerHTML = '<label class="field form-field">' +
+        '<span class="form-label">IBAN</span>' +
+        '<input class="form-control" type="text" name="iban-' + index + '" id="' + id + '" placeholder="e.g. LV80BANK0000435195001" aria-label="IBAN" aria-invalid="false">' +
         '</label>' +
-        '<label class="field">' +
-        '<span>Bank name or notes</span>' +
-        '<input type="text" name="iban-bank-' + index + '" id="' + bankId + '" placeholder="Bank name or notes" aria-label="Bank name or notes">' +
+        '<label class="field form-field">' +
+        '<span class="form-label">Bank name or notes</span>' +
+        '<input class="form-control" type="text" name="iban-bank-' + index + '" id="' + bankId + '" placeholder="Bank name or notes" aria-label="Bank name or notes">' +
         '</label>' +
         '<div class="iban-row-actions">' +
         '<a href="#" role="button" class="link-remove-iban" data-iban-index="' + index + '">Remove</a>' +
@@ -259,13 +259,13 @@ console.log('hello');
     div.className = 'iban-item';
     var id = 'seller-iban-' + index;
     var bankId = 'seller-iban-bank-' + index;
-    div.innerHTML = '<label class="field">' +
-      '<span>IBAN</span>' +
-      '<input type="text" name="iban-' + index + '" id="' + id + '" placeholder="e.g. LV80BANK0000435195001" aria-label="IBAN">' +
+    div.innerHTML = '<label class="field form-field">' +
+      '<span class="form-label">IBAN</span>' +
+      '<input class="form-control" type="text" name="iban-' + index + '" id="' + id + '" placeholder="e.g. LV80BANK0000435195001" aria-label="IBAN" aria-invalid="false">' +
       '</label>' +
-      '<label class="field">' +
-      '<span>Bank name or notes</span>' +
-      '<input type="text" name="iban-bank-' + index + '" id="' + bankId + '" placeholder="Bank name or notes" aria-label="Bank name or notes">' +
+      '<label class="field form-field">' +
+      '<span class="form-label">Bank name or notes</span>' +
+      '<input class="form-control" type="text" name="iban-bank-' + index + '" id="' + bankId + '" placeholder="Bank name or notes" aria-label="Bank name or notes">' +
       '</label>' +
       '<div class="iban-row-actions">' +
       '<a href="#" role="button" class="link-remove-iban" data-iban-index="' + index + '">Remove</a>' +
@@ -280,16 +280,44 @@ console.log('hello');
     }
   }
 
+  function syncFieldErrorA11y(id, hasError) {
+    var input = document.getElementById(id);
+    var err = document.getElementById(id + '-error');
+    if (!input) return;
+    input.setAttribute('aria-invalid', hasError ? 'true' : 'false');
+    if (err) {
+      var describedBy = [];
+      var base = input.getAttribute('data-describedby-base');
+      if (!base && input.hasAttribute('aria-describedby')) {
+        var current = (input.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean).filter(function (token) {
+          return token !== err.id;
+        });
+        if (current.length) {
+          base = current.join(' ');
+          input.setAttribute('data-describedby-base', base);
+        }
+      }
+      if (base) describedBy.push(base);
+      if (hasError) describedBy.push(err.id);
+      if (describedBy.length) input.setAttribute('aria-describedby', describedBy.join(' '));
+      else input.removeAttribute('aria-describedby');
+    }
+    var field = input.closest('.form-field') || input.closest('.field');
+    if (field) field.classList.toggle('has-error', !!hasError);
+  }
+
   function hideFieldErrors() {
     ['seller-registration', 'seller-vat', 'seller-phone', 'seller-email'].forEach(function (id) {
       var err = document.getElementById(id + '-error');
       if (err) { err.hidden = true; err.textContent = ''; }
+      syncFieldErrorA11y(id, false);
     });
   }
 
   function showFieldError(id, message) {
     var err = document.getElementById(id + '-error');
     if (err) { err.textContent = message || ''; err.hidden = !message; }
+    syncFieldErrorA11y(id, !!message);
   }
 
   function validateSellerForm() {
@@ -331,12 +359,32 @@ console.log('hello');
         }
       });
       var ibanErr = document.getElementById('seller-iban-error');
-      if (ibanErr) ibanErr.hidden = true;
+      if (ibanErr) {
+        ibanErr.hidden = true;
+        ibanErr.textContent = '';
+      }
+      if (sellerIbanBlock) sellerIbanBlock.classList.remove('has-error');
+      ibanInputs.forEach(function (inp) {
+        inp.setAttribute('aria-invalid', 'false');
+        inp.removeAttribute('aria-describedby');
+      });
       if (!hasOne) {
         if (ibanErr) { ibanErr.textContent = 'At least one IBAN is required for credit transfer'; ibanErr.hidden = false; }
+        if (sellerIbanBlock) sellerIbanBlock.classList.add('has-error');
+        ibanInputs.forEach(function (inp) {
+          inp.setAttribute('aria-invalid', 'true');
+          if (ibanErr) inp.setAttribute('aria-describedby', ibanErr.id);
+        });
         valid = false;
       } else if (!allValid && v) {
         if (ibanErr) { ibanErr.textContent = 'All IBANs must be valid'; ibanErr.hidden = false; }
+        if (sellerIbanBlock) sellerIbanBlock.classList.add('has-error');
+        ibanInputs.forEach(function (inp) {
+          if (v.validIban && inp.value.trim() && !v.validIban(inp.value.trim())) {
+            inp.setAttribute('aria-invalid', 'true');
+            if (ibanErr) inp.setAttribute('aria-describedby', ibanErr.id);
+          }
+        });
         valid = false;
       }
     }
