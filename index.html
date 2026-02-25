@@ -103,8 +103,8 @@
               </div>
             </section>
 
-            <dialog id="seller-dialog" class="seller-modal" aria-labelledby="seller-dialog-title" aria-modal="true">
-              <div class="seller-modal-inner">
+            <template id="seller-sheet-template">
+              <div class="seller-bottom-sheet" x-data="{ sellerTab: 'organisation' }" aria-labelledby="seller-dialog-title" aria-modal="true" role="dialog">
                 <header class="seller-modal-header">
                   <h2 id="seller-dialog-title" class="seller-modal-title">Seller</h2>
                   <button type="button" class="btn btn--secondary btn--icon-only seller-modal-close" id="seller-close" aria-label="Close seller modal">
@@ -112,8 +112,8 @@
                   </button>
                 </header>
                 <div class="seller-modal-tabs" role="tablist">
-                  <button type="button" class="btn btn--tab seller-tab active" role="tab" aria-selected="true" id="seller-tab-organisation" data-seller-tab="organisation">Organisation</button>
-                  <button type="button" class="btn btn--tab seller-tab" role="tab" aria-selected="false" id="seller-tab-individual" data-seller-tab="individual">Individual</button>
+                  <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'organisation' }" :aria-selected="sellerTab === 'organisation'" @click="sellerTab = 'organisation'" id="seller-tab-organisation" data-seller-tab="organisation">Organisation</button>
+                  <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'individual' }" :aria-selected="sellerTab === 'individual'" @click="sellerTab = 'individual'" id="seller-tab-individual" data-seller-tab="individual">Individual</button>
                 </div>
                 <form id="seller-form" class="seller-form" novalidate>
                   <div class="seller-modal-section">
@@ -185,7 +185,7 @@
                   </div>
                 </form>
               </div>
-            </dialog>
+            </template>
 
             <section class="section">
               <h2>Buyer</h2>
@@ -279,6 +279,7 @@
   <script src="assets/js/calc.js"></script>
   <script src="assets/js/validation.js"></script>
   <script src="assets/js/xml.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@plainsheet/core@latest/dist/plainsheet-core.umd.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

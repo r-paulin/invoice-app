@@ -103,46 +103,65 @@ console.log('hello');
   var draft = (typeof window !== 'undefined' && window.__invioDraft) ? window.__invioDraft : (window.InvioState && window.InvioState.createDefaultDraft());
   if (typeof window !== 'undefined') window.__invioDraft = draft;
 
-  var sellerDialog = document.getElementById('seller-dialog');
-  var sellerForm = document.getElementById('seller-form');
+  var sellerSheetTemplate = document.getElementById('seller-sheet-template');
+  var sellerBottomSheet = null;
+  var sellerForm = null;
   var sellerTrigger = document.querySelector('[data-seller-modal-trigger]');
-  var sellerCountryInput = document.getElementById('seller-country');
-  var sellerCountryList = document.getElementById('seller-country-list');
-  var sellerIbanList = document.getElementById('seller-iban-list');
-  var sellerAddIbanLink = document.getElementById('seller-add-iban');
-  var sellerIbanBlock = document.getElementById('seller-iban-block');
-  var sellerCancelBtn = document.getElementById('seller-cancel');
-  var sellerCloseBtn = document.getElementById('seller-close');
-  var sellerTabs = document.querySelectorAll('.seller-tab');
+  var sellerCountryInput = null;
+  var sellerCountryList = null;
+  var sellerIbanList = null;
+  var sellerAddIbanLink = null;
+  var sellerIbanBlock = null;
+  var sellerCancelBtn = null;
+  var sellerCloseBtn = null;
   var paymentMeansRadios = document.querySelectorAll('input[name="payment-means"]');
 
-  function getFocusables(el) {
+  function cacheSellerElements() {
+    sellerForm = document.getElementById('seller-form');
+    sellerCountryInput = document.getElementById('seller-country');
+    sellerCountryList = document.getElementById('seller-country-list');
+    sellerIbanList = document.getElementById('seller-iban-list');
+    sellerAddIbanLink = document.getElementById('seller-add-iban');
+    sellerIbanBlock = document.getElementById('seller-iban-block');
+    sellerCancelBtn = document.getElementById('seller-cancel');
+    sellerCloseBtn = document.getElementById('seller-close');
+  }
+
+  function initSellerSheetAlpine() {
+    if (!window.Alpine || !sellerForm) return;
+    var sheetRoot = sellerForm.closest('.seller-bottom-sheet');
+    if (!sheetRoot || sheetRoot.__sellerAlpineInit) return;
+    window.Alpine.initTree(sheetRoot);
+    sheetRoot.__sellerAlpineInit = true;
+  }
+
+  if (sellerSheetTemplate && window.BottomSheet && window.BottomSheet.createBottomSheet) {
+    sellerBottomSheet = window.BottomSheet.createBottomSheet({
+      content: sellerSheetTemplate.innerHTML,
+      shouldShowHandle: false,
+      backdropColor: 'rgba(0, 0, 0, 0.4)',
+      rootClass: 'seller-sheet-root',
+      containerClass: 'seller-sheet-container',
+      contentWrapperClass: 'seller-sheet-content-wrapper'
+    });
+    sellerBottomSheet.mount();
+    cacheSellerElements();
+    initSellerSheetAlpine();
+  }
+
+  function getFocusables() {
+    if (!sellerForm) return [];
+    var el = sellerForm;
     if (!el) return [];
     var sel = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
     return Array.prototype.slice.call(el.querySelectorAll(sel));
   }
 
-  function trapFocus(e) {
-    if (e.key !== 'Tab' || !sellerDialog || !sellerDialog.open) return;
-    var focusables = getFocusables(sellerDialog);
-    if (focusables.length === 0) return;
-    var first = focusables[0];
-    var last = focusables[focusables.length - 1];
-    if (e.shiftKey) {
-      if (document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      }
-    } else {
-      if (document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-  }
-
   function openSellerModal() {
-    if (!sellerDialog || !sellerForm) return;
+    if (!sellerBottomSheet) return;
+    if (!sellerForm) cacheSellerElements();
+    if (!sellerForm) return;
+    initSellerSheetAlpine();
     var s = draft.seller || {};
     var a = s.address || {};
     var c = s.contact || {};
@@ -169,43 +188,18 @@ console.log('hello');
     hideFieldErrors();
     var ibanErrEl = document.getElementById('seller-iban-error');
     if (ibanErrEl) { ibanErrEl.hidden = true; ibanErrEl.textContent = ''; }
-    sellerDialog.showModal();
-    document.body.classList.add('seller-sheet-open');
-    sellerDialog.addEventListener('keydown', trapFocus);
-    sellerDialog.addEventListener('close', function onClose() {
-      document.body.classList.remove('seller-sheet-open');
-      sellerDialog.classList.remove('seller-sheet-open');
-      sellerDialog.removeEventListener('keydown', trapFocus);
-    }, { once: true });
+    sellerBottomSheet.open();
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        sellerDialog.classList.add('seller-sheet-open');
-        var firstFocus = getFocusables(sellerDialog)[0];
+        var firstFocus = getFocusables()[0];
         if (firstFocus) firstFocus.focus();
       });
     });
   }
 
   function closeSellerModal() {
-    if (!sellerDialog) return;
-    sellerDialog.removeEventListener('keydown', trapFocus);
-    var inner = sellerDialog.querySelector('.seller-modal-inner');
-    if (inner && sellerDialog.classList.contains('seller-sheet-open')) {
-      sellerDialog.classList.remove('seller-sheet-open');
-      var closed = false;
-      var done = function (e) {
-        if (closed) return;
-        if (e && e.target !== inner) return;
-        if (e && e.propertyName && e.propertyName !== 'transform') return;
-        closed = true;
-        inner.removeEventListener('transitionend', done);
-        sellerDialog.close();
-      };
-      inner.addEventListener('transitionend', done);
-      setTimeout(function () { done(null); }, 350);
-    } else {
-      sellerDialog.close();
-    }
+    if (!sellerBottomSheet) return;
+    sellerBottomSheet.close();
   }
 
   function parseCountryCodeFromInput(val) {
@@ -456,31 +450,26 @@ console.log('hello');
       openSellerModal();
     });
   }
-  if (sellerCancelBtn) sellerCancelBtn.addEventListener('click', closeSellerModal);
-  if (sellerCloseBtn) sellerCloseBtn.addEventListener('click', closeSellerModal);
-  if (sellerTabs && sellerTabs.length) {
-    sellerTabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        sellerTabs.forEach(function (t) {
-          t.classList.remove('active');
-          t.setAttribute('aria-selected', 'false');
-        });
-        tab.classList.add('active');
-        tab.setAttribute('aria-selected', 'true');
-      });
-    });
-  }
-  if (sellerForm) {
-    sellerForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      saveSellerForm();
-    });
-  }
-  if (sellerAddIbanLink) {
-    sellerAddIbanLink.addEventListener('click', function (e) {
-      addIbanRow(e);
-    });
-  }
+  document.addEventListener('click', function (event) {
+    var target = event.target;
+    if (!target) return;
+    var closeTrigger = target.closest('#seller-cancel, #seller-close');
+    if (closeTrigger) {
+      event.preventDefault();
+      closeSellerModal();
+      return;
+    }
+    var addIbanTrigger = target.closest('#seller-add-iban');
+    if (addIbanTrigger) {
+      addIbanRow(event);
+    }
+  });
+  document.addEventListener('submit', function (event) {
+    var form = event.target;
+    if (!form || form.id !== 'seller-form') return;
+    event.preventDefault();
+    saveSellerForm();
+  });
   if (paymentMeansRadios && paymentMeansRadios.length) {
     paymentMeansRadios.forEach(function (radio) {
       radio.addEventListener('change', function () {
