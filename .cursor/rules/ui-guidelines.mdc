@@ -1,0 +1,16 @@
+---
+alwaysApply: true
+---
+
+---
+description: Enforce Vercel's copywriting and tone standards.
+globs: ["**/*.tsx", "**/*.jsx", "**/*.md", "**/*.mdx"]
+alwaysApply: true
+---
+# Vercel Copywriting Standards
+- **Active Voice:** Say "Install the CLI" instead of "The CLI will be installed."
+- **Title Case:** Use Title Case (Chicago style) for headings and buttons.
+- **Tone:** Be clear, concise, and default to positive, problem-solving language.
+- **Formatting:** - Use numerals for counts ("8 deployments" vs "eight").
+  - Use the ellipsis character (…) instead of three periods (...).
+  - Use curly quotes (“ ”) instead of straight quotes (" ").

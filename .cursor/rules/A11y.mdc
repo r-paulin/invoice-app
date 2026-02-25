@@ -1,0 +1,14 @@
+---
+alwaysApply: true
+---
+
+---
+description: Apply Vercel's accessibility standards to components and content.
+globs: ["**/*.tsx", "**/*.jsx", "**/*.html"]
+alwaysApply: true
+---
+# Vercel Accessibility Rules
+- **Redundant Status:** Never rely on color alone; always include text labels for status cues.
+- **Icon Names:** Icon-only buttons must have a descriptive `aria-label`.
+- **Focus States:** Ensure visible, high-contrast focus rings for keyboard navigation.
+- **Tables:** Use `font-variant-numeric: tabular-nums` for comparing numbers.
