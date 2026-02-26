@@ -320,7 +320,7 @@
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
                         <label for="buyer-street"><span class="form-label">Address <span class="required-mark">*</span></span></label>
                         <input class="form-control" type="text" name="buyer-street" id="buyer-street" required placeholder="Enter address" aria-describedby="buyer-street-hint">
-                        <small class="field-helper form-help" id="buyer-street-hint" x-text="buyerTab === 'individual' ? 'Enter address as it should appear on invoices' : 'Enter the company's legal address as it should appear on invoices'"></small>
+                        <small class="field-helper form-help" id="buyer-street-hint" x-text="buyerTab === 'individual' ? 'Enter address as it should appear on invoices' : 'Enter the company\'s legal address as it should appear on invoices'"></small>
                         <span class="field-error form-error field-error-reserved" id="buyer-street-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="buyer-field-row">
@@ -403,8 +403,8 @@
               <h2>Buyer</h2>
               <div class="section-content">
                 <div class="card" id="buyer-card">
-                  <img src="assets/men-holding-papers.webp" alt="Buyer details illustration" class="card-image" width="248" height="auto">
-                  <h3 id="buyer-card-summary">Enter your business details</h3>
+                  <img src="assets/image-men-holding-an-invoice.webp" alt="Buyer details illustration" class="card-image" width="248" height="auto">
+                  <h3 id="buyer-card-summary">Enter your customers details</h3>
                   <button type="button" class="btn btn--primary btn--icon-left" data-buyer-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button>
                 </div>
               </div>
