@@ -42,6 +42,48 @@
         }
       };
     });
+    Alpine.data('buyerPaymentDetails', function () {
+      return {
+        ibanDebounce: {},
+        addAccount: function () {
+          var s = Alpine.store('buyerBankAccounts');
+          if (s.length >= 6) return;
+          s.push({
+            iban: '',
+            bankName: '',
+            ibanError: '',
+            _id: 'iban-' + Date.now() + '-' + Math.random().toString(36).slice(2)
+          });
+        },
+        removeAccount: function (i) {
+          var s = Alpine.store('buyerBankAccounts');
+          if (s.length <= 1) return;
+          s.splice(i, 1);
+        },
+        validateIbanAt: function (i) {
+          var self = this;
+          clearTimeout(this.ibanDebounce[i]);
+          this.ibanDebounce[i] = setTimeout(function () {
+            var s = Alpine.store('buyerBankAccounts');
+            var acc = s[i];
+            if (!acc) return;
+            var raw = (acc.iban || '').trim();
+            var norm = raw.replace(/\s/g, '').toUpperCase();
+            if (!norm) {
+              acc.ibanError = '';
+              return;
+            }
+            var countryEl = document.getElementById('buyer-country');
+            var country = countryEl ? countryEl.value : '';
+            if (country && window.InvioValidation && window.InvioValidation.validIbanFormatForCountry && !window.InvioValidation.validIbanFormatForCountry(norm, country)) {
+              acc.ibanError = 'IBAN length does not match selected country';
+              return;
+            }
+            acc.ibanError = (window.InvioValidation && window.InvioValidation.validIban && !window.InvioValidation.validIban(norm)) ? 'Invalid IBAN' : '';
+          }, 350);
+        }
+      };
+    });
   });
 
   const tabs = document.querySelectorAll('.tab[data-target]');
@@ -341,27 +383,81 @@
     nameEl.textContent = country ? country.name : iso2;
   }
 
+  function getBuyerComposedPhoneValue() {
+    var phoneInput = document.getElementById('buyer-phone');
+    var phoneSelect = document.getElementById('buyer-phone-country');
+    var local = phoneInput ? normalizePhoneValue(phoneInput.value) : '';
+    if (!local) return '';
+    var country = phoneSelect && phoneSelect.value ? findCountryByIso2(phoneSelect.value) : null;
+    var dial = country ? country.dialCode : '';
+    if (!dial) return local;
+    return (dial + ' ' + local).trim();
+  }
+
+  function updateBuyerPhoneCountryDisplay(iso2) {
+    var dialEl = document.getElementById('buyer-phone-country-dial');
+    var flagEl = document.getElementById('buyer-phone-country-flag');
+    var displayEl = document.getElementById('buyer-phone-country-display');
+    if (!displayEl) return;
+    var country = findCountryByIso2(iso2);
+    if (flagEl) {
+      flagEl.className = 'phone-country-flag fi' + (iso2 ? ' fi-' + iso2.toLowerCase() : '');
+    }
+    if (dialEl) dialEl.textContent = country ? country.dialCode : '';
+  }
+
+  function updateBuyerAddressCountryDisplay(iso2) {
+    var flagEl = document.getElementById('buyer-country-flag');
+    var nameEl = document.getElementById('buyer-country-name');
+    var selectEl = document.getElementById('buyer-country');
+    if (!flagEl || !nameEl || !selectEl) return;
+    if (!iso2) {
+      flagEl.className = 'country-select-flag fi';
+      nameEl.textContent = 'Select country';
+      return;
+    }
+    var country = findCountryByIso2(iso2);
+    flagEl.className = 'country-select-flag fi fi-' + iso2.toLowerCase();
+    nameEl.textContent = country ? country.name : iso2;
+  }
+
   function fillNativeCountrySelects() {
     var addressSelect = document.getElementById('seller-country');
     var phoneSelect = document.getElementById('seller-phone-country');
-    if (!addressSelect || !phoneSelect) return;
-
-    addressSelect.length = 1;
-    phoneSelect.length = 1;
-
-    worldCountriesCache.forEach(function (country) {
-      var addressOption = document.createElement('option');
-      addressOption.value = country.iso2;
-      addressOption.textContent = country.name;
-      addressSelect.appendChild(addressOption);
-
-      var phoneOption = document.createElement('option');
-      phoneOption.value = country.iso2;
-      phoneOption.textContent = country.name + ' (' + country.dialCode + ')';
-      phoneSelect.appendChild(phoneOption);
-    });
-    updateAddressCountryDisplay(addressSelect.value);
-    updatePhoneCountryDisplay(phoneSelect.value);
+    if (addressSelect && phoneSelect) {
+      addressSelect.length = 1;
+      phoneSelect.length = 1;
+      worldCountriesCache.forEach(function (country) {
+        var addressOption = document.createElement('option');
+        addressOption.value = country.iso2;
+        addressOption.textContent = country.name;
+        addressSelect.appendChild(addressOption);
+        var phoneOption = document.createElement('option');
+        phoneOption.value = country.iso2;
+        phoneOption.textContent = country.name + ' (' + country.dialCode + ')';
+        phoneSelect.appendChild(phoneOption);
+      });
+      updateAddressCountryDisplay(addressSelect.value);
+      updatePhoneCountryDisplay(phoneSelect.value);
+    }
+    var buyerAddressSelect = document.getElementById('buyer-country');
+    var buyerPhoneSelect = document.getElementById('buyer-phone-country');
+    if (buyerAddressSelect && buyerPhoneSelect) {
+      buyerAddressSelect.length = 1;
+      buyerPhoneSelect.length = 1;
+      worldCountriesCache.forEach(function (country) {
+        var addressOption = document.createElement('option');
+        addressOption.value = country.iso2;
+        addressOption.textContent = country.name;
+        buyerAddressSelect.appendChild(addressOption);
+        var phoneOption = document.createElement('option');
+        phoneOption.value = country.iso2;
+        phoneOption.textContent = country.name + ' (' + country.dialCode + ')';
+        buyerPhoneSelect.appendChild(phoneOption);
+      });
+      updateBuyerAddressCountryDisplay(buyerAddressSelect.value);
+      updateBuyerPhoneCountryDisplay(buyerPhoneSelect.value);
+    }
   }
 
   function applyGeoPrefillIfEmpty() {
@@ -384,20 +480,31 @@
   function bindNativeCountrySelectEvents() {
     var addressSelect = document.getElementById('seller-country');
     var phoneSelect = document.getElementById('seller-phone-country');
-    var phoneInput = document.getElementById('seller-phone');
-    if (!addressSelect || !phoneSelect) return;
-
-    addressSelect.addEventListener('change', function () {
-      var iso2 = addressSelect.value;
-      updateAddressCountryDisplay(iso2);
-      phoneSelect.value = iso2;
-      updatePhoneCountryDisplay(iso2);
-      lastAddressCountryForPhone = iso2 || '';
-    });
-
-    phoneSelect.addEventListener('change', function () {
-      updatePhoneCountryDisplay(phoneSelect.value);
-    });
+    if (addressSelect && phoneSelect) {
+      addressSelect.addEventListener('change', function () {
+        var iso2 = addressSelect.value;
+        updateAddressCountryDisplay(iso2);
+        phoneSelect.value = iso2;
+        updatePhoneCountryDisplay(iso2);
+        lastAddressCountryForPhone = iso2 || '';
+      });
+      phoneSelect.addEventListener('change', function () {
+        updatePhoneCountryDisplay(phoneSelect.value);
+      });
+    }
+    var buyerAddressSelect = document.getElementById('buyer-country');
+    var buyerPhoneSelect = document.getElementById('buyer-phone-country');
+    if (buyerAddressSelect && buyerPhoneSelect) {
+      buyerAddressSelect.addEventListener('change', function () {
+        var iso2 = buyerAddressSelect.value;
+        updateBuyerAddressCountryDisplay(iso2);
+        buyerPhoneSelect.value = iso2;
+        updateBuyerPhoneCountryDisplay(iso2);
+      });
+      buyerPhoneSelect.addEventListener('change', function () {
+        updateBuyerPhoneCountryDisplay(buyerPhoneSelect.value);
+      });
+    }
   }
 
   window.InvioCountries = window.InvioCountries || {};
@@ -421,6 +528,14 @@
   var sellerCloseBtn = null;
   var paymentMeansRadios = document.querySelectorAll('input[name="payment-means"]');
 
+  var buyerSheetTemplate = document.getElementById('buyer-sheet-template');
+  var buyerBottomSheet = null;
+  var buyerForm = null;
+  var buyerCountryInput = null;
+  var buyerIbanBlock = null;
+  var buyerCancelBtn = null;
+  var buyerCloseBtn = null;
+
   function cacheSellerElements() {
     sellerForm = document.getElementById('seller-form');
     sellerCountryInput = document.getElementById('seller-country');
@@ -429,12 +544,28 @@
     sellerCloseBtn = document.getElementById('seller-close');
   }
 
+  function cacheBuyerElements() {
+    buyerForm = document.getElementById('buyer-form');
+    buyerCountryInput = document.getElementById('buyer-country');
+    buyerIbanBlock = document.getElementById('buyer-iban-block');
+    buyerCancelBtn = document.getElementById('buyer-cancel');
+    buyerCloseBtn = document.getElementById('buyer-close');
+  }
+
   function initSellerSheetAlpine() {
     if (!window.Alpine || !sellerForm) return;
     var sheetRoot = sellerForm.closest('.seller-bottom-sheet');
     if (!sheetRoot || sheetRoot.__sellerAlpineInit) return;
     window.Alpine.initTree(sheetRoot);
     sheetRoot.__sellerAlpineInit = true;
+  }
+
+  function initBuyerSheetAlpine() {
+    if (!window.Alpine || !buyerForm) return;
+    var sheetRoot = buyerForm.closest('.buyer-bottom-sheet');
+    if (!sheetRoot || sheetRoot.__buyerAlpineInit) return;
+    window.Alpine.initTree(sheetRoot);
+    sheetRoot.__buyerAlpineInit = true;
   }
 
   if (sellerSheetTemplate && window.BottomSheet && window.BottomSheet.createBottomSheet) {
@@ -453,12 +584,34 @@
     if (sheetRoot) sheetRoot.setAttribute('inert', '');
   }
 
+  if (buyerSheetTemplate && window.BottomSheet && window.BottomSheet.createBottomSheet) {
+    buyerBottomSheet = window.BottomSheet.createBottomSheet({
+      content: buyerSheetTemplate.innerHTML,
+      shouldShowHandle: false,
+      backdropColor: 'rgba(0, 0, 0, 0.4)',
+      rootClass: 'buyer-sheet-root',
+      containerClass: 'buyer-sheet-container',
+      contentWrapperClass: 'buyer-sheet-content-wrapper'
+    });
+    buyerBottomSheet.mount();
+    cacheBuyerElements();
+    initBuyerSheetAlpine();
+    var buyerSheetRoot = document.querySelector('.buyer-bottom-sheet');
+    if (buyerSheetRoot) buyerSheetRoot.setAttribute('inert', '');
+  }
+
   function getFocusables() {
     if (!sellerForm) return [];
     var el = sellerForm;
     if (!el) return [];
     var sel = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
     return Array.prototype.slice.call(el.querySelectorAll(sel));
+  }
+
+  function getBuyerFocusables() {
+    if (!buyerForm) return [];
+    var sel = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    return Array.prototype.slice.call(buyerForm.querySelectorAll(sel));
   }
 
   function setFormValue(id, value) {
@@ -539,6 +692,72 @@
     sellerBottomSheet.close();
     var sheetRoot = document.querySelector('.seller-bottom-sheet');
     if (sheetRoot) sheetRoot.setAttribute('inert', '');
+  }
+
+  function openBuyerModal() {
+    if (!buyerBottomSheet) return;
+    if (!buyerForm) cacheBuyerElements();
+    if (!buyerForm) return;
+    initBuyerSheetAlpine();
+    var b = draft.buyer || {};
+    var a = b.address || {};
+    var c = b.contact || {};
+    var p = draft.payment || {};
+    setFormValue('buyer-name', b.name);
+    setFormValue('buyer-registration', b.legalRegistrationId);
+    setFormValue('buyer-vat', b.vatId);
+    setFormValue('buyer-street', a.line1);
+    setFormValue('buyer-city', a.city);
+    setFormValue('buyer-postal', a.postalCode);
+    var localPhone = getLocalPartFromFullPhone(c.phone || '');
+    setFormValue('buyer-phone', localPhone);
+    setFormValue('buyer-email', c.email);
+    var buyerPhoneCountryInput = document.getElementById('buyer-phone-country');
+    var countryCode = (a.countryCode || '').toUpperCase();
+    if (buyerCountryInput) buyerCountryInput.value = countryCode || '';
+    if (buyerPhoneCountryInput) {
+      var phoneCountry = detectCountryByPhone(c.phone || '');
+      buyerPhoneCountryInput.value = phoneCountry ? phoneCountry.iso2 : '';
+      if (!buyerPhoneCountryInput.value && countryCode) buyerPhoneCountryInput.value = countryCode;
+      updateBuyerPhoneCountryDisplay(buyerPhoneCountryInput.value);
+    }
+    var finalCountry = buyerCountryInput ? buyerCountryInput.value : '';
+    updateBuyerAddressCountryDisplay(finalCountry || '');
+    if (buyerIbanBlock) buyerIbanBlock.hidden = (p.meansTypeCode || '30') !== '30';
+    var accounts = (p.accounts && p.accounts.length) ? p.accounts : (p.accountId ? [{ accountId: p.accountId, bankName: p.bankName || null }] : [{ accountId: '', bankName: null }]);
+    var normalized = accounts.map(function (acc, idx) {
+      return {
+        iban: (acc.accountId || '').trim(),
+        bankName: (acc.bankName || '').trim() || '',
+        ibanError: '',
+        _id: acc._id || 'iban-' + Date.now() + '-' + idx
+      };
+    });
+    if (normalized.length === 0) normalized = [{ iban: '', bankName: '', ibanError: '', _id: 'iban-' + Date.now() + '-0' }];
+    if (typeof Alpine !== 'undefined' && Alpine.store && Alpine.store('buyerBankAccounts')) {
+      Alpine.store('buyerBankAccounts').splice(0, Alpine.store('buyerBankAccounts').length);
+      normalized.forEach(function (acc) { Alpine.store('buyerBankAccounts').push(acc); });
+    }
+    hideBuyerFieldErrors();
+    showBuyerFormAlert(false);
+    var ibanErrEl = document.getElementById('buyer-iban-error');
+    if (ibanErrEl) { ibanErrEl.hidden = true; ibanErrEl.textContent = ''; }
+    var buyerSheetRoot = document.querySelector('.buyer-bottom-sheet');
+    if (buyerSheetRoot) buyerSheetRoot.removeAttribute('inert');
+    buyerBottomSheet.open();
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        var firstFocus = getBuyerFocusables()[0];
+        if (firstFocus) firstFocus.focus();
+      });
+    });
+  }
+
+  function closeBuyerModal() {
+    if (!buyerBottomSheet) return;
+    buyerBottomSheet.close();
+    var buyerSheetRoot = document.querySelector('.buyer-bottom-sheet');
+    if (buyerSheetRoot) buyerSheetRoot.setAttribute('inert', '');
   }
 
   function parseCountryCodeFromInput(val) {
@@ -768,39 +987,463 @@
     updateSellerCardSummary();
   }
 
-  function updateSellerCardSummary() {
-    var summaryEl = document.getElementById('seller-card-summary');
-    if (!summaryEl) return;
-    var s = draft.seller || {};
-    var name = (s.name || '').trim();
-    var country = (s.address && s.address.countryCode) ? s.address.countryCode : '';
-    if (name) {
-      summaryEl.textContent = country ? name + ', ' + country : name;
+  function hideBuyerFieldErrors() {
+    ['buyer-country', 'buyer-name', 'buyer-registration', 'buyer-vat', 'buyer-street', 'buyer-city', 'buyer-postal', 'buyer-phone', 'buyer-email'].forEach(function (id) {
+      var err = document.getElementById(id + '-error');
+      if (err) { err.hidden = true; err.textContent = ''; }
+      syncFieldErrorA11y(id, false);
+    });
+  }
+
+  function showBuyerFieldError(id, message) {
+    var err = document.getElementById(id + '-error');
+    if (err) { err.textContent = message || ''; err.hidden = !message; err.removeAttribute('x-cloak'); }
+    var hintEl = document.getElementById(id + '-hint');
+    if (hintEl) hintEl.hidden = !!message;
+    syncFieldErrorA11y(id, !!message);
+  }
+
+  function validateBuyerForm() {
+    var countryCode = buyerCountryInput ? parseCountryCodeFromInput(buyerCountryInput.value) : '';
+    var countryRaw = buyerCountryInput ? (buyerCountryInput.value || '').trim() : '';
+    var regEl = document.getElementById('buyer-registration');
+    var regField = regEl && regEl.closest('.form-field');
+    var isOrganisation = regField && regField.offsetParent !== null;
+    var reg = regEl ? regEl.value : '';
+    var nameEl = document.getElementById('buyer-name');
+    var name = nameEl ? nameEl.value.trim() : '';
+    var streetEl = document.getElementById('buyer-street');
+    var street = streetEl ? streetEl.value.trim() : '';
+    var cityEl = document.getElementById('buyer-city');
+    var city = cityEl ? cityEl.value.trim() : '';
+    var postalEl = document.getElementById('buyer-postal');
+    var postal = postalEl ? postalEl.value.trim() : '';
+    var vat = document.getElementById('buyer-vat') ? document.getElementById('buyer-vat').value.trim() : '';
+    var phone = getBuyerComposedPhoneValue();
+    var email = document.getElementById('buyer-email') ? document.getElementById('buyer-email').value : '';
+    var valid = true;
+    hideBuyerFieldErrors();
+    if (!countryRaw) {
+      showBuyerFieldError('buyer-country', 'Country is required');
+      valid = false;
+    }
+    if (!name) {
+      showBuyerFieldError('buyer-name', isOrganisation ? 'Legal name is required' : 'Name and surname is required');
+      valid = false;
+    }
+    if (isOrganisation) {
+      if (!reg) {
+        showBuyerFieldError('buyer-registration', 'Registration number is required');
+        valid = false;
+      }
     } else {
-      summaryEl.textContent = 'Enter your business details';
+      if (!vat) {
+        showBuyerFieldError('buyer-vat', 'Tax number is required');
+        valid = false;
+      }
+    }
+    if (!street) {
+      showBuyerFieldError('buyer-street', 'Address is required');
+      valid = false;
+    }
+    if (!city) {
+      showBuyerFieldError('buyer-city', 'City is required');
+      valid = false;
+    }
+    if (!postal) {
+      showBuyerFieldError('buyer-postal', 'Postal code is required');
+      valid = false;
+    }
+    var v = window.InvioValidation;
+    if (isOrganisation && reg && v && v.validRegistrationId && !v.validRegistrationId(reg, countryCode)) {
+      showBuyerFieldError('buyer-registration', 'Invalid registration number for selected country');
+      valid = false;
+    }
+    if (isOrganisation && vat && v && v.validVatId && !v.validVatId(vat, countryCode)) {
+      showBuyerFieldError('buyer-vat', 'Invalid VAT number for selected country');
+      valid = false;
+    }
+    var phoneCountrySelect = document.getElementById('buyer-phone-country');
+    var phoneDialCode = '';
+    if (phoneCountrySelect && window.InvioCountries && window.InvioCountries.findByIso2) {
+      var phoneCountry = window.InvioCountries.findByIso2(phoneCountrySelect.value);
+      phoneDialCode = phoneCountry ? phoneCountry.dialCode : '';
+    }
+    if (v && v.validPhone && phone && !v.validPhone(phone, phoneDialCode)) {
+      showBuyerFieldError('buyer-phone', 'Invalid phone number');
+      valid = false;
+    }
+    if (email && v && v.validEmail && !v.validEmail(email)) {
+      showBuyerFieldError('buyer-email', 'Invalid email address');
+      valid = false;
+    }
+    var means = (document.querySelector('input[name="payment-means"]:checked') || {}).value || '30';
+    if (means === '30') {
+      var store = typeof Alpine !== 'undefined' && Alpine.store && Alpine.store('buyerBankAccounts');
+      var accounts = store ? Alpine.store('buyerBankAccounts') : [];
+      var hasOne = false;
+      var allValid = true;
+      var i;
+      for (i = 0; i < accounts.length; i++) {
+        accounts[i].ibanError = '';
+      }
+      for (i = 0; i < accounts.length; i++) {
+        var ibanVal = (accounts[i].iban || '').trim();
+        if (ibanVal) {
+          hasOne = true;
+          if (v && v.validIban && !v.validIban(ibanVal)) {
+            allValid = false;
+            accounts[i].ibanError = 'Invalid IBAN';
+          }
+        }
+      }
+      var ibanErr = document.getElementById('buyer-iban-error');
+      if (ibanErr) {
+        ibanErr.hidden = true;
+        ibanErr.textContent = '';
+      }
+      if (buyerIbanBlock) buyerIbanBlock.classList.remove('has-error');
+      if (!hasOne) {
+        if (ibanErr) { ibanErr.textContent = 'At least one IBAN is required for credit transfer'; ibanErr.hidden = false; }
+        if (buyerIbanBlock) buyerIbanBlock.classList.add('has-error');
+        valid = false;
+      } else if (!allValid) {
+        if (buyerIbanBlock) buyerIbanBlock.classList.add('has-error');
+        valid = false;
+      }
+    }
+    return valid;
+  }
+
+  function showBuyerFormAlert(show) {
+    var store = typeof Alpine !== 'undefined' && Alpine.store && Alpine.store('buyerFormAlert');
+    if (store) {
+      store.show = !!show;
+      store.message = show ? 'Please correct the highlighted fields.' : '';
+    }
+    if (show) {
+      requestAnimationFrame(function () {
+        var alertEl = document.getElementById('buyer-form-errors');
+        var sheet = document.querySelector('.buyer-bottom-sheet');
+        if (sheet) sheet.scrollTop = 0;
+        if (alertEl) alertEl.focus();
+      });
     }
   }
 
-  if (sellerTrigger) {
-    sellerTrigger.addEventListener('click', function () {
-      openSellerModal();
-    });
+  function saveBuyerForm() {
+    if (!validateBuyerForm()) {
+      showBuyerFormAlert(true);
+      return;
+    }
+    showBuyerFormAlert(false);
+    var b = draft.buyer || {};
+    var a = b.address || {};
+    var c = b.contact || {};
+    b.name = (document.getElementById('buyer-name') && document.getElementById('buyer-name').value) || '';
+    b.legalRegistrationId = (document.getElementById('buyer-registration') && document.getElementById('buyer-registration').value) || null;
+    b.vatId = (document.getElementById('buyer-vat') && document.getElementById('buyer-vat').value) || null;
+    if (!b.vatId || !b.vatId.trim()) b.vatId = null;
+    a.line1 = (document.getElementById('buyer-street') && document.getElementById('buyer-street').value) || '';
+    a.city = (document.getElementById('buyer-city') && document.getElementById('buyer-city').value) || '';
+    a.postalCode = (document.getElementById('buyer-postal') && document.getElementById('buyer-postal').value) || null;
+    a.countryCode = buyerCountryInput ? parseCountryCodeFromInput(buyerCountryInput.value) : '';
+    c.phone = getBuyerComposedPhoneValue() || null;
+    if (!c.phone || !c.phone.trim()) c.phone = null;
+    c.email = (document.getElementById('buyer-email') && document.getElementById('buyer-email').value) || null;
+    if (!c.email || !c.email.trim()) c.email = null;
+    draft.buyer = b;
+    b.address = a;
+    b.contact = c;
+    var means = (document.querySelector('input[name="payment-means"]:checked') || {}).value || '30';
+    draft.payment = draft.payment || {};
+    draft.payment.meansTypeCode = means;
+    if (means === '30') {
+      var storeAccounts = (typeof Alpine !== 'undefined' && Alpine.store) ? Alpine.store('buyerBankAccounts') : [];
+      var accounts = storeAccounts.map(function (acc) {
+        var iban = (acc.iban || '').trim();
+        var bankName = (acc.bankName || '').trim() || null;
+        return { accountId: iban, bankName: bankName };
+      }).filter(function (a) { return a.accountId; });
+      draft.payment.accounts = accounts;
+      draft.payment.accountId = accounts[0] ? accounts[0].accountId : null;
+      draft.payment.bankName = accounts[0] ? accounts[0].bankName : null;
+    } else {
+      draft.payment.accounts = [];
+      draft.payment.accountId = null;
+      draft.payment.bankName = null;
+    }
+    closeBuyerModal();
+    updateBuyerCardSummary();
   }
+
+  function clearSellerSectionContent() {
+    var section = document.getElementById('seller-section');
+    if (!section) return;
+    var content = section.querySelector('.section-content');
+    if (content) content.innerHTML = '';
+  }
+
+  function updateSellerCardSummary() {
+    var section = document.getElementById('seller-section');
+    if (!section) return;
+    var content = section.querySelector('.section-content');
+    if (!content) return;
+    var s = draft.seller || {};
+    var p = draft.payment || {};
+    var a = s.address || {};
+    var c = s.contact || {};
+    var name = (s.name || '').trim();
+    clearSellerSectionContent();
+    if (!name) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      card.id = 'seller-card';
+      var img = document.createElement('img');
+      img.src = 'assets/men-holding-papers.webp';
+      img.alt = 'Seller details illustration';
+      img.className = 'card-image';
+      img.width = 248;
+      var h3 = document.createElement('h3');
+      h3.id = 'seller-card-summary';
+      h3.textContent = 'Enter your business details';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn--primary btn--icon-left';
+      btn.setAttribute('data-seller-modal-trigger', '');
+      btn.innerHTML = '<span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span>';
+      card.appendChild(img);
+      card.appendChild(h3);
+      card.appendChild(btn);
+      content.appendChild(card);
+      return;
+    }
+    var wrap = document.createElement('div');
+    wrap.className = 'seller-summary';
+    wrap.setAttribute('aria-live', 'polite');
+    wrap.setAttribute('aria-atomic', 'true');
+    var h4 = document.createElement('h4');
+    h4.className = 'seller-summary__title';
+    h4.textContent = name;
+    wrap.appendChild(h4);
+    var reg = (s.legalRegistrationId || '').trim();
+    var vat = (s.vatId || '').trim();
+    if (reg || vat) {
+      var identityParts = [];
+      if (reg) identityParts.push('Registration number: ' + reg);
+      if (vat) identityParts.push('Tax number: ' + vat);
+      var pId = document.createElement('p');
+      pId.className = 'seller-summary__text';
+      pId.textContent = identityParts.join(', ');
+      wrap.appendChild(pId);
+    }
+    var line1 = (a.line1 || '').trim();
+    var city = (a.city || '').trim();
+    var postal = (a.postalCode || '').trim() || '';
+    var cc = (a.countryCode || '').trim();
+    var countryName = cc;
+    if (cc && window.InvioCountries && window.InvioCountries.findByIso2) {
+      var countryObj = window.InvioCountries.findByIso2(cc);
+      if (countryObj && countryObj.name) countryName = countryObj.name;
+    }
+    if (line1 || city || postal || countryName) {
+      var parts = [line1, city, postal, countryName].filter(Boolean);
+      var addrLine = parts.join(', ');
+      var pAddr = document.createElement('p');
+      pAddr.className = 'seller-summary__text';
+      pAddr.setAttribute('aria-label', 'Address');
+      pAddr.textContent = addrLine;
+      wrap.appendChild(pAddr);
+    }
+    if (p.meansTypeCode === '30' && p.accounts && p.accounts.length) {
+      p.accounts.forEach(function (acc, idx) {
+        var iban = (acc.accountId || '').trim();
+        if (!iban) return;
+        var bankName = (acc.bankName || '').trim() || '';
+        var line = bankName ? iban + ' – ' + bankName : iban;
+        var pBank = document.createElement('p');
+        pBank.className = 'seller-summary__text';
+        if (idx === 0) pBank.setAttribute('aria-label', 'Bank account');
+        pBank.textContent = line;
+        wrap.appendChild(pBank);
+      });
+    }
+    var phone = (c.phone || '').trim();
+    var email = (c.email || '').trim();
+    if (phone || email) {
+      var contactParts = [];
+      if (phone) contactParts.push('Phone: ' + phone);
+      if (email) contactParts.push('Email: ' + email);
+      var pContact = document.createElement('p');
+      pContact.className = 'seller-summary__text';
+      pContact.setAttribute('aria-label', 'Contacts');
+      pContact.textContent = contactParts.join(' ');
+      wrap.appendChild(pContact);
+    }
+    var editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'btn btn--secondary seller-summary__edit';
+    editBtn.setAttribute('data-seller-modal-trigger', '');
+    editBtn.innerHTML = '<span class="btn__label">Edit</span>';
+    editBtn.setAttribute('aria-label', 'Edit seller details');
+    wrap.appendChild(editBtn);
+    content.appendChild(wrap);
+  }
+
+  function clearBuyerSectionContent() {
+    var section = document.getElementById('buyer-section');
+    if (!section) return;
+    var content = section.querySelector('.section-content');
+    if (content) content.innerHTML = '';
+  }
+
+  function updateBuyerCardSummary() {
+    var section = document.getElementById('buyer-section');
+    if (!section) return;
+    var content = section.querySelector('.section-content');
+    if (!content) return;
+    var b = draft.buyer || {};
+    var p = draft.payment || {};
+    var a = b.address || {};
+    var c = b.contact || {};
+    var name = (b.name || '').trim();
+    clearBuyerSectionContent();
+    if (!name) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      card.id = 'buyer-card';
+      var img = document.createElement('img');
+      img.src = 'assets/men-holding-papers.webp';
+      img.alt = 'Buyer details illustration';
+      img.className = 'card-image';
+      img.width = 248;
+      var h3 = document.createElement('h3');
+      h3.id = 'buyer-card-summary';
+      h3.textContent = 'Enter your business details';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn--primary btn--icon-left';
+      btn.setAttribute('data-buyer-modal-trigger', '');
+      btn.innerHTML = '<span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span>';
+      card.appendChild(img);
+      card.appendChild(h3);
+      card.appendChild(btn);
+      content.appendChild(card);
+      return;
+    }
+    var wrap = document.createElement('div');
+    wrap.className = 'buyer-summary';
+    wrap.setAttribute('aria-live', 'polite');
+    wrap.setAttribute('aria-atomic', 'true');
+    var h4 = document.createElement('h4');
+    h4.className = 'buyer-summary__title';
+    h4.textContent = name;
+    wrap.appendChild(h4);
+    var reg = (b.legalRegistrationId || '').trim();
+    var vat = (b.vatId || '').trim();
+    if (reg || vat) {
+      var identityParts = [];
+      if (reg) identityParts.push('Registration number: ' + reg);
+      if (vat) identityParts.push('Tax number: ' + vat);
+      var pId = document.createElement('p');
+      pId.className = 'buyer-summary__text';
+      pId.textContent = identityParts.join(', ');
+      wrap.appendChild(pId);
+    }
+    var line1 = (a.line1 || '').trim();
+    var city = (a.city || '').trim();
+    var postal = (a.postalCode || '').trim() || '';
+    var cc = (a.countryCode || '').trim();
+    var countryName = cc;
+    if (cc && window.InvioCountries && window.InvioCountries.findByIso2) {
+      var countryObj = window.InvioCountries.findByIso2(cc);
+      if (countryObj && countryObj.name) countryName = countryObj.name;
+    }
+    if (line1 || city || postal || countryName) {
+      var parts = [line1, city, postal, countryName].filter(Boolean);
+      var addrLine = parts.join(', ');
+      var pAddr = document.createElement('p');
+      pAddr.className = 'buyer-summary__text';
+      pAddr.setAttribute('aria-label', 'Address');
+      pAddr.textContent = addrLine;
+      wrap.appendChild(pAddr);
+    }
+    if (p.meansTypeCode === '30' && p.accounts && p.accounts.length) {
+      p.accounts.forEach(function (acc, idx) {
+        var iban = (acc.accountId || '').trim();
+        if (!iban) return;
+        var bankName = (acc.bankName || '').trim() || '';
+        var line = bankName ? iban + ' – ' + bankName : iban;
+        var pBank = document.createElement('p');
+        pBank.className = 'buyer-summary__text';
+        if (idx === 0) pBank.setAttribute('aria-label', 'Bank account');
+        pBank.textContent = line;
+        wrap.appendChild(pBank);
+      });
+    }
+    var phone = (c.phone || '').trim();
+    var email = (c.email || '').trim();
+    if (phone || email) {
+      var contactParts = [];
+      if (phone) contactParts.push('Phone: ' + phone);
+      if (email) contactParts.push('Email: ' + email);
+      var pContact = document.createElement('p');
+      pContact.className = 'buyer-summary__text';
+      pContact.setAttribute('aria-label', 'Contacts');
+      pContact.textContent = contactParts.join(' ');
+      wrap.appendChild(pContact);
+    }
+    var editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'btn btn--secondary buyer-summary__edit';
+    editBtn.setAttribute('data-buyer-modal-trigger', '');
+    editBtn.innerHTML = '<span class="btn__label">Edit</span>';
+    editBtn.setAttribute('aria-label', 'Edit buyer details');
+    wrap.appendChild(editBtn);
+    content.appendChild(wrap);
+  }
+
   document.addEventListener('click', function (event) {
     var target = event.target;
     if (!target) return;
+    var modalTrigger = target.closest('[data-seller-modal-trigger]');
+    if (modalTrigger) {
+      event.preventDefault();
+      openSellerModal();
+      return;
+    }
+    var buyerModalTrigger = target.closest('[data-buyer-modal-trigger]');
+    if (buyerModalTrigger) {
+      event.preventDefault();
+      openBuyerModal();
+      return;
+    }
     var closeTrigger = target.closest('#seller-cancel, #seller-close');
     if (closeTrigger) {
       event.preventDefault();
       closeSellerModal();
       return;
     }
+    var buyerCloseTrigger = target.closest('#buyer-cancel, #buyer-close');
+    if (buyerCloseTrigger) {
+      event.preventDefault();
+      closeBuyerModal();
+      return;
+    }
   });
   document.addEventListener('submit', function (event) {
     var form = event.target;
-    if (!form || form.id !== 'seller-form') return;
-    event.preventDefault();
-    saveSellerForm();
+    if (!form) return;
+    if (form.id === 'seller-form') {
+      event.preventDefault();
+      saveSellerForm();
+      return;
+    }
+    if (form.id === 'buyer-form') {
+      event.preventDefault();
+      saveBuyerForm();
+      return;
+    }
   });
   if (paymentMeansRadios && paymentMeansRadios.length) {
     paymentMeansRadios.forEach(function (radio) {
@@ -816,9 +1459,11 @@
     fillNativeCountrySelects();
     bindNativeCountrySelectEvents();
     applyGeoPrefillIfEmpty();
+    updateBuyerCardSummary();
   }).catch(function () {
     fillNativeCountrySelects();
     bindNativeCountrySelectEvents();
     applyGeoPrefillIfEmpty();
+    updateBuyerCardSummary();
   });
 })();

@@ -597,6 +597,37 @@ h3{
   gap: 0.75rem;
 }
 
+.seller-summary,
+.buyer-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0;
+}
+
+.seller-summary__title,
+.buyer-summary__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--grey-800);
+  margin: 0 0 0.25rem 0;
+}
+
+.seller-summary__text,
+.buyer-summary__text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--grey-800);
+  margin: 0;
+}
+
+.seller-summary__edit,
+.buyer-summary__edit {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -1127,19 +1158,22 @@ input::placeholder {
   }
 }
 
-/* Seller bottom sheet (Plainsheet content) */
-.seller-sheet-root {
+/* Seller / Buyer bottom sheet (Plainsheet content) */
+.seller-sheet-root,
+.buyer-sheet-root {
   padding: 0 !important;
 }
 
-.seller-sheet-container {
+.seller-sheet-container,
+.buyer-sheet-container {
   margin: 0 auto;
   max-width: 72rem;
   padding: 0 !important;
   width: 100%;
 }
 
-.seller-sheet-content-wrapper {
+.seller-sheet-content-wrapper,
+.buyer-sheet-content-wrapper {
   background: transparent;
   border: 0;
   box-shadow: none;
@@ -1149,11 +1183,13 @@ input::placeholder {
   -ms-overflow-style: none;
 }
 
-.seller-sheet-content-wrapper::-webkit-scrollbar {
+.seller-sheet-content-wrapper::-webkit-scrollbar,
+.buyer-sheet-content-wrapper::-webkit-scrollbar {
   display: none;
 }
 
-.seller-bottom-sheet {
+.seller-bottom-sheet,
+.buyer-bottom-sheet {
   background: var(--grey-100);
   border: 1px solid var(--grey-200);
   border-radius: 1rem 1rem 0 0;
@@ -1171,11 +1207,13 @@ input::placeholder {
   max-width: 100%;
 }
 
-.seller-bottom-sheet::-webkit-scrollbar {
+.seller-bottom-sheet::-webkit-scrollbar,
+.buyer-bottom-sheet::-webkit-scrollbar {
   display: none;
 }
 
-.seller-modal-header {
+.seller-modal-header,
+.buyer-modal-header {
   align-items: flex-end;
   display: flex;
   gap: 0.75rem;
@@ -1183,7 +1221,8 @@ input::placeholder {
   background: var(--white);
 }
 
-.seller-modal-title {
+.seller-modal-title,
+.buyer-modal-title {
   flex: 1 1 0;
   font-size: 1.6875rem;
   font-weight: 600;
@@ -1193,7 +1232,8 @@ input::placeholder {
   color: var(--grey-800);
 }
 
-.seller-modal-close {
+.seller-modal-close,
+.buyer-modal-close {
   border-radius: 50%;
   flex-shrink: 0;
   min-width: 2.5rem;
@@ -1202,18 +1242,21 @@ input::placeholder {
   color: var(--grey-800);
 }
 
-.seller-modal-close:hover {
+.seller-modal-close:hover,
+.buyer-modal-close:hover {
   background: var(--btn-secondary-hover-bg);
 }
 
-.seller-modal-tabs {
+.seller-modal-tabs,
+.buyer-modal-tabs {
   display: flex;
   gap: 0.25rem;
   padding: 0 1rem 0 1rem;
   background: var(--white);
 }
 
-.seller-tab {
+.seller-tab,
+.buyer-tab {
   border-bottom: 0.1875rem solid transparent;
   border-radius: 0;
   box-shadow: none;
@@ -1225,12 +1268,14 @@ input::placeholder {
   position: relative;
 }
 
-.seller-tab.active {
+.seller-tab.active,
+.buyer-tab.active {
   border-bottom-color: var(--green-600);
   color: var(--grey-800);
 }
 
-.seller-tab:hover:not(.active) {
+.seller-tab:hover:not(.active),
+.buyer-tab:hover:not(.active) {
   color: var(--green-700);
 }
 
@@ -1456,7 +1501,8 @@ input::placeholder {
   min-width: 0;
 }
 
-.seller-form {
+.seller-form,
+.buyer-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0;
@@ -1465,13 +1511,15 @@ input::placeholder {
   overflow: visible;
 }
 
-.seller-form-alert-wrap {
+.seller-form-alert-wrap,
+.buyer-form-alert-wrap {
   grid-column: 1;
   padding: 1rem 1rem var(--space-lg) 1rem;
   min-width: 0;
 }
 
-.seller-form-alert {
+.seller-form-alert,
+.buyer-form-alert {
   display: flex;
   align-items: center;
   gap: 0;
@@ -1491,7 +1539,8 @@ input::placeholder {
   box-sizing: border-box;
 }
 
-.seller-form-alert__icon {
+.seller-form-alert__icon,
+.buyer-form-alert__icon {
   display: flex;
   align-items: center;
   padding: 2px var(--space-xs) 2px 0;
@@ -1499,18 +1548,21 @@ input::placeholder {
   color: var(--red-700);
 }
 
-.seller-form-alert__icon .material-symbols-rounded {
+.seller-form-alert__icon .material-symbols-rounded,
+.buyer-form-alert__icon .material-symbols-rounded {
   font-size: 1.5rem;
   font-variation-settings: "opsz" 24, "wght" 400, "FILL" 0, "GRAD" 0;
 }
 
-.seller-form-alert__message {
+.seller-form-alert__message,
+.buyer-form-alert__message {
   flex: 1 1 0;
   min-width: 0;
   padding: 0 var(--space-lg);
 }
 
-.seller-form-alert__dismiss {
+.seller-form-alert__dismiss,
+.buyer-form-alert__dismiss {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1525,22 +1577,26 @@ input::placeholder {
   min-height: 2.5rem;
 }
 
-.seller-form-alert__dismiss:hover {
+.seller-form-alert__dismiss:hover,
+.buyer-form-alert__dismiss:hover {
   background: rgba(165, 0, 54, 0.08);
   color: var(--red-800);
 }
 
-.seller-form-alert__dismiss:focus-visible {
+.seller-form-alert__dismiss:focus-visible,
+.buyer-form-alert__dismiss:focus-visible {
   outline-offset: 2px;
 }
 
-.seller-form-alert__dismiss .material-symbols-rounded {
+.seller-form-alert__dismiss .material-symbols-rounded,
+.buyer-form-alert__dismiss .material-symbols-rounded {
   font-size: 1.25rem;
   font-variation-settings: "opsz" 20, "wght" 400, "FILL" 0, "GRAD" 0;
 }
 
 
-.seller-modal-section {
+.seller-modal-section,
+.buyer-modal-section {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
@@ -1548,7 +1604,8 @@ input::placeholder {
   align-items: flex-start;
 }
 
-.seller-section-title {
+.seller-section-title,
+.buyer-section-title {
   grid-column: 1;
   font-size: 1.4375rem;
   font-weight: 600;
@@ -1558,7 +1615,8 @@ input::placeholder {
   min-width: 0;
 }
 
-.seller-section-fields {
+.seller-section-fields,
+.buyer-section-fields {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1567,20 +1625,23 @@ input::placeholder {
   min-width: 0;
 }
 
-.seller-section-fields .field {
+.seller-section-fields .field,
+.buyer-section-fields .field {
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
 }
 
-.seller-section-fields .field span {
+.seller-section-fields .field span,
+.buyer-section-fields .field span {
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.5;
   color: var(--grey-800);
 }
 
-.seller-section-fields .field input:not(.form-control) {
+.seller-section-fields .field input:not(.form-control),
+.buyer-section-fields .field input:not(.form-control) {
   background: var(--white);
   border: 1px solid var(--grey-200);
   border-radius: 0.25rem;
@@ -1592,41 +1653,48 @@ input::placeholder {
   font-family: inherit;
 }
 
-.seller-section-fields .field input:not(.form-control)::placeholder {
+.seller-section-fields .field input:not(.form-control)::placeholder,
+.buyer-section-fields .field input:not(.form-control)::placeholder {
   color: var(--grey-400);
 }
 
-.seller-field-row {
+.seller-field-row,
+.buyer-field-row {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
 }
 
 @media (min-width: 600px) {
-  .seller-field-row {
+  .seller-field-row,
+  .buyer-field-row {
     grid-template-columns: 1fr 1fr;
   }
 }
 
-.seller-form .field-error {
+.seller-form .field-error,
+.buyer-form .field-error {
   color: var(--color-error);
   font-size: var(--font-size-help);
   margin-top: var(--space-2xs);
 }
 
-.seller-form .payment-means {
+.seller-form .payment-means,
+.buyer-form .payment-means {
   border: 0;
   margin: 0;
   padding: 0;
 }
 
-.seller-form .payment-means legend {
+.seller-form .payment-means legend,
+.buyer-form .payment-means legend {
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
-.seller-form .radio-label {
+.seller-form .radio-label,
+.buyer-form .radio-label {
   align-items: center;
   display: flex;
   font-weight: 400;
@@ -1634,45 +1702,53 @@ input::placeholder {
   margin-bottom: 0.375rem;
 }
 
-.seller-form .link-add-iban {
+.seller-form .link-add-iban,
+.buyer-form .link-add-iban {
   color: var(--green-700);
   font-size: 0.9rem;
   font-weight: 600;
   text-decoration: underline;
 }
 
-.seller-form .link-add-iban:hover {
+.seller-form .link-add-iban:hover,
+.buyer-form .link-add-iban:hover {
   color: var(--green-800);
 }
 
-.seller-payment-add-wrap {
+.seller-payment-add-wrap,
+.buyer-payment-add-wrap {
   position: relative;
   grid-column: 1;
   padding-top: 1.2em;
   padding-bottom: 1.2em;
 }
 
-.seller-add-iban-anchor {
+.seller-add-iban-anchor,
+.buyer-add-iban-anchor {
   anchor-name: --add-iban-btn;
   color: var(--green-700);
   font-weight: 600;
 }
 
-.seller-add-iban-anchor:hover:not(:disabled) {
+.seller-add-iban-anchor:hover:not(:disabled),
+.buyer-add-iban-anchor:hover:not(:disabled) {
   color: var(--green-800);
   border-color: var(--grey-200);
 }
 
-.seller-add-iban-anchor:disabled {
+.seller-add-iban-anchor:disabled,
+.buyer-add-iban-anchor:disabled {
   color: var(--grey-500);
   cursor: not-allowed;
 }
 
-.seller-remove-iban {
+.seller-remove-iban,
+.buyer-remove-iban {
   align-self: flex-start;
 }
 
-#seller-add-iban-tooltip {
+#seller-add-iban-tooltip,
+#buyer-add-iban-tooltip {
   position: absolute;
   top: 100%;
   left: 0;
@@ -1690,7 +1766,8 @@ input::placeholder {
 }
 
 @supports (position-anchor: --add-iban-btn) {
-  #seller-add-iban-tooltip {
+  #seller-add-iban-tooltip,
+  #buyer-add-iban-tooltip {
     position-anchor: --add-iban-btn;
     top: anchor(bottom);
     left: anchor(center);
@@ -1700,35 +1777,41 @@ input::placeholder {
 }
 
 
-.seller-form .iban-fields {
+.seller-form .iban-fields,
+.buyer-form .iban-fields {
   margin-top: 0;
 }
 
-.seller-form .iban-block {
+.seller-form .iban-block,
+.buyer-form .iban-block {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.seller-form .iban-item {
+.seller-form .iban-item,
+.buyer-form .iban-item {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.seller-form .iban-item .field-helper {
+.seller-form .iban-item .field-helper,
+.buyer-form .iban-item .field-helper {
   color: var(--grey-500);
   font-size: 0.9rem;
 }
 
-.seller-form .iban-item .iban-row-actions {
+.seller-form .iban-item .iban-row-actions,
+.buyer-form .iban-item .iban-row-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
 
-.seller-modal-actions {
+.seller-modal-actions,
+.buyer-modal-actions {
   background: var(--white);
   border-top: 1px solid var(--grey-200);
   display: flex;
@@ -1741,50 +1824,65 @@ input::placeholder {
 }
 
 @media (min-width: 768px) {
-  .seller-modal-tabs {
+  .seller-modal-tabs,
+  .buyer-modal-tabs {
     padding: 0 0.75rem 0 1.5rem;
     border-bottom: 1px solid var(--grey-300);
   }
 
-  .seller-form-alert-wrap {
+  .seller-form-alert-wrap,
+  .buyer-form-alert-wrap {
     padding: 1.5rem 1.5rem var(--space-lg) 1.5rem;
   }
 
-  .seller-modal-section {
+  .seller-modal-section,
+  .buyer-modal-section {
     grid-template-columns: minmax(12rem, 1fr) minmax(0, 1.6fr);
     gap: 1.5rem;
     padding: 1.5rem;
   }
 
-  .seller-section-fields {
+  .seller-section-fields,
+  .buyer-section-fields {
     grid-column: 2;
   }
 
-  .seller-form .iban-fields {
+  .seller-form .iban-fields,
+  .buyer-form .iban-fields {
     grid-column: 2;
     grid-row: 1 / 3;
   }
 }
 
 @media (max-width: 767px) {
-  .seller-sheet-container {
+  .seller-sheet-container,
+  .buyer-sheet-container {
     margin: 0;
     max-width: none;
     width: 100%;
   }
 
-  .seller-modal-actions {
+  .seller-modal-actions,
+  .buyer-modal-actions {
     flex-direction: column-reverse;
     align-items: stretch;
   }
 
-  .seller-modal-actions .btn {
+  .seller-modal-actions .btn,
+  .buyer-modal-actions .btn {
     width: 100%;
     min-width: 0;
   }
+
+  .seller-summary__edit,
+  .buyer-summary__edit {
+    width: 100%;
+    align-self: stretch;
+  }
 }
 
-.seller-modal-actions .btn {
+.seller-modal-actions .btn,
+.buyer-modal-actions .btn {
   min-height: var(--btn-height);
   min-width: var(--btn-min-width);
 }
