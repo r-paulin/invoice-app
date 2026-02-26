@@ -1,4 +1,5 @@
 ---
+description: 
 alwaysApply: true
 ---
 
@@ -12,3 +13,14 @@ alwaysApply: true
 - **Icon Names:** Icon-only buttons must have a descriptive `aria-label`.
 - **Focus States:** Ensure visible, high-contrast focus rings for keyboard navigation.
 - **Tables:** Use `font-variant-numeric: tabular-nums` for comparing numbers.
+- **Always follow WCAG 2.2 Level AA standards for all HTML and UI components.
+- **Use semantic HTML tags (e.g., <main>, <nav>, <article>, <section>, <button>) instead of generic <div> or <span> whenever possible.
+- **Ensure every interactive element is keyboard-accessible (Tab, Enter, Space).
+- **Never use 'outline: none' in CSS; always provide a visible focus indicator (minimum 3:1 contrast).
+- **All form inputs must have associated <label> elements or 'aria-label' attributes.
+- **Use 'aria-describedby' to link error messages or help text to their respective inputs.
+- **Ensure all images have 'alt' attributes (empty alt="" for decorative images, descriptive for functional ones).
+- **Provide 'aria-live' regions for dynamic content updates (like toast notifications or status changes).
+- **Interactive targets must be at least 24x24 CSS pixels.
+- **Maintain a minimum text contrast ratio of 4.5:1 (3:1 for large text/UI components).
+- **If using Alpine.js or JS for custom widgets, manually manage 'aria-expanded', 'aria-hidden', and focus traps where necessary.

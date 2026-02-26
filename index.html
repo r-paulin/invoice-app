@@ -16,6 +16,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,0,0&display=block">
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>
+    document.addEventListener('alpine:init', function () {
+      Alpine.store('sellerFormAlert', { show: false, message: '' });
+      Alpine.store('sellerBankAccounts', []);
+    });
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
@@ -24,12 +31,13 @@
         <div class="header-grid container">
           <img class="logo header-grid__logo" src="assets/logo-invio.svg" alt="Invio" width="114" height="42">
           <div class="header-grid__lang lang-control">
-            <button type="button" class="btn btn--secondary lang-button" id="lang-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language selector">
-              <span class="lang-flag-icon" id="lang-button-flag" aria-hidden="true">🇬🇧</span>
-              <span class="lang-button__label" id="lang-button-label">English</span>
-              <span class="material-symbols-rounded lang-icon lang-icon-chevron" aria-hidden="true">keyboard_arrow_down</span>
-            </button>
-            <select class="lang-native-select" id="lang-select" aria-label="Language">
+            <div class="lang-select-wrapper" id="lang-select-wrapper">
+              <span class="lang-select-display" id="lang-select-display" aria-hidden="true">
+                <span class="lang-select-flag fi fi-gb" id="lang-button-flag"></span>
+                <span class="lang-select-name" id="lang-button-label">English</span>
+              </span>
+              <span class="select native-select lang-select-label">
+                <select class="form-select native-select__control" id="lang-select" aria-label="Language">
               <option value="bg">Български</option>
               <option value="hr">Hrvatski</option>
               <option value="cs">Čeština</option>
@@ -54,7 +62,9 @@
               <option value="sl">Slovenščina</option>
               <option value="es">Español</option>
               <option value="sv">Svenska</option>
-            </select>
+                </select>
+              </span>
+            </div>
           </div>
 
           <div class="hero header-grid__hero">
@@ -78,29 +88,32 @@
             <section class="section">
               <h2>Basic details</h2>
               <div class="section-content">
-                <label class="field form-field" for="invoice-number" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                  <span class="form-label">Invoice number <span class="required-mark">*</span></span>
+                <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                  <label for="invoice-number"><span class="form-label">Invoice number <span class="required-mark">*</span></span></label>
                   <input class="form-control" type="text" id="invoice-number" name="invoice-number" placeholder="Enter invoice number" maxlength="80" required aria-describedby="invoice-number-help">
-                  <div class="field-helper form-help" id="invoice-number-help">Make sure the number you enter follows your established accounting sequence</div>
-                </label>
-                <label class="field form-field" for="payment-reference" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                  <span class="form-label">Payment reference <span class="required-mark">*</span></span>
-                  <input class="form-control" type="text" id="payment-reference" placeholder="Enter payment reference">
-                </label>
+                  <small class="field-helper form-help" id="invoice-number-help">Make sure the number you enter follows your established accounting sequence</small>
+                </div>
+                <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                  <label for="payment-reference"><span class="form-label">Payment reference <span class="required-mark">*</span></span></label>
+                  <input class="form-control" type="text" id="payment-reference" name="payment-reference" placeholder="Enter payment reference" aria-describedby="payment-reference-hint">
+                  <small class="field-helper form-help" id="payment-reference-hint">Reference used for payment matching (e.g. invoice number)</small>
+                </div>
                 <div class="field-row">
-                  <label class="field form-field" for="issue-date" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                    <span class="form-label">Issue date <span class="required-mark">*</span></span>
+                  <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                    <label for="issue-date"><span class="form-label">Issue date <span class="required-mark">*</span></span></label>
                     <div class="date-field">
-                      <input class="form-control" type="date" id="issue-date" name="issue-date" required aria-label="Invoice issue date (YYYY-MM-DD)">
+                      <input class="form-control" type="date" id="issue-date" name="issue-date" required aria-describedby="issue-date-hint" aria-label="Invoice issue date (YYYY-MM-DD)">
                     </div>
-                  </label>
-                  <label class="field form-field" for="due-date" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                    <span class="form-label">Due date <span class="required-mark">*</span></span>
+                    <small class="field-helper form-help" id="issue-date-hint">Date the invoice is issued</small>
+                  </div>
+                  <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                    <label for="due-date"><span class="form-label">Due date <span class="required-mark">*</span></span></label>
                     <div class="date-field" id="due-date-field">
                       <span class="date-updating" id="due-date-updating" aria-live="polite" hidden>Updating…</span>
-                      <input class="form-control" type="date" id="due-date" name="due-date" required aria-label="Due date (YYYY-MM-DD)">
+                      <input class="form-control" type="date" id="due-date" name="due-date" required aria-describedby="due-date-updating due-date-hint" aria-label="Due date (YYYY-MM-DD)">
                     </div>
-                  </label>
+                    <small class="field-helper form-help" id="due-date-hint">Payment due date</small>
+                  </div>
                 </div>
               </div>
             </section>
@@ -109,8 +122,8 @@
               <h2>Seller</h2>
               <div class="section-content">
                 <div class="card" id="seller-card">
-                  <div class="card-icon">💼</div>
-                  <p id="seller-card-summary">Enter your business details</p>
+                    <img src="assets/men-holding-papers.webp" alt="Seller details illustration" class="card-image" width="248" height="auto">
+                  <h3 id="seller-card-summary">Enter your business details</h3>
                   <button type="button" class="btn btn--primary btn--icon-left" data-seller-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button>
                 </div>
               </div>
@@ -126,81 +139,114 @@
                 </header>
                 <div class="seller-modal-tabs" role="tablist">
                   <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'organisation' }" :aria-selected="sellerTab === 'organisation'" @click="sellerTab = 'organisation'" id="seller-tab-organisation" data-seller-tab="organisation">Organisation</button>
-                  <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'individual' }" :aria-selected="sellerTab === 'individual'" @click="sellerTab = 'individual'" id="seller-tab-individual" data-seller-tab="individual">Individual</button>
+                  <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'individual' }" :aria-selected="sellerTab === 'individual'" @click="sellerTab = 'individual'; $nextTick(() => { const r = document.getElementById('seller-registration'); const v = document.getElementById('seller-vat'); if (r) r.value = ''; if (v) v.value = ''; })" id="seller-tab-individual" data-seller-tab="individual">Individual</button>
                 </div>
                 <form id="seller-form" class="seller-form" novalidate>
-                  <div class="seller-modal-section">
-                    <div class="seller-section-title">Basic details</div>
-                    <div class="seller-section-fields">
-                      <div class="field form-field native-country-select-wrap">
-                        <span class="form-label">Country <span class="required-mark">*</span></span>
-                        <label class="select native-select" for="seller-country">
-                          <select class="form-select native-select__control" name="seller-country" id="seller-country" required aria-label="Country">
-                            <option value="">Select country</option>
-                          </select>
-                        </label>
-                      </div>
-                      <label class="field form-field" for="seller-name" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <span class="form-label">Legal name <span class="required-mark">*</span></span>
-                        <input class="form-control" type="text" name="seller-name" id="seller-name" required placeholder="Enter legal name of company / person" maxlength="200">
-                      </label>
-                      <label class="field form-field" for="seller-registration" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <span class="form-label">Registration number <span class="required-mark">*</span></span>
-                        <input class="form-control" type="text" name="seller-registration" id="seller-registration" required placeholder="Enter registration number" aria-describedby="seller-registration-error">
-                        <span class="field-error form-error" id="seller-registration-error" hidden></span>
-                      </label>
-                      <label class="field form-field" for="seller-vat" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <span class="form-label">Tax number (optional)</span>
-                        <input class="form-control" type="text" name="seller-vat" id="seller-vat" placeholder="Enter tax number" aria-describedby="seller-vat-error">
-                        <span class="field-error form-error" id="seller-vat-error" hidden></span>
-                      </label>
-                      <label class="field form-field" for="seller-street" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <span class="form-label">Address <span class="required-mark">*</span></span>
-                        <input class="form-control" type="text" name="seller-street" id="seller-street" required placeholder="Enter address">
-                      </label>
-                      <div class="seller-field-row">
-                        <label class="field form-field" for="seller-city" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                          <span class="form-label">City <span class="required-mark">*</span></span>
-                          <input class="form-control" type="text" name="seller-city" id="seller-city" required placeholder="Enter city">
-                        </label>
-                        <label class="field form-field" for="seller-postal" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                          <span class="form-label">Postal code <span class="required-mark">*</span></span>
-                          <input class="form-control" type="text" name="seller-postal" id="seller-postal" required placeholder="Enter postal code">
-                        </label>
-                      </div>
+                  <div class="seller-form-alert-wrap" x-show="$store.sellerFormAlert.show" x-cloak>
+                    <div class="seller-form-alert" id="seller-form-errors" role="alert" tabindex="-1" aria-live="polite" :aria-hidden="!$store.sellerFormAlert.show ? 'true' : 'false'">
+                      <span class="seller-form-alert__icon" aria-hidden="true"><span class="material-symbols-rounded" aria-hidden="true">warning</span></span>
+                      <span class="seller-form-alert__message" x-text="$store.sellerFormAlert.message"></span>
+                      <button type="button" class="seller-form-alert__dismiss" aria-label="Dismiss error" @click="$store.sellerFormAlert.show = false; $store.sellerFormAlert.message = ''"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
                     </div>
                   </div>
                   <div class="seller-modal-section">
-                    <div class="seller-section-title">Payment details</div>
+                    <div class="seller-section-title">Basic details</div>
                     <div class="seller-section-fields">
+                      <div class="form-group form-field native-country-select-wrap">
+                        <label for="seller-country"><span class="form-label">Country <span class="required-mark">*</span></span></label>
+                        <div class="country-select-wrapper" id="seller-country-wrapper">
+                          <span class="country-select-display" id="seller-country-display" aria-hidden="true"><span class="country-select-flag fi" id="seller-country-flag"></span><span class="country-select-name" id="seller-country-name">Select country</span></span>
+                          <span class="select native-select country-select-label">
+                            <select class="form-select native-select__control" name="seller-country" id="seller-country" required aria-label="Country" aria-describedby="seller-country-hint">
+                              <option value="">Select country</option>
+                            </select>
+                          </span>
+                        </div>
+                        <small class="field-helper form-help" id="seller-country-hint">Country of registration</small>
+                      </div>
+                      <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                        <label for="seller-name"><span class="form-label">Legal name <span class="required-mark">*</span></span></label>
+                        <input class="form-control" type="text" name="seller-name" id="seller-name" required placeholder="Enter legal name of company / person" maxlength="200" aria-describedby="seller-name-hint">
+                        <small class="field-helper form-help" id="seller-name-hint">Legal name of company or person</small>
+                      </div>
+                      <div class="form-group form-field" x-data="{ focused: false }" x-show="sellerTab === 'organisation'" x-cloak :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                        <label for="seller-registration"><span class="form-label">Registration number <span class="required-mark">*</span></span></label>
+                        <input class="form-control" type="text" name="seller-registration" id="seller-registration" required placeholder="Enter registration number" aria-describedby="seller-registration-error">
+                        <span class="field-error form-error field-error-reserved" id="seller-registration-error" role="alert" aria-live="polite" hidden x-cloak></span>
+                      </div>
+                      <div class="form-group form-field" x-data="{ focused: false }" x-show="sellerTab === 'organisation'" x-cloak :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                        <label for="seller-vat"><span class="form-label">Tax number</span> <span class="label-optional">(Optional)</span></label>
+                        <input class="form-control" type="text" name="seller-vat" id="seller-vat" placeholder="Enter tax number" aria-describedby="seller-vat-error">
+                        <span class="field-error form-error field-error-reserved" id="seller-vat-error" role="alert" aria-live="polite" hidden x-cloak></span>
+                      </div>
+                      <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                        <label for="seller-street"><span class="form-label">Address <span class="required-mark">*</span></span></label>
+                        <input class="form-control" type="text" name="seller-street" id="seller-street" required placeholder="Enter address" aria-describedby="seller-street-hint">
+                        <small class="field-helper form-help" id="seller-street-hint">Street and number</small>
+                      </div>
+                      <div class="seller-field-row">
+                        <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                          <label for="seller-city"><span class="form-label">City <span class="required-mark">*</span></span></label>
+                          <input class="form-control" type="text" name="seller-city" id="seller-city" required placeholder="Enter city" aria-describedby="seller-city-hint">
+                          <small class="field-helper form-help" id="seller-city-hint">City or town</small>
+                        </div>
+                        <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                          <label for="seller-postal"><span class="form-label">Postal code <span class="required-mark">*</span></span></label>
+                          <input class="form-control" type="text" name="seller-postal" id="seller-postal" required placeholder="Enter postal code" aria-describedby="seller-postal-hint">
+                          <small class="field-helper form-help" id="seller-postal-hint">Postal or ZIP code</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="seller-modal-section" x-data="paymentDetails()">
+                  <div>
+                    <div class="seller-section-title">Payment details</div>
+                    <div class="seller-payment-add-wrap">
+                      <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left seller-add-iban-anchor" id="seller-add-iban" :disabled="$store.sellerBankAccounts.length >= 6" :title="$store.sellerBankAccounts.length >= 6 ? 'Max number of 6 bank accounts are allowed.' : null" :aria-describedby="$store.sellerBankAccounts.length >= 6 ? 'seller-add-iban-tooltip' : null" @click="addAccount()"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add bank account</span></button>
+                      <span id="seller-add-iban-tooltip" class="seller-add-iban-tooltip" role="tooltip" x-show="$store.sellerBankAccounts.length >= 6" x-cloak>Max number of 6 bank accounts are allowed.</span>
+                    </div>
+                    </div>
+                    <div class="seller-section-fields iban-fields">
                       <div class="iban-block" id="seller-iban-block">
-                        <span class="field-error form-error" id="seller-iban-error" hidden></span>
-                        <div class="iban-list" id="seller-iban-list"></div>
-                        <a href="#" role="button" class="btn btn--transparent btn--icon-left link-add-iban" id="seller-add-iban"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add bank account number</span></a>
+                        <span class="field-error form-error field-error-reserved" id="seller-iban-error" role="alert" aria-live="polite" hidden></span>
+                        <template x-for="(account, index) in $store.sellerBankAccounts" :key="account._id">
+                          <div class="iban-item">
+                            <div class="form-group form-field">
+                              <label :for="'seller-iban-' + index"><span class="form-label">Bank account number<span class="required-mark">*</span></label>
+                              <input class="form-control" :id="'seller-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" placeholder="Enter IBAN number" :aria-describedby="'seller-iban-' + index + '-error'" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
+                              <span class="field-error form-error field-error-reserved" :id="'seller-iban-' + index + '-error'" role="alert" aria-live="polite" x-show="account.ibanError" x-cloak x-text="account.ibanError"></span>
+                            </div>
+                            <div class="form-group form-field">
+                              <label :for="'seller-iban-bank-' + index"><span class="form-label">Bank name</span> <span class="label-optional">(Optional)</span></label>
+                              <input class="form-control" :id="'seller-iban-bank-' + index" type="text" x-model="account.bankName" placeholder="Enter bank name" :name="'iban-bank-' + index">
+                            </div>
+                            <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left seller-remove-iban" @click="removeAccount(index)" :aria-label="'Remove bank account ' + (index + 1)" x-show="$store.sellerBankAccounts.length > 1" x-cloak><span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span><span class="btn__label">Remove</span></button>
+                          </div>
+                        </template>
                       </div>
                     </div>
                   </div>
                   <div class="seller-modal-section">
                     <div class="seller-section-title">Contacts</div>
                     <div class="seller-section-fields">
-                      <label class="field form-field" for="seller-email" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <span class="form-label">Email address (optional)</span>
+                      <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                        <label for="seller-email"><span class="form-label">Email address</span> <span class="label-optional">(Optional)</span></label>
                         <input class="form-control" type="email" name="seller-email" id="seller-email" placeholder="Enter email address" aria-describedby="seller-email-error">
-                        <span class="field-error form-error" id="seller-email-error" hidden></span>
-                      </label>
-                      <div class="field form-field phone-field-group" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <span class="form-label" id="seller-phone-label">Phone number (optional)</span>
+                        <span class="field-error form-error field-error-reserved" id="seller-email-error" role="alert" aria-live="polite" hidden x-cloak></span>
+                      </div>
+                      <div class="form-group form-field phone-field-group" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                        <label for="seller-phone" id="seller-phone-label"><span class="form-label">Phone number</span> <span class="label-optional">(Optional)</span></label>
                         <div class="phone-input-row">
                           <div class="phone-country-box">
-                            <span class="phone-country-display" id="seller-phone-country-display" aria-hidden="true"><span class="phone-country-emoji"></span><span class="phone-country-dial" id="seller-phone-country-dial"></span></span>
+                            <span class="phone-country-display" id="seller-phone-country-display" aria-hidden="true"><span class="phone-country-flag fi" id="seller-phone-country-flag"></span><span class="phone-country-dial" id="seller-phone-country-dial"></span></span>
                             <select class="form-control form-select phone-country-select" id="seller-phone-country" name="seller-phone-country" aria-label="Phone country code">
                               <option value="">Select</option>
                             </select>
                             <span class="material-symbols-rounded phone-country-chevron" aria-hidden="true">keyboard_arrow_down</span>
                           </div>
-                          <input class="form-control phone-number-input" type="tel" inputmode="tel" name="seller-phone" id="seller-phone" placeholder="Phone number" aria-labelledby="seller-phone-label" aria-describedby="seller-phone-error" autocomplete="tel-national">
+                          <input class="form-control phone-number-input" type="tel" inputmode="tel" name="seller-phone" id="seller-phone" placeholder="222222" aria-labelledby="seller-phone-label" aria-describedby="seller-phone-error" autocomplete="tel-national">
                         </div>
-                        <span class="field-error form-error" id="seller-phone-error" role="alert" hidden></span>
+                        <span class="field-error form-error field-error-reserved" id="seller-phone-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                     </div>
                   </div>
@@ -234,13 +280,16 @@
                   <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left chip"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Note</span></button>
                 </div>
                 <div class="line-head">
-                  <span>Service / Product</span>
+                  <label for="line-item-name-0"><span class="form-label">Service / Product</span> <span class="required-mark">*</span></label>
                   <span>Quantity</span>
                   <span>Unit price</span>
                   <span>Total</span>
                 </div>
                 <div class="line-row">
-                  <input class="form-control" type="text" placeholder="Enter name" aria-label="Service or product name">
+                  <div class="line-item-name-cell">
+                    <input class="form-control" type="text" id="line-item-name-0" placeholder="Enter name" name="line-item-name-0" aria-describedby="line-item-name-0-hint">
+                    <small class="visually-hidden" id="line-item-name-0-hint">Service or product name</small>
+                  </div>
                   <button type="button" class="btn btn--secondary btn--sm btn--icon-right mini-select"><span class="btn__label">1 pcs</span><span class="material-symbols-rounded btn__icon" aria-hidden="true">keyboard_arrow_down</span></button>
                   <span class="price">0.00 EUR</span>
                   <div class="line-total">
@@ -272,18 +321,21 @@
                   <label class="radio-label form-radio"><input type="radio" name="payment-means" value="10"> Cash</label>
                   <label class="radio-label form-radio"><input type="radio" name="payment-means" value="48"> Credit card</label>
                 </fieldset>
-                <label class="field form-field" for="document-language" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                  <span class="form-label">Document language</span>
-                  <input class="form-control" id="document-language" type="text" placeholder="English">
-                </label>
-                <label class="field form-field" for="currency" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                  <span class="form-label">Currency</span>
-                  <input class="form-control" id="currency" type="text" placeholder="EUR">
-                </label>
-                <label class="field form-field" for="template-note" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                  <span class="form-label">Template note</span>
-                  <input class="form-control" id="template-note" type="text" placeholder="Enter note">
-                </label>
+                <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                  <label for="document-language"><span class="form-label">Document language</span> <span class="label-optional">(Optional)</span></label>
+                  <input class="form-control" id="document-language" name="document-language" type="text" placeholder="English" aria-describedby="document-language-hint">
+                  <small class="field-helper form-help" id="document-language-hint">Language for the invoice document</small>
+                </div>
+                <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                  <label for="currency"><span class="form-label">Currency</span> <span class="label-optional">(Optional)</span></label>
+                  <input class="form-control" id="currency" name="currency" type="text" placeholder="EUR" aria-describedby="currency-hint">
+                  <small class="field-helper form-help" id="currency-hint">Three-letter currency code (e.g. EUR, USD)</small>
+                </div>
+                <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                  <label for="template-note"><span class="form-label">Template note</span> <span class="label-optional">(Optional)</span></label>
+                  <input class="form-control" id="template-note" name="template-note" type="text" placeholder="Enter note" aria-describedby="template-note-hint">
+                  <small class="field-helper form-help" id="template-note-hint">Note or terms shown on the invoice</small>
+                </div>
               </div>
             </section>
           </section>

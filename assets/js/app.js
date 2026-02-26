@@ -1,4 +1,49 @@
 (function () {
+  document.addEventListener('alpine:init', function () {
+    Alpine.data('paymentDetails', function () {
+      return {
+        ibanDebounce: {},
+        addAccount: function () {
+          var s = Alpine.store('sellerBankAccounts');
+          if (s.length >= 6) return;
+          s.push({
+            iban: '',
+            bankName: '',
+            ibanError: '',
+            _id: 'iban-' + Date.now() + '-' + Math.random().toString(36).slice(2)
+          });
+        },
+        removeAccount: function (i) {
+          var s = Alpine.store('sellerBankAccounts');
+          if (s.length <= 1) return;
+          s.splice(i, 1);
+        },
+        validateIbanAt: function (i) {
+          var self = this;
+          clearTimeout(this.ibanDebounce[i]);
+          this.ibanDebounce[i] = setTimeout(function () {
+            var s = Alpine.store('sellerBankAccounts');
+            var acc = s[i];
+            if (!acc) return;
+            var raw = (acc.iban || '').trim();
+            var norm = raw.replace(/\s/g, '').toUpperCase();
+            if (!norm) {
+              acc.ibanError = '';
+              return;
+            }
+            var countryEl = document.getElementById('seller-country');
+            var country = countryEl ? countryEl.value : '';
+            if (country && window.InvioValidation && window.InvioValidation.validIbanFormatForCountry && !window.InvioValidation.validIbanFormatForCountry(norm, country)) {
+              acc.ibanError = 'IBAN length does not match selected country';
+              return;
+            }
+            acc.ibanError = (window.InvioValidation && window.InvioValidation.validIban && !window.InvioValidation.validIban(norm)) ? 'Invalid IBAN' : '';
+          }, 350);
+        }
+      };
+    });
+  });
+
   const tabs = document.querySelectorAll('.tab[data-target]');
   const panels = document.querySelectorAll('.panel[data-panel]');
 
@@ -22,86 +67,51 @@
 
   setActive('invoice-data');
 
-  // --- Header language picker: button trigger + native select ---
-  const langButton = document.getElementById('lang-button');
+  // --- Header language picker: same design as country selector (flag + label, native select overlaid) ---
   const langButtonLabel = document.getElementById('lang-button-label');
   const langButtonFlag = document.getElementById('lang-button-flag');
   const langSelect = document.getElementById('lang-select');
 
-  if (langButton && langSelect && langButtonLabel && langButtonFlag) {
-    const languageToFlag = {
-      bg: '🇧🇬',
-      hr: '🇭🇷',
-      cs: '🇨🇿',
-      da: '🇩🇰',
-      nl: '🇳🇱',
-      en: '🇬🇧',
-      et: '🇪🇪',
-      fi: '🇫🇮',
-      fr: '🇫🇷',
-      de: '🇩🇪',
-      el: '🇬🇷',
-      hu: '🇭🇺',
-      ga: '🇮🇪',
-      it: '🇮🇹',
-      lv: '🇱🇻',
-      lt: '🇱🇹',
-      mt: '🇲🇹',
-      pl: '🇵🇱',
-      pt: '🇵🇹',
-      ro: '🇷🇴',
-      sk: '🇸🇰',
-      sl: '🇸🇮',
-      es: '🇪🇸',
-      sv: '🇸🇪'
+  if (langSelect && langButtonLabel && langButtonFlag) {
+    var languageToCountry = {
+      bg: 'bg',
+      hr: 'hr',
+      cs: 'cz',
+      da: 'dk',
+      nl: 'nl',
+      en: 'gb',
+      et: 'ee',
+      fi: 'fi',
+      fr: 'fr',
+      de: 'de',
+      el: 'gr',
+      hu: 'hu',
+      ga: 'ie',
+      it: 'it',
+      lv: 'lv',
+      lt: 'lt',
+      mt: 'mt',
+      pl: 'pl',
+      pt: 'pt',
+      ro: 'ro',
+      sk: 'sk',
+      sl: 'si',
+      es: 'es',
+      sv: 'se'
     };
 
-    function syncLangButtonLabel() {
-      const selectedOption = langSelect.options[langSelect.selectedIndex];
+    function syncLangDisplay() {
+      var selectedOption = langSelect.options[langSelect.selectedIndex];
       if (selectedOption) {
         langButtonLabel.textContent = selectedOption.textContent || 'English';
-        langButtonFlag.textContent = languageToFlag[langSelect.value] || '🇪🇺';
+        var countryCode = languageToCountry[langSelect.value] || 'gb';
+        langButtonFlag.className = 'lang-select-flag fi fi-' + countryCode.toLowerCase();
       }
     }
 
-    function openNativeLanguagePicker() {
-      if (langSelect.disabled) return;
-      langButton.setAttribute('aria-expanded', 'true');
-      langSelect.focus();
-      if (typeof langSelect.showPicker === 'function') {
-        try {
-          langSelect.showPicker();
-          return;
-        } catch (_error) {
-          // Fallback below for browsers that block showPicker.
-        }
-      }
-      langSelect.click();
-    }
+    langSelect.addEventListener('change', syncLangDisplay);
 
-    langButton.addEventListener('click', function (event) {
-      event.preventDefault();
-      openNativeLanguagePicker();
-    });
-
-    langButton.addEventListener('keydown', function (event) {
-      if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        openNativeLanguagePicker();
-      }
-    });
-
-    langSelect.addEventListener('change', function () {
-      syncLangButtonLabel();
-      langButton.setAttribute('aria-expanded', 'false');
-      langButton.focus();
-    });
-
-    langSelect.addEventListener('blur', function () {
-      langButton.setAttribute('aria-expanded', 'false');
-    });
-
-    syncLangButtonLabel();
+    syncLangDisplay();
   }
 
   // --- Basic details: issue date & due date (ISO 8601, 14-day rule, no past due) ---
@@ -218,20 +228,44 @@
   }
 
   function applyDialCodeToPhoneInput(dialCode) {
+    if (!dialCode) return;
+    var phoneSelect = document.getElementById('seller-phone-country');
+    if (phoneSelect) phoneSelect.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  function getLocalPartFromFullPhone(fullPhone) {
+    var full = normalizePhoneValue(fullPhone || '');
+    if (!full || full.charAt(0) !== '+' || !worldCountriesCache.length) return full;
+    var matches = worldCountriesCache.filter(function (country) {
+      return full.indexOf(country.dialCode) === 0;
+    });
+    if (!matches.length) return full;
+    matches.sort(function (a, b) { return b.dialCode.length - a.dialCode.length; });
+    var prefix = matches[0].dialCode;
+    var rest = full.slice(prefix.length).replace(/^\s+/, '');
+    return rest;
+  }
+
+  function getComposedPhoneValue() {
     var phoneInput = document.getElementById('seller-phone');
-    if (!phoneInput || !dialCode) return;
-    var current = normalizePhoneValue(phoneInput.value);
-    var localPart = current.replace(/^\+\d+\s*/, '');
-    phoneInput.value = localPart ? (dialCode + ' ' + localPart) : (dialCode + ' ');
+    var phoneSelect = document.getElementById('seller-phone-country');
+    var local = phoneInput ? normalizePhoneValue(phoneInput.value) : '';
+    if (!local) return '';
+    var country = phoneSelect && phoneSelect.value ? findCountryByIso2(phoneSelect.value) : null;
+    var dial = country ? country.dialCode : '';
+    if (!dial) return local;
+    return (dial + ' ' + local).trim();
   }
 
   function updatePhoneCountryDisplay(iso2) {
     var dialEl = document.getElementById('seller-phone-country-dial');
+    var flagEl = document.getElementById('seller-phone-country-flag');
     var displayEl = document.getElementById('seller-phone-country-display');
     if (!displayEl) return;
-    var emojiEl = displayEl.querySelector('.phone-country-emoji');
     var country = findCountryByIso2(iso2);
-    if (emojiEl) emojiEl.textContent = country ? countryEmojiFromIso2(country.iso2) : '';
+    if (flagEl) {
+      flagEl.className = 'phone-country-flag fi' + (iso2 ? ' fi-' + iso2.toLowerCase() : '');
+    }
     if (dialEl) dialEl.textContent = country ? country.dialCode : '';
   }
 
@@ -292,6 +326,21 @@
     return '';
   }
 
+  function updateAddressCountryDisplay(iso2) {
+    var flagEl = document.getElementById('seller-country-flag');
+    var nameEl = document.getElementById('seller-country-name');
+    var selectEl = document.getElementById('seller-country');
+    if (!flagEl || !nameEl || !selectEl) return;
+    if (!iso2) {
+      flagEl.className = 'country-select-flag fi';
+      nameEl.textContent = 'Select country';
+      return;
+    }
+    var country = findCountryByIso2(iso2);
+    flagEl.className = 'country-select-flag fi fi-' + iso2.toLowerCase();
+    nameEl.textContent = country ? country.name : iso2;
+  }
+
   function fillNativeCountrySelects() {
     var addressSelect = document.getElementById('seller-country');
     var phoneSelect = document.getElementById('seller-phone-country');
@@ -303,14 +352,15 @@
     worldCountriesCache.forEach(function (country) {
       var addressOption = document.createElement('option');
       addressOption.value = country.iso2;
-      addressOption.textContent = countryEmojiFromIso2(country.iso2) + ' ' + country.name + ' (' + country.iso2 + ')';
+      addressOption.textContent = country.name;
       addressSelect.appendChild(addressOption);
 
       var phoneOption = document.createElement('option');
       phoneOption.value = country.iso2;
-      phoneOption.textContent = countryEmojiFromIso2(country.iso2) + ' ' + country.name + ' (' + country.dialCode + ')';
+      phoneOption.textContent = country.name + ' (' + country.dialCode + ')';
       phoneSelect.appendChild(phoneOption);
     });
+    updateAddressCountryDisplay(addressSelect.value);
     updatePhoneCountryDisplay(phoneSelect.value);
   }
 
@@ -329,10 +379,21 @@
     }
   }
 
+  var lastAddressCountryForPhone = '';
+
   function bindNativeCountrySelectEvents() {
     var addressSelect = document.getElementById('seller-country');
     var phoneSelect = document.getElementById('seller-phone-country');
+    var phoneInput = document.getElementById('seller-phone');
     if (!addressSelect || !phoneSelect) return;
+
+    addressSelect.addEventListener('change', function () {
+      var iso2 = addressSelect.value;
+      updateAddressCountryDisplay(iso2);
+      phoneSelect.value = iso2;
+      updatePhoneCountryDisplay(iso2);
+      lastAddressCountryForPhone = iso2 || '';
+    });
 
     phoneSelect.addEventListener('change', function () {
       updatePhoneCountryDisplay(phoneSelect.value);
@@ -355,8 +416,6 @@
   var sellerForm = null;
   var sellerTrigger = document.querySelector('[data-seller-modal-trigger]');
   var sellerCountryInput = null;
-  var sellerIbanList = null;
-  var sellerAddIbanLink = null;
   var sellerIbanBlock = null;
   var sellerCancelBtn = null;
   var sellerCloseBtn = null;
@@ -365,8 +424,6 @@
   function cacheSellerElements() {
     sellerForm = document.getElementById('seller-form');
     sellerCountryInput = document.getElementById('seller-country');
-    sellerIbanList = document.getElementById('seller-iban-list');
-    sellerAddIbanLink = document.getElementById('seller-add-iban');
     sellerIbanBlock = document.getElementById('seller-iban-block');
     sellerCancelBtn = document.getElementById('seller-cancel');
     sellerCloseBtn = document.getElementById('seller-close');
@@ -424,7 +481,8 @@
     setFormValue('seller-street', a.line1);
     setFormValue('seller-city', a.city);
     setFormValue('seller-postal', a.postalCode);
-    setFormValue('seller-phone', c.phone);
+    var localPhone = getLocalPartFromFullPhone(c.phone || '');
+    setFormValue('seller-phone', localPhone);
     setFormValue('seller-email', c.email);
     var sellerPhoneCountryInput = document.getElementById('seller-phone-country');
     var countryCode = (a.countryCode || '').toUpperCase();
@@ -438,6 +496,9 @@
     }
 
     applyGeoPrefillIfEmpty();
+    var finalCountry = sellerCountryInput ? sellerCountryInput.value : '';
+    lastAddressCountryForPhone = finalCountry || '';
+    updateAddressCountryDisplay(finalCountry || '');
 
     var sheetRoot = document.querySelector('.seller-bottom-sheet');
     if (sheetRoot) sheetRoot.removeAttribute('inert');
@@ -446,8 +507,22 @@
     var paymentRadios = document.querySelectorAll('input[name="payment-means"]');
     paymentRadios.forEach(function (r) { r.checked = r.value === means; });
     if (sellerIbanBlock) sellerIbanBlock.hidden = means !== '30';
-    renderIbanList(p.accounts && p.accounts.length ? p.accounts : (p.accountId ? [{ accountId: p.accountId, bankName: p.bankName || null }] : [{ accountId: '', bankName: null }]));
+    var accounts = (p.accounts && p.accounts.length) ? p.accounts : (p.accountId ? [{ accountId: p.accountId, bankName: p.bankName || null }] : [{ accountId: '', bankName: null }]);
+    var normalized = accounts.map(function (acc, idx) {
+      return {
+        iban: (acc.accountId || '').trim(),
+        bankName: (acc.bankName || '').trim() || '',
+        ibanError: '',
+        _id: acc._id || 'iban-' + Date.now() + '-' + idx
+      };
+    });
+    if (normalized.length === 0) normalized = [{ iban: '', bankName: '', ibanError: '', _id: 'iban-' + Date.now() + '-0' }];
+    if (typeof Alpine !== 'undefined' && Alpine.store && Alpine.store('sellerBankAccounts')) {
+      Alpine.store('sellerBankAccounts').splice(0, Alpine.store('sellerBankAccounts').length);
+      normalized.forEach(function (acc) { Alpine.store('sellerBankAccounts').push(acc); });
+    }
     hideFieldErrors();
+    showSellerFormAlert(false);
     var ibanErrEl = document.getElementById('seller-iban-error');
     if (ibanErrEl) { ibanErrEl.hidden = true; ibanErrEl.textContent = ''; }
     sellerBottomSheet.open();
@@ -473,100 +548,6 @@
     if (match) return match[1].toUpperCase();
     if (trimmed.length === 2) return trimmed.toUpperCase();
     return trimmed.toUpperCase();
-  }
-
-  function createIbanRowDom(index) {
-    var id = 'seller-iban-' + String(index);
-    var bankId = 'seller-iban-bank-' + String(index);
-    var div = document.createElement('div');
-    div.className = 'iban-item';
-
-    var labelIban = document.createElement('label');
-    labelIban.className = 'field form-field';
-    var spanIban = document.createElement('span');
-    spanIban.className = 'form-label';
-    spanIban.textContent = 'IBAN';
-    var inputIban = document.createElement('input');
-    inputIban.className = 'form-control';
-    inputIban.type = 'text';
-    inputIban.name = 'iban-' + String(index);
-    inputIban.id = id;
-    inputIban.placeholder = 'e.g. LV80BANK0000435195001';
-    inputIban.setAttribute('aria-label', 'IBAN');
-    inputIban.setAttribute('aria-invalid', 'false');
-    labelIban.appendChild(spanIban);
-    labelIban.appendChild(inputIban);
-    div.appendChild(labelIban);
-
-    var labelBank = document.createElement('label');
-    labelBank.className = 'field form-field';
-    var spanBank = document.createElement('span');
-    spanBank.className = 'form-label';
-    spanBank.textContent = 'Bank name or notes';
-    var inputBank = document.createElement('input');
-    inputBank.className = 'form-control';
-    inputBank.type = 'text';
-    inputBank.name = 'iban-bank-' + String(index);
-    inputBank.id = bankId;
-    inputBank.placeholder = 'Bank name or notes';
-    inputBank.setAttribute('aria-label', 'Bank name or notes');
-    labelBank.appendChild(spanBank);
-    labelBank.appendChild(inputBank);
-    div.appendChild(labelBank);
-
-    var actions = document.createElement('div');
-    actions.className = 'iban-row-actions';
-    var removeLink = document.createElement('a');
-    removeLink.href = '#';
-    removeLink.setAttribute('role', 'button');
-    removeLink.className = 'btn btn--transparent link-remove-iban';
-    removeLink.setAttribute('data-iban-index', String(index));
-    var removeLabel = document.createElement('span');
-    removeLabel.className = 'btn__label';
-    removeLabel.textContent = 'Remove';
-    removeLink.appendChild(removeLabel);
-    actions.appendChild(removeLink);
-    div.appendChild(actions);
-
-    return div;
-  }
-
-  function renderIbanList(accounts) {
-    if (!sellerIbanList) return;
-    sellerIbanList.innerHTML = '';
-    (accounts || [{ accountId: '', bankName: null }]).forEach(function (acc, index) {
-      var id = 'seller-iban-' + String(index);
-      var bankId = 'seller-iban-bank-' + String(index);
-      var div = createIbanRowDom(index);
-      sellerIbanList.appendChild(div);
-      var input = document.getElementById(id);
-      var bankInput = document.getElementById(bankId);
-      if (input) input.value = (acc && acc.accountId) ? acc.accountId : '';
-      if (bankInput) bankInput.value = (acc && acc.bankName) ? acc.bankName : '';
-      var removeLink = div.querySelector('.link-remove-iban');
-      if (removeLink) {
-        removeLink.addEventListener('click', function (e) {
-          e.preventDefault();
-          div.remove();
-        });
-      }
-    });
-  }
-
-  function addIbanRow(e) {
-    if (e) e.preventDefault();
-    if (!sellerIbanList) return;
-    var items = sellerIbanList.querySelectorAll('.iban-item');
-    var index = items.length;
-    var div = createIbanRowDom(index);
-    sellerIbanList.appendChild(div);
-    var removeLink = div.querySelector('.link-remove-iban');
-    if (removeLink) {
-      removeLink.addEventListener('click', function (ev) {
-        ev.preventDefault();
-        div.remove();
-      });
-    }
   }
 
   function syncFieldErrorA11y(id, hasError) {
@@ -611,77 +592,97 @@
 
   function validateSellerForm() {
     var countryCode = sellerCountryInput ? parseCountryCodeFromInput(sellerCountryInput.value) : '';
-    var reg = document.getElementById('seller-registration').value;
+    var regEl = document.getElementById('seller-registration');
+    var isOrganisation = regEl && regEl.closest('.form-field') && regEl.closest('.form-field').offsetParent !== null;
+    var reg = regEl ? regEl.value : '';
     var vat = document.getElementById('seller-vat').value;
-    var phone = document.getElementById('seller-phone').value;
+    var phone = getComposedPhoneValue();
     var email = document.getElementById('seller-email').value;
     var valid = true;
     hideFieldErrors();
     var v = window.InvioValidation;
-    if (v && v.validRegistrationId && !v.validRegistrationId(reg, countryCode)) {
+    if (isOrganisation && v && v.validRegistrationId && !v.validRegistrationId(reg, countryCode)) {
       showFieldError('seller-registration', 'Invalid registration number for selected country');
       valid = false;
     }
-    if (v && v.validVatId && vat && !v.validVatId(vat, countryCode)) {
+    if (isOrganisation && v && v.validVatId && vat && !v.validVatId(vat, countryCode)) {
       showFieldError('seller-vat', 'Invalid VAT number for selected country');
       valid = false;
     }
-    if (v && v.validPhone && phone && !v.validPhone(phone, countryCode)) {
+    var phoneCountrySelect = document.getElementById('seller-phone-country');
+    var phoneDialCode = '';
+    if (phoneCountrySelect && window.InvioCountries && window.InvioCountries.findByIso2) {
+      var phoneCountry = window.InvioCountries.findByIso2(phoneCountrySelect.value);
+      phoneDialCode = phoneCountry ? phoneCountry.dialCode : '';
+    }
+    if (v && v.validPhone && phone && !v.validPhone(phone, phoneDialCode)) {
       showFieldError('seller-phone', 'Invalid phone number');
       valid = false;
     }
-    if (v && v.validEmailRejectTemp && email && !v.validEmailRejectTemp(email)) {
-      if (v.validEmail && !v.validEmail(email)) showFieldError('seller-email', 'Invalid email address');
-      else showFieldError('seller-email', 'Temporary email domains are not allowed');
+    if (email && v && v.validEmail && !v.validEmail(email)) {
+      showFieldError('seller-email', 'Invalid email address');
       valid = false;
     }
     var means = (document.querySelector('input[name="payment-means"]:checked') || {}).value || '30';
     if (means === '30') {
-      var ibanInputs = sellerIbanList ? sellerIbanList.querySelectorAll('input[id^="seller-iban-"]:not([id*="bank"])') : [];
+      var store = typeof Alpine !== 'undefined' && Alpine.store && Alpine.store('sellerBankAccounts');
+      var accounts = store ? Alpine.store('sellerBankAccounts') : [];
       var hasOne = false;
       var allValid = true;
-      ibanInputs.forEach(function (inp) {
-        var val = inp.value.trim();
-        if (val) {
+      var i;
+      for (i = 0; i < accounts.length; i++) {
+        accounts[i].ibanError = '';
+      }
+      for (i = 0; i < accounts.length; i++) {
+        var ibanVal = (accounts[i].iban || '').trim();
+        if (ibanVal) {
           hasOne = true;
-          if (v && v.validIban && !v.validIban(val)) allValid = false;
+          if (v && v.validIban && !v.validIban(ibanVal)) {
+            allValid = false;
+            accounts[i].ibanError = 'Invalid IBAN';
+          }
         }
-      });
+      }
       var ibanErr = document.getElementById('seller-iban-error');
       if (ibanErr) {
         ibanErr.hidden = true;
         ibanErr.textContent = '';
       }
       if (sellerIbanBlock) sellerIbanBlock.classList.remove('has-error');
-      ibanInputs.forEach(function (inp) {
-        inp.setAttribute('aria-invalid', 'false');
-        inp.removeAttribute('aria-describedby');
-      });
       if (!hasOne) {
         if (ibanErr) { ibanErr.textContent = 'At least one IBAN is required for credit transfer'; ibanErr.hidden = false; }
         if (sellerIbanBlock) sellerIbanBlock.classList.add('has-error');
-        ibanInputs.forEach(function (inp) {
-          inp.setAttribute('aria-invalid', 'true');
-          if (ibanErr) inp.setAttribute('aria-describedby', ibanErr.id);
-        });
         valid = false;
-      } else if (!allValid && v) {
-        if (ibanErr) { ibanErr.textContent = 'All IBANs must be valid'; ibanErr.hidden = false; }
+      } else if (!allValid) {
         if (sellerIbanBlock) sellerIbanBlock.classList.add('has-error');
-        ibanInputs.forEach(function (inp) {
-          if (v.validIban && inp.value.trim() && !v.validIban(inp.value.trim())) {
-            inp.setAttribute('aria-invalid', 'true');
-            if (ibanErr) inp.setAttribute('aria-describedby', ibanErr.id);
-          }
-        });
         valid = false;
       }
     }
     return valid;
   }
 
+  function showSellerFormAlert(show) {
+    var store = typeof Alpine !== 'undefined' && Alpine.store && Alpine.store('sellerFormAlert');
+    if (store) {
+      store.show = !!show;
+      store.message = show ? 'Please correct the highlighted fields.' : '';
+    }
+    if (show) {
+      requestAnimationFrame(function () {
+        var alertEl = document.getElementById('seller-form-errors');
+        var sheet = document.querySelector('.seller-bottom-sheet');
+        if (sheet) sheet.scrollTop = 0;
+        if (alertEl) alertEl.focus();
+      });
+    }
+  }
+
   function saveSellerForm() {
-    if (!validateSellerForm()) return;
+    if (!validateSellerForm()) {
+      showSellerFormAlert(true);
+      return;
+    }
+    showSellerFormAlert(false);
     var s = draft.seller || {};
     var a = s.address || {};
     var c = s.contact || {};
@@ -693,7 +694,7 @@
     a.city = (document.getElementById('seller-city') && document.getElementById('seller-city').value) || '';
     a.postalCode = (document.getElementById('seller-postal') && document.getElementById('seller-postal').value) || null;
     a.countryCode = sellerCountryInput ? parseCountryCodeFromInput(sellerCountryInput.value) : '';
-    c.phone = (document.getElementById('seller-phone') && document.getElementById('seller-phone').value) || null;
+    c.phone = getComposedPhoneValue() || null;
     if (!c.phone || !c.phone.trim()) c.phone = null;
     c.email = (document.getElementById('seller-email') && document.getElementById('seller-email').value) || null;
     if (!c.email || !c.email.trim()) c.email = null;
@@ -704,20 +705,15 @@
     draft.payment = draft.payment || {};
     draft.payment.meansTypeCode = means;
     if (means === '30') {
-      var ibanItems = sellerIbanList ? sellerIbanList.querySelectorAll('.iban-item') : [];
-      var accounts = [];
-      ibanItems.forEach(function (item) {
-        var ibanInp = item.querySelector('input[id^="seller-iban-"]:not([id*="bank"])');
-        var bankInp = item.querySelector('input[id^="seller-iban-bank-"]');
-        var val = ibanInp ? ibanInp.value.trim() : '';
-        if (val) {
-          var bankName = bankInp ? bankInp.value.trim() || null : null;
-          accounts.push({ accountId: val, bankName: bankName });
-        }
-      });
-      draft.payment.accounts = accounts.length ? accounts : [];
-      draft.payment.accountId = draft.payment.accounts[0] ? draft.payment.accounts[0].accountId : null;
-      draft.payment.bankName = draft.payment.accounts[0] ? draft.payment.accounts[0].bankName : null;
+      var storeAccounts = (typeof Alpine !== 'undefined' && Alpine.store) ? Alpine.store('sellerBankAccounts') : [];
+      var accounts = storeAccounts.map(function (acc) {
+        var iban = (acc.iban || '').trim();
+        var bankName = (acc.bankName || '').trim() || null;
+        return { accountId: iban, bankName: bankName };
+      }).filter(function (a) { return a.accountId; });
+      draft.payment.accounts = accounts;
+      draft.payment.accountId = accounts[0] ? accounts[0].accountId : null;
+      draft.payment.bankName = accounts[0] ? accounts[0].bankName : null;
     } else {
       draft.payment.accounts = [];
       draft.payment.accountId = null;
@@ -753,10 +749,6 @@
       event.preventDefault();
       closeSellerModal();
       return;
-    }
-    var addIbanTrigger = target.closest('#seller-add-iban');
-    if (addIbanTrigger) {
-      addIbanRow(event);
     }
   });
   document.addEventListener('submit', function (event) {

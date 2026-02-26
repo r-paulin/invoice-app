@@ -1,4 +1,5 @@
 ---
+description: 
 alwaysApply: true
 ---
 
@@ -20,3 +21,12 @@ alwaysApply: true
 - **Style:** Use the rounded set (`Material Symbols Rounded`).
 - **Default Axes:** Use `opsz=20`, `wght=400`, `FILL=0`, `GRAD=0` unless a design explicitly requires otherwise.
 - **Consistency:** Keep icon style/axes consistent across buttons, inputs, and navigation controls.
+
+#Alpine.js project rules
+- **Always use Alpine.js for DOM manipulation and reactivity. 
+- **Favor 'x-data', 'x-init', and 'x-model' for state management.
+- **When writing components, keep logic inline for simple cases, but suggest <script> based 'Alpine.data()' for complex components.
+- **Do not suggest heavy frameworks like React, Vue, or Angular.
+- **Ensure all event listeners use the '@' shorthand (e.g., @click instead of x-on:click).
+- **Follow the official Alpine.js best practices for performance (e.g., using x-cloak to prevent flickering).
+-** Don't use Tailwind or anything related with this project

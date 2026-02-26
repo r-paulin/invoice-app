@@ -16,10 +16,11 @@
   --green-800: #016630;
   --green-900: #0d542b;
   --green-600: #00a63e;
+  --red-50: #fff1f2;
   --red-200: #da1e28;
+  --red-700: #c70036;
   --red-800: #a50036;
   --red-900: #8b0836;
-  --red-700: #dc2626;
 
   /* Shared form tokens (Figma-aligned) */
   --color-text: var(--grey-800);
@@ -28,13 +29,20 @@
   --color-surface: var(--white);
   --color-border: var(--grey-200);
   --color-border-hover: var(--grey-300);
-  --color-border-focus: var(--green-700);
+  --color-border-focus: #FB8B24;
   --color-error: var(--red-800);
   --color-error-border: var(--red-700);
   --color-disabled-bg: var(--grey-50);
   --color-disabled-text: var(--grey-500);
 
+  /* Focus outline (keyboard-only, high-contrast) */
+  --focus-outline-color: #FB8B24;
+  --focus-outline-offset: 0.1rem;
+  --focus-outline-style: solid;
+  --focus-outline-width: 2px;
+
   --radius-input: 0.25rem;
+  --radius-md: 0.5rem;
   --border-width-input: 0.0625rem;
   --shadow-input: 0 0.0625rem 0.125rem rgba(18, 18, 23, 0.05);
 
@@ -55,6 +63,7 @@
   --font-weight-label: 600;
   --font-weight-value: 400;
   --font-weight-help: 400;
+  --font-weight-optional: 500;
 
   /* Shared button tokens (Figma node 1:4378) */
   --btn-height: 2.5rem;
@@ -68,7 +77,7 @@
   --btn-padding-icon-end: 0.625rem;
   --btn-icon-size: 1.25rem;
   --btn-shadow: 0 0.0625rem 0.125rem rgba(18, 18, 23, 0.05);
-  --btn-focus-ring: 0 0 0 0.125rem rgba(0, 130, 54, 0.2);
+  --btn-focus-ring: 0 0 0 0.125rem rgba(251, 139, 36, 0.2);
   --btn-active-scale: 0.975;
 
   --btn-primary-bg: var(--green-700);
@@ -100,6 +109,13 @@
   --btn-disabled-text: var(--grey-400);
 }
 
+*:focus-visible {
+  outline-color: var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+  outline-style: var(--focus-outline-style);
+  outline-width: var(--focus-outline-width);
+}
+
 /* Global layout utility */
 .container {
   margin-left: auto;
@@ -126,6 +142,22 @@ body {
   color: var(--grey-800);
   font-family: "Source Sans 3", sans-serif;
   scrollbar-gutter: stable;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+h3{ 
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.015625rem;
+  line-height: 1.25;
 }
 
 .top {
@@ -235,43 +267,72 @@ body {
   position: relative;
 }
 
-.lang-button {
+.lang-select-wrapper {
+  position: relative;
+  min-height: 2.5rem;
+  min-width: 7.125rem;
+  max-width: 16rem;
+  width: 100%;
+  background: var(--color-surface);
+  border: var(--border-width-input) solid var(--color-border);
+  border-radius: var(--radius-input);
+  box-shadow: var(--shadow-input);
+  transition: border-color 0.12s ease;
+}
+
+.lang-control:hover .lang-select-wrapper {
+  border-color: var(--color-border-hover);
+}
+
+.lang-select-wrapper:focus-within {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
+}
+
+.lang-select-display {
+  align-items: center;
+  display: flex;
+  gap: var(--space-md);
+  inset: 0;
+  padding: 0 var(--space-lg);
+  pointer-events: none;
+  position: absolute;
+  border-radius: var(--radius-input);
+}
+
+.lang-select-flag {
+  flex-shrink: 0;
+  height: 1rem;
+  width: 1.5rem;
+}
+
+.lang-select-flag.fi:not([class*="fi-"]) {
+  visibility: hidden;
+}
+
+.lang-select-name {
+  font-size: var(--font-size-value);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lang-select-wrapper .lang-select-label {
+  position: relative;
+  z-index: 1;
+  display: block;
   min-width: 0;
 }
 
-.lang-button__label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.lang-button .lang-icon {
-  pointer-events: none;
-}
-
-.lang-flag-icon {
-  font-size: 1.1rem;
-  line-height: 1;
-  pointer-events: none;
-}
-
-.lang-button .lang-icon-chevron {
-  color: var(--grey-600);
-  font-size: 1.25rem;
-}
-
-.lang-native-select {
-  height: 1px;
-  left: 0;
+.lang-select-wrapper .lang-select-label .native-select__control {
   opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  width: 1px;
-}
-
-.lang-control:focus-within .lang-button {
-  box-shadow: var(--btn-shadow), var(--btn-focus-ring);
+  min-height: 2.5rem;
+  cursor: pointer;
+  width: 100%;
 }
 
 @keyframes header-float {
@@ -369,8 +430,7 @@ body {
 }
 
 .btn:focus-visible {
-  box-shadow: var(--btn-shadow), var(--btn-focus-ring);
-  outline: none;
+  box-shadow: var(--btn-shadow);
 }
 
 .btn:active:not(:disabled):not([aria-disabled="true"]) {
@@ -490,8 +550,9 @@ body {
 }
 
 .btn--tab:focus-visible {
-  box-shadow: var(--btn-shadow), var(--btn-focus-ring);
-  outline: none;
+  box-shadow: var(--btn-shadow);
+  /* Negative offset so outline sits inside and isn’t clipped by .tabs overflow-x */
+  outline-offset: -2px;
 }
 
 .tab {
@@ -592,7 +653,20 @@ input::placeholder {
   margin-top: var(--space-2xs);
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Shared form control system */
+.form-group,
 .form-field {
   display: flex;
   flex-direction: column;
@@ -611,6 +685,13 @@ input::placeholder {
   font-style: normal;
 }
 
+.label-optional {
+  color: var(--grey-500);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-optional);
+  line-height: var(--line-height-label);
+}
+
 .form-help {
   color: var(--color-text-muted);
   font-size: var(--font-size-help);
@@ -627,6 +708,23 @@ input::placeholder {
 
 .form-error[hidden] {
   display: none;
+}
+
+.field-error-reserved {
+  min-height: 1.375rem;
+}
+
+.form-control:user-invalid:not(:placeholder-shown),
+.form-control[aria-invalid="true"],
+.form-select:user-invalid:not(:placeholder-shown),
+.form-select[aria-invalid="true"] {
+  border-color: var(--color-error-border);
+}
+
+.form-field:has(.form-control:user-invalid:not(:placeholder-shown)) .form-control,
+.form-field:has(.form-control[aria-invalid="true"]) .form-control,
+.form-field:has(.form-select[aria-invalid="true"]) .form-select {
+  border-color: var(--color-error-border);
 }
 
 .form-control,
@@ -685,7 +783,7 @@ input::placeholder {
 .form-field.is-focused .form-select,
 .form-field.is-focused .form-textarea {
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 0.125rem rgba(0, 130, 54, 0.15);
+  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
 }
 
 .form-field.has-error .form-control,
@@ -810,7 +908,7 @@ input::placeholder {
   gap: 0.75rem;
   justify-content: center;
   min-height: 7.75rem;
-  padding: 1.25rem 0.75rem;
+  padding: 0.75rem 0.75rem 2rem 0.75rem;
 }
 
 .card-icon {
@@ -857,6 +955,12 @@ input::placeholder {
   width: 100%;
 }
 
+.line-head label {
+  cursor: default;
+  font-weight: inherit;
+  margin: 0;
+}
+
 .line-row {
   display: grid;
   grid-template-columns: 2.2fr 1fr 1fr 1fr;
@@ -869,6 +973,12 @@ input::placeholder {
   border-radius: 0;
   font-size: 0.9rem;
   height: 2.5rem;
+}
+
+.line-item-name-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .line-row input {
@@ -1143,6 +1253,70 @@ input::placeholder {
   width: 100%;
 }
 
+.country-select-wrapper {
+  position: relative;
+  min-height: 2.5rem;
+  width: 100%;
+  background: var(--color-surface);
+  border: var(--border-width-input) solid var(--color-border);
+  border-radius: var(--radius-input);
+  box-shadow: var(--shadow-input);
+  transition: border-color 0.12s ease;
+}
+
+.form-field:hover .country-select-wrapper {
+  border-color: var(--color-border-hover);
+}
+
+.form-field.is-focused .country-select-wrapper {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
+}
+
+.country-select-wrapper:focus-within {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
+}
+
+.country-select-display {
+  align-items: center;
+  display: flex;
+  gap: var(--space-md);
+  inset: 0;
+  padding: 0 var(--space-lg);
+  pointer-events: none;
+  position: absolute;
+  border-radius: var(--radius-input);
+}
+
+.country-select-flag {
+  flex-shrink: 0;
+  height: 1rem;
+  width: 1.5rem;
+}
+
+.country-select-flag.fi:not([class*="fi-"]) {
+  visibility: hidden;
+}
+
+.country-select-name {
+  font-size: var(--font-size-value);
+  color: var(--color-text);
+}
+
+.country-select-wrapper .country-select-label {
+  position: relative;
+  z-index: 1;
+  display: block;
+  min-width: 0;
+}
+
+.country-select-wrapper .native-select__control {
+  opacity: 0;
+  min-height: 2.5rem;
+  cursor: pointer;
+}
+
 .select.native-select {
   align-items: center;
   display: grid;
@@ -1210,23 +1384,28 @@ input::placeholder {
 
 .form-field.is-focused .phone-country-box {
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 0.125rem rgba(0, 130, 54, 0.15);
+  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
 }
 
-/* When closed: show only emoji (1.1rem) + dial code. Native select overlaid for dropdown. */
+/* When closed: flag (flag-icons) + dial code. Native select overlaid for dropdown. */
 .phone-country-display {
   align-items: center;
   display: flex;
-  gap: 0.25rem;
+  gap: var(--space-md);
   inset: 0;
   padding: 0 1.75rem 0 var(--space-lg);
   pointer-events: none;
   position: absolute;
 }
 
-.phone-country-emoji {
-  font-size: 1.1rem;
-  line-height: 1;
+.phone-country-flag {
+  flex-shrink: 0;
+  height: 1rem;
+  width: 1.5rem;
+}
+
+.phone-country-flag.fi:not([class*="fi-"]) {
+  visibility: hidden;
 }
 
 .phone-country-dial {
@@ -1257,10 +1436,6 @@ input::placeholder {
   display: none;
 }
 
-.phone-country-select:focus {
-  outline: none;
-}
-
 .phone-country-select option {
   color: var(--color-text);
 }
@@ -1282,12 +1457,88 @@ input::placeholder {
 }
 
 .seller-form {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
   flex: 0 0 auto;
   min-height: auto;
   overflow: visible;
 }
+
+.seller-form-alert-wrap {
+  grid-column: 1;
+  padding: 1rem 1rem var(--space-lg) 1rem;
+  min-width: 0;
+}
+
+.seller-form-alert {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: var(--space-lg) var(--space-md);
+  background: var(--red-50);
+  border: 1px solid var(--red-800);
+  color: var(--red-800);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  border-radius: var(--radius-md);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.seller-form-alert__icon {
+  display: flex;
+  align-items: center;
+  padding: 2px var(--space-xs) 2px 0;
+  flex-shrink: 0;
+  color: var(--red-700);
+}
+
+.seller-form-alert__icon .material-symbols-rounded {
+  font-size: 1.5rem;
+  font-variation-settings: "opsz" 24, "wght" 400, "FILL" 0, "GRAD" 0;
+}
+
+.seller-form-alert__message {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 var(--space-lg);
+}
+
+.seller-form-alert__dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px var(--space-xs) 2px var(--space-lg);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-input);
+  color: var(--red-700);
+  cursor: pointer;
+  flex-shrink: 0;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+}
+
+.seller-form-alert__dismiss:hover {
+  background: rgba(165, 0, 54, 0.08);
+  color: var(--red-800);
+}
+
+.seller-form-alert__dismiss:focus-visible {
+  outline-offset: 2px;
+}
+
+.seller-form-alert__dismiss .material-symbols-rounded {
+  font-size: 1.25rem;
+  font-variation-settings: "opsz" 20, "wght" 400, "FILL" 0, "GRAD" 0;
+}
+
 
 .seller-modal-section {
   display: grid;
@@ -1358,9 +1609,9 @@ input::placeholder {
 }
 
 .seller-form .field-error {
-  color: #dc2626;
-  font-size: 0.9rem;
-  margin-top: 0.125rem;
+  color: var(--color-error);
+  font-size: var(--font-size-help);
+  margin-top: var(--space-2xs);
 }
 
 .seller-form .payment-means {
@@ -1394,27 +1645,75 @@ input::placeholder {
   color: var(--green-800);
 }
 
-.seller-form .link-remove-iban {
-  color: var(--grey-500);
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
-  text-decoration: underline;
+.seller-payment-add-wrap {
+  position: relative;
+  grid-column: 1;
+  padding-top: 1.2em;
+  padding-bottom: 1.2em;
 }
 
-.seller-form .link-remove-iban:hover {
-  color: var(--grey-700);
+.seller-add-iban-anchor {
+  anchor-name: --add-iban-btn;
+  color: var(--green-700);
+  font-weight: 600;
+}
+
+.seller-add-iban-anchor:hover:not(:disabled) {
+  color: var(--green-800);
+  border-color: var(--grey-200);
+}
+
+.seller-add-iban-anchor:disabled {
+  color: var(--grey-500);
+  cursor: not-allowed;
+}
+
+.seller-remove-iban {
+  align-self: flex-start;
+}
+
+#seller-add-iban-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--grey-800);
+  background: var(--grey-100);
+  border: 1px solid var(--grey-200);
+  border-radius: var(--radius-input);
+  box-shadow: var(--shadow-input);
+  white-space: nowrap;
+  z-index: 1;
+}
+
+@supports (position-anchor: --add-iban-btn) {
+  #seller-add-iban-tooltip {
+    position-anchor: --add-iban-btn;
+    top: anchor(bottom);
+    left: anchor(center);
+    translate: -50% 0;
+    margin-top: 0.25rem;
+  }
+}
+
+
+.seller-form .iban-fields {
+  margin-top: 0;
 }
 
 .seller-form .iban-block {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .seller-form .iban-item {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: 0.75rem;
 }
 
 .seller-form .iban-item .field-helper {
@@ -1444,6 +1743,11 @@ input::placeholder {
 @media (min-width: 768px) {
   .seller-modal-tabs {
     padding: 0 0.75rem 0 1.5rem;
+    border-bottom: 1px solid var(--grey-300);
+  }
+
+  .seller-form-alert-wrap {
+    padding: 1.5rem 1.5rem var(--space-lg) 1.5rem;
   }
 
   .seller-modal-section {
@@ -1454,6 +1758,11 @@ input::placeholder {
 
   .seller-section-fields {
     grid-column: 2;
+  }
+
+  .seller-form .iban-fields {
+    grid-column: 2;
+    grid-row: 1 / 3;
   }
 }
 
@@ -1474,8 +1783,7 @@ input::placeholder {
   min-height: 2rem;
 }
 
-.link-add-iban.btn,
-.link-remove-iban.btn {
+.link-add-iban.btn {
   border: 0;
   border-radius: 0.25rem;
   box-shadow: none;

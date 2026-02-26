@@ -4,7 +4,12 @@
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const IBAN = /^[A-Z]{2}\d{2}[A-Z0-9]{4}\d{7}([A-Z0-9]?){0,16}$/;
+const IBAN_STRUCTURE = /^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$/;
+
+/** Per-country IBAN length (ISO 13616-1); used for optional format hint when country is selected. */
+const IBAN_LENGTH_BY_COUNTRY = {
+  AD: 24, AL: 28, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22, BH: 22, BR: 29, BY: 28, CH: 21, CR: 22, CY: 28, CZ: 24, DE: 22, DK: 18, DO: 28, EE: 20, ES: 24, FI: 18, FO: 18, FR: 27, GB: 22, GE: 22, GI: 23, GL: 18, GR: 27, HR: 21, HU: 28, IE: 22, IL: 23, IS: 26, IT: 27, JO: 30, KW: 30, KZ: 20, LB: 28, LI: 21, LT: 20, LU: 20, LV: 21, MC: 27, MD: 24, ME: 22, MK: 19, MR: 27, MT: 31, MU: 30, NL: 18, NO: 15, PK: 24, PL: 28, PS: 29, PT: 25, QA: 29, RO: 24, RS: 22, SA: 24, SE: 24, SI: 19, SK: 24, SM: 27, TN: 24, TR: 26, UA: 29, VA: 22, VG: 24, XK: 20
+};
 
 const VAT_CATEGORY_CODES = ['S', 'Z', 'E', 'G', 'O', 'K', 'L', 'M', 'N', 'A'];
 const UNIT_CODES = ['C62', 'DAY', 'HUR', 'KGM', 'LTR', 'MTR', 'MTK', 'MTQ', 'PCE', 'KMT'];
@@ -84,10 +89,40 @@ function validEmail(s) {
   return typeof s === 'string' && EMAIL.test(s.trim());
 }
 
+function mod97(str) {
+  let remainder = '';
+  for (let i = 0; i < str.length; i++) {
+    remainder = (remainder + str[i]).replace(/^0+/, '') || '0';
+    if (remainder.length <= 14) continue;
+    const chunk = remainder.slice(0, 12);
+    remainder = (parseInt(chunk, 10) % 97) + remainder.slice(12);
+  }
+  return parseInt(remainder, 10) % 97;
+}
+
 function validIban(s) {
   if (!s) return true;
   const normalized = String(s).replace(/\s/g, '').toUpperCase();
-  return IBAN.test(normalized);
+  if (normalized.length < 15 || normalized.length > 34) return false;
+  if (!IBAN_STRUCTURE.test(normalized)) return false;
+  const rearranged = normalized.slice(4) + normalized.slice(0, 4);
+  const numeric = rearranged.replace(/[A-Z]/g, function (c) {
+    return String(c.charCodeAt(0) - 55);
+  });
+  return mod97(numeric) === 1;
+}
+
+/**
+ * Optional format check: when country is selected, IBAN length must match that country.
+ * Does not run MOD-97 or structure; use validIban() for full validation.
+ */
+function validIbanFormatForCountry(iban, countryCode) {
+  if (!iban || typeof iban !== 'string') return true;
+  var normalized = String(iban).replace(/\s/g, '').toUpperCase();
+  if (!countryCode) return true;
+  var len = IBAN_LENGTH_BY_COUNTRY[String(countryCode).toUpperCase()];
+  if (len == null) return true;
+  return normalized.length === len;
 }
 
 function validVatCategory(code) {
@@ -112,32 +147,17 @@ function validVatId(value, countryCode) {
   return re.test(value.trim().replace(/\s/g, ''));
 }
 
-function validPhone(value, countryCode) {
+function validPhone(value, dialCode) {
   if (!value || !value.trim()) return true;
   var s = value.trim().replace(/[\s\-\(\)]/g, '');
-  return /^\+?[0-9]{6,15}$/.test(s);
-}
-
-function getTempEmailDenylist() {
-  if (typeof window !== 'undefined' && window.InvioTempEmailDomains) {
-    return window.InvioTempEmailDomains;
+  var digits = s.replace(/\D/g, '');
+  if (digits.length < 6 || digits.length > 15) return false;
+  if (dialCode) {
+    var prefix = dialCode.replace(/\D/g, '');
+    if (!prefix) return true;
+    return digits.indexOf(prefix) === 0;
   }
-  return [];
-}
-
-function isTempEmailDomain(domain) {
-  if (!domain || typeof domain !== 'string') return false;
-  var d = domain.toLowerCase().trim();
-  var list = getTempEmailDenylist();
-  return list.indexOf(d) !== -1;
-}
-
-function validEmailRejectTemp(s) {
-  if (!s || !s.trim()) return true;
-  if (!validEmail(s)) return false;
-  var parts = s.trim().split('@');
-  if (parts.length !== 2) return false;
-  return !isTempEmailDomain(parts[1]);
+  return /^\+?[0-9]{6,15}$/.test(s);
 }
 
 /**
@@ -191,14 +211,11 @@ function validateDraft(draft) {
     if (!validVatCategory(line.vatCategoryCode)) errors.push(`Line ${idx}: VAT category code (BT-151) is required and must be one of: ${VAT_CATEGORY_CODES.join(', ')}`);
   });
 
-  // Optional but format checks (reject temp email domains)
-  if (seller.contact && seller.contact.email) {
-    if (!validEmail(seller.contact.email)) errors.push('Seller email must be a valid email address');
-    else if (!validEmailRejectTemp(seller.contact.email)) errors.push('Seller email must not use a temporary email domain');
+  if (seller.contact && seller.contact.email && !validEmail(seller.contact.email)) {
+    errors.push('Seller email must be a valid email address');
   }
-  if (buyer.contact && buyer.contact.email) {
-    if (!validEmail(buyer.contact.email)) errors.push('Buyer email must be a valid email address');
-    else if (!validEmailRejectTemp(buyer.contact.email)) errors.push('Buyer email must not use a temporary email domain');
+  if (buyer.contact && buyer.contact.email && !validEmail(buyer.contact.email)) {
+    errors.push('Buyer email must be a valid email address');
   }
 
   // Payment: if credit transfer (30), at least one valid IBAN required
@@ -256,14 +273,13 @@ if (typeof window !== 'undefined') {
     validateForExport,
     validIsoDate,
     validEmail,
-    validEmailRejectTemp,
     validIban,
+    validIbanFormatForCountry,
     validVatCategory,
     validUnitCode,
     validRegistrationId,
     validVatId,
     validPhone,
-    isTempEmailDomain,
     VAT_CATEGORY_CODES,
     UNIT_CODES
   };
