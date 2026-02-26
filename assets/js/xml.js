@@ -202,6 +202,14 @@ function buildInvoiceXML(draft, totals) {
 }
 
 /**
+ * Sanitize filename for download: allow only alphanumeric, hyphen, underscore.
+ */
+function sanitizeDownloadFilename(name) {
+  if (!name || typeof name !== 'string') return 'invoice';
+  return name.replace(/[^A-Za-z0-9_\-]/g, '_').slice(0, 200) || 'invoice';
+}
+
+/**
  * Serialize to string and trigger download
  */
 function serializeAndDownload(doc, filename) {
@@ -210,10 +218,12 @@ function serializeAndDownload(doc, filename) {
   str = '<?xml version="1.0" encoding="UTF-8"?>\n' + str;
   const blob = new Blob([str], { type: 'application/xml' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename || 'invoice.xml';
+  const url = URL.createObjectURL(blob);
+  a.href = url;
+  const safeBase = (filename && filename.replace) ? filename.replace(/\.xml$/i, '').trim() : '';
+  a.download = (safeBase ? sanitizeDownloadFilename(safeBase) : 'invoice') + '.xml';
   a.click();
-  URL.revokeObjectURL(a.href);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
 }
 
 /**
@@ -228,8 +238,8 @@ function generateAndDownloadXML(draft) {
   if (!recon.ok) return { ok: false, errors: ['Totals do not reconcile'] };
   const doc = buildInvoiceXML(draft, totals);
   if (!doc) return { ok: false, errors: ['Could not build XML'] };
-  const filename = (draft.header && draft.header.invoiceNumber) ? `invoice_${draft.header.invoiceNumber}.xml` : 'invoice.xml';
-  serializeAndDownload(doc, filename);
+  const baseName = (draft.header && draft.header.invoiceNumber) ? 'invoice_' + draft.header.invoiceNumber : 'invoice';
+  serializeAndDownload(doc, baseName);
   return { ok: true };
 }
 

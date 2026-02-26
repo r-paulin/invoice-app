@@ -730,6 +730,16 @@ input::placeholder {
   line-height: var(--line-height-help);
 }
 
+.countries-load-status {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-help);
+  margin: 0 0 var(--space-md);
+}
+
+.countries-load-status[hidden] {
+  display: none;
+}
+
 .form-error {
   color: var(--color-error);
   font-size: var(--font-size-help);

@@ -1,4 +1,11 @@
 (function () {
+  /** Minimal logger for errors; no-op by default; can be replaced with reporting in production. */
+  function logError(context, err) {
+    if (typeof window !== 'undefined' && window.InvioLog && typeof window.InvioLog.error === 'function') {
+      window.InvioLog.error(context, err);
+    }
+  }
+
   document.addEventListener('alpine:init', function () {
     Alpine.data('paymentDetails', function () {
       return {
@@ -260,6 +267,7 @@
       })
       .catch(function (err) {
         worldCountriesCache = [];
+        logError('loadWorldCountries', err);
         throw err;
       });
     return worldCountriesPromise;
@@ -348,8 +356,8 @@
     if (navigator.language) localeCandidates.push(navigator.language);
     try {
       localeCandidates.push(Intl.DateTimeFormat().resolvedOptions().locale);
-    } catch (_error) {
-      // Locale lookup best-effort only.
+    } catch (e) {
+      logError('inferIso2FromLocale', e);
     }
 
     for (var i = 0; i < localeCandidates.length; i += 1) {
@@ -1645,7 +1653,13 @@
     bindNativeCountrySelectEvents();
     applyGeoPrefillIfEmpty();
     updateBuyerCardSummary();
-  }).catch(function () {
+  }).catch(function (err) {
+    logError('initCountries', err);
+    var statusEl = document.getElementById('countries-load-status');
+    if (statusEl) {
+      statusEl.textContent = 'Country list could not be loaded. You can still use the form with the available options.';
+      statusEl.hidden = false;
+    }
     fillNativeCountrySelects();
     bindNativeCountrySelectEvents();
     applyGeoPrefillIfEmpty();
