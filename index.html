@@ -76,7 +76,7 @@
 
           <nav class="tabs header-grid__tabs" aria-label="Invoice tabs">
             <button type="button" class="btn btn--tab tab active" data-target="invoice-data">Invoice data</button>
-            <button type="button" class="btn btn--tab tab" data-target="invoice-settings">Invoice settings</button>
+            <button type="button" class="btn btn--tab tab" data-target="invoice-settings">General</button>
           </nav>
 
           <div class="header-decoration-wrap header-grid__decoration" aria-hidden="true">
@@ -205,7 +205,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="seller-modal-section" x-data="paymentDetails()">
+                  <div class="seller-modal-section" id="seller-payment-details-section" x-data="paymentDetails()">
                   <div>
                     <div class="seller-section-title">Payment details</div>
                     <div class="seller-payment-add-wrap">
@@ -264,6 +264,17 @@
                 </form>
               </div>
             </template>
+
+            <section class="section" id="buyer-section">
+              <h2>Buyer</h2>
+              <div class="section-content">
+                <div class="card" id="buyer-card">
+                  <img src="assets/image-men-holding-an-invoice.webp" alt="Buyer details illustration" class="card-image" width="248" height="auto">
+                  <h3 id="buyer-card-summary">Enter your customers details</h3>
+                  <button type="button" class="btn btn--primary btn--icon-left" data-buyer-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button>
+                </div>
+              </div>
+            </section>
 
             <template id="buyer-sheet-template">
               <div class="buyer-bottom-sheet" x-data="{ buyerTab: 'organisation' }" aria-labelledby="buyer-dialog-title" aria-modal="true" role="dialog">
@@ -339,7 +350,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="buyer-modal-section" x-data="buyerPaymentDetails()">
+                  <div class="buyer-modal-section" id="buyer-payment-details-section" x-data="buyerPaymentDetails()">
                   <div>
                     <div class="buyer-section-title">Payment details</div>
                     <div class="buyer-payment-add-wrap">
@@ -353,7 +364,7 @@
                         <template x-for="(account, index) in $store.buyerBankAccounts" :key="account._id">
                           <div class="iban-item">
                             <div class="form-group form-field">
-                              <label :for="'buyer-iban-' + index"><span class="form-label">Bank account number <span class="required-mark">*</span></label>
+                              <label :for="'buyer-iban-' + index"><span class="form-label">Bank account number</span> <span class="label-optional">(Optional)</span></label>
                               <input class="form-control" :id="'buyer-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" placeholder="Enter IBAN number" :aria-describedby="'buyer-iban-' + index + '-error'" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
                               <span class="field-error form-error field-error-reserved" :id="'buyer-iban-' + index + '-error'" role="alert" aria-live="polite" x-show="account.ibanError" x-cloak x-text="account.ibanError"></span>
                             </div>
@@ -399,17 +410,6 @@
               </div>
             </template>
 
-            <section class="section" id="buyer-section">
-              <h2>Buyer</h2>
-              <div class="section-content">
-                <div class="card" id="buyer-card">
-                  <img src="assets/image-men-holding-an-invoice.webp" alt="Buyer details illustration" class="card-image" width="248" height="auto">
-                  <h3 id="buyer-card-summary">Enter your customers details</h3>
-                  <button type="button" class="btn btn--primary btn--icon-left" data-buyer-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button>
-                </div>
-              </div>
-            </section>
-
             <section class="section items">
               <h2>Items</h2>
               <div class="section-content">
@@ -454,28 +454,77 @@
 
           <section class="panel panel-invoice-settings" data-panel="invoice-settings" hidden>
             <section class="section">
-              <h2>Invoice settings</h2>
-              <div class="section-content">
-                <fieldset class="field payment-means form-radio-group">
-                  <legend>Payment</legend>
-                  <label class="radio-label form-radio"><input type="radio" name="payment-means" value="30" checked> Credit transfer</label>
-                  <label class="radio-label form-radio"><input type="radio" name="payment-means" value="10"> Cash</label>
-                  <label class="radio-label form-radio"><input type="radio" name="payment-means" value="48"> Credit card</label>
-                </fieldset>
-                <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                  <label for="document-language"><span class="form-label">Document language</span> <span class="label-optional">(Optional)</span></label>
-                  <input class="form-control" id="document-language" name="document-language" type="text" placeholder="English" aria-describedby="document-language-hint">
-                  <small class="field-helper form-help" id="document-language-hint">Language for the invoice document</small>
+              <h2>General</h2>
+              <div class="section-content general-settings-content" aria-live="polite" aria-atomic="false">
+                <div class="form-group form-field native-country-select-wrap invoice-language-wrap">
+                  <label for="invoice-language-select"><span class="form-label">Invoice language</span></label>
+                  <div class="country-select-wrapper invoice-language-select-wrapper" id="invoice-language-wrapper">
+                    <span class="country-select-display invoice-language-display" id="invoice-language-display" aria-hidden="true">
+                      <span class="country-select-flag fi fi-gb" id="invoice-language-flag"></span>
+                      <span class="country-select-name" id="invoice-language-name">English</span>
+                    </span>
+                    <span class="select native-select country-select-label">
+                      <select class="form-select native-select__control" name="invoice-language" id="invoice-language-select" required aria-label="Invoice language" aria-describedby="invoice-language-hint invoice-language-live">
+                        <option value="bg">Български</option>
+                        <option value="hr">Hrvatski</option>
+                        <option value="cs">Čeština</option>
+                        <option value="da">Dansk</option>
+                        <option value="nl">Nederlands</option>
+                        <option value="en" selected>English</option>
+                        <option value="et">Eesti</option>
+                        <option value="fi">Suomi</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="el">Ελληνικά</option>
+                        <option value="hu">Magyar</option>
+                        <option value="ga">Gaeilge</option>
+                        <option value="it">Italiano</option>
+                        <option value="lv">Latviešu</option>
+                        <option value="lt">Lietuvių</option>
+                        <option value="mt">Malti</option>
+                        <option value="pl">Polski</option>
+                        <option value="pt">Português</option>
+                        <option value="ro">Română</option>
+                        <option value="sk">Slovenčina</option>
+                        <option value="sl">Slovenščina</option>
+                        <option value="es">Español</option>
+                        <option value="sv">Svenska</option>
+                      </select>
+                    </span>
+                  </div>
+                  <small class="field-helper form-help" id="invoice-language-hint">Language for generated XML/PDF labels and static text</small>
+                  <span id="invoice-language-live" class="visually-hidden" aria-live="polite" aria-atomic="true"></span>
                 </div>
-                <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                  <label for="currency"><span class="form-label">Currency</span> <span class="label-optional">(Optional)</span></label>
-                  <input class="form-control" id="currency" name="currency" type="text" placeholder="EUR" aria-describedby="currency-hint">
-                  <small class="field-helper form-help" id="currency-hint">Three-letter currency code (e.g. EUR, USD)</small>
+                <div class="form-group form-field">
+                  <label for="invoice-currency-select"><span class="form-label">Invoice currency <span class="required-mark">*</span></span></label>
+                  <select class="form-control form-select" id="invoice-currency-select" name="invoice-currency" required aria-describedby="invoice-currency-hint" aria-label="Invoice currency">
+                    <option value="EUR" selected>EUR</option>
+                  </select>
+                  <small class="field-helper form-help" id="invoice-currency-hint">All calculations use this currency</small>
                 </div>
-                <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                  <label for="template-note"><span class="form-label">Template note</span> <span class="label-optional">(Optional)</span></label>
-                  <input class="form-control" id="template-note" name="template-note" type="text" placeholder="Enter note" aria-describedby="template-note-hint">
-                  <small class="field-helper form-help" id="template-note-hint">Note or terms shown on the invoice</small>
+                <div class="form-group form-field">
+                  <label for="invoice-type-select"><span class="form-label">Invoice type</span></label>
+                  <select class="form-control form-select" id="invoice-type-select" name="invoice-type" aria-describedby="invoice-type-subtext" aria-label="Invoice type">
+                    <option value="380" selected>Commercial invoice</option>
+                    <option value="384">Corrected invoice</option>
+                    <option value="381">Credit note</option>
+                    <option value="326">Partial invoice</option>
+                    <option value="389">Self-billed invoice</option>
+                    <option value="875">Partial construction invoice</option>
+                    <option value="876">Partial final construction invoice</option>
+                    <option value="877">Final construction invoice</option>
+                  </select>
+                  <small class="field-helper form-help" id="invoice-type-subtext" aria-live="polite" aria-atomic="true">Standard invoice for goods or services.</small>
+                </div>
+                <div class="form-group form-field">
+                  <label for="payment-type-select"><span class="form-label">Payment type</span></label>
+                  <select class="form-control form-select" id="payment-type-select" name="payment-type" aria-describedby="payment-type-hint payment-type-live" aria-label="Payment type">
+                    <option value="30" selected>Bank transfer</option>
+                    <option value="10">Cash</option>
+                    <option value="48">Credit card</option>
+                  </select>
+                  <small class="field-helper form-help" id="payment-type-hint">Bank details shown only for bank transfer</small>
+                  <span id="payment-type-live" class="visually-hidden" aria-live="polite" aria-atomic="true"></span>
                 </div>
               </div>
             </section>

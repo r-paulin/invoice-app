@@ -7,6 +7,7 @@ const INVIO_SPECIFICATION_ID = 'urn:cen.eu:en16931:2017';
 
 /**
  * Default header (BT-1, BT-2, BT-3, BT-5, BT-24, etc.)
+ * languageCode: ISO 639-1 for XML/PDF and document target language.
  */
 function defaultHeader() {
   const today = new Date().toISOString().slice(0, 10);
@@ -17,6 +18,7 @@ function defaultHeader() {
     issueDate: today,
     typeCode: '380',
     currencyCode: 'EUR',
+    languageCode: 'en',
     specificationId: INVIO_SPECIFICATION_ID,
     dueDate: due.toISOString().slice(0, 10),
     buyerReference: null,
@@ -152,6 +154,7 @@ function normalizeDraft(draft) {
   if (!draft || typeof draft !== 'object') return createDefaultDraft();
   const def = createDefaultDraft();
   const h = { ...def.header, ...(draft.header || {}) };
+  if (!h.languageCode || typeof h.languageCode !== 'string') h.languageCode = def.header.languageCode || 'en';
   const seller = draft.seller || {};
   const buyer = draft.buyer || {};
   const pay = draft.payment || {};

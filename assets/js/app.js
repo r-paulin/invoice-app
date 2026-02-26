@@ -518,6 +518,208 @@
   var draft = (typeof window !== 'undefined' && window.__invioDraft) ? window.__invioDraft : (window.InvioState && window.InvioState.createDefaultDraft());
   if (typeof window !== 'undefined') window.__invioDraft = draft;
 
+  // --- General panel: Invoice Language (flag + name, ISO 639-1), pre-fill from website language ---
+  var invoiceLanguageSelect = document.getElementById('invoice-language-select');
+  var invoiceLanguageName = document.getElementById('invoice-language-name');
+  var invoiceLanguageFlag = document.getElementById('invoice-language-flag');
+  var invoiceLanguageLive = document.getElementById('invoice-language-live');
+  var invoiceLanguageToCountry = {
+    bg: 'bg', hr: 'hr', cs: 'cz', da: 'dk', nl: 'nl', en: 'gb', et: 'ee', fi: 'fi', fr: 'fr', de: 'de',
+    el: 'gr', hu: 'hu', ga: 'ie', it: 'it', lv: 'lv', lt: 'lt', mt: 'mt', pl: 'pl', pt: 'pt', ro: 'ro',
+    sk: 'sk', sl: 'si', es: 'es', sv: 'se'
+  };
+  var EU_24_LANG_CODES = ['bg', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'de', 'el', 'hu', 'ga', 'it', 'lv', 'lt', 'mt', 'pl', 'pt', 'ro', 'sk', 'sl', 'es', 'sv'];
+  function syncInvoiceLanguageDisplay() {
+    if (!invoiceLanguageSelect || !invoiceLanguageName || !invoiceLanguageFlag) return;
+    var opt = invoiceLanguageSelect.options[invoiceLanguageSelect.selectedIndex];
+    if (opt) {
+      invoiceLanguageName.textContent = opt.textContent || 'English';
+      var cc = invoiceLanguageToCountry[invoiceLanguageSelect.value] || 'gb';
+      invoiceLanguageFlag.className = 'country-select-flag fi fi-' + cc.toLowerCase();
+    }
+  }
+  function setInvoiceLanguageFromDraft() {
+    if (!invoiceLanguageSelect) return;
+    var code = (draft.header && draft.header.languageCode) || 'en';
+    if (EU_24_LANG_CODES.indexOf(code) === -1) code = 'en';
+    invoiceLanguageSelect.value = code;
+    syncInvoiceLanguageDisplay();
+  }
+  function setInvoiceLanguageFromWebsite() {
+    if (!invoiceLanguageSelect) return;
+    var langSelect = document.getElementById('lang-select');
+    var websiteLang = langSelect ? langSelect.value : '';
+    if (websiteLang && EU_24_LANG_CODES.indexOf(websiteLang) !== -1) {
+      invoiceLanguageSelect.value = websiteLang;
+      draft.header = draft.header || {};
+      draft.header.languageCode = websiteLang;
+    } else {
+      invoiceLanguageSelect.value = 'en';
+      draft.header = draft.header || {};
+      draft.header.languageCode = 'en';
+    }
+    syncInvoiceLanguageDisplay();
+  }
+  if (invoiceLanguageSelect) {
+    setInvoiceLanguageFromWebsite();
+    invoiceLanguageSelect.addEventListener('change', function () {
+      draft.header = draft.header || {};
+      draft.header.languageCode = invoiceLanguageSelect.value;
+      syncInvoiceLanguageDisplay();
+      if (invoiceLanguageLive) invoiceLanguageLive.textContent = 'Labels and static text will be generated in ' + (invoiceLanguageSelect.options[invoiceLanguageSelect.selectedIndex].textContent || 'English') + '.';
+    });
+  }
+
+  // --- General panel: Currency (ISO 4217), all European + major world; code + name ---
+  var CURRENCY_NAMES = {
+    EUR: 'Euro', USD: 'US dollar', GBP: 'Pound sterling', CHF: 'Swiss franc', JPY: 'Japanese yen', CNY: 'Chinese yuan',
+    CAD: 'Canadian dollar', AUD: 'Australian dollar', HKD: 'Hong Kong dollar', SGD: 'Singapore dollar',
+    SEK: 'Swedish krona', NOK: 'Norwegian krone', DKK: 'Danish krone', PLN: 'Polish zloty', CZK: 'Czech koruna',
+    HUF: 'Hungarian forint', RON: 'Romanian leu', BGN: 'Bulgarian lev', ISK: 'Icelandic krona', HRK: 'Croatian kuna',
+    RUB: 'Russian rouble', TRY: 'Turkish lira', INR: 'Indian rupee', BRL: 'Brazilian real', MXN: 'Mexican peso',
+    ZAR: 'South African rand', KRW: 'South Korean won', ALL: 'Albanian lek', AMD: 'Armenian dram',
+    AZN: 'Azerbaijani manat', BAM: 'Bosnia-Herzegovina convertible mark', BYN: 'Belarusian rouble',
+    GEL: 'Georgian lari', MDL: 'Moldovan leu', MKD: 'Macedonian denar', RSD: 'Serbian dinar', UAH: 'Ukrainian hryvnia',
+    GIP: 'Gibraltar pound', JEP: 'Jersey pound', GGP: 'Guernsey pound', IMP: 'Manx pound'
+  };
+  var CURRENCY_LIST = [
+    'EUR', 'USD', 'GBP', 'CHF', 'JPY', 'CNY', 'CAD', 'AUD', 'HKD', 'SGD', 'SEK', 'NOK', 'DKK', 'PLN', 'CZK', 'HUF', 'RON', 'BGN', 'ISK', 'HRK', 'RUB', 'TRY', 'INR', 'BRL', 'MXN', 'ZAR', 'KRW',
+    'ALL', 'AMD', 'AZN', 'BAM', 'BYN', 'GEL', 'MDL', 'MKD', 'RSD', 'UAH', 'GIP', 'JEP', 'GGP', 'IMP'
+  ];
+  var invoiceCurrencySelect = document.getElementById('invoice-currency-select');
+  if (invoiceCurrencySelect) {
+    var currentCurrency = (draft.header && draft.header.currencyCode) || 'EUR';
+    var opts = invoiceCurrencySelect.querySelectorAll('option');
+    if (opts.length <= 1) {
+      invoiceCurrencySelect.innerHTML = '';
+      CURRENCY_LIST.forEach(function (code) {
+        var opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = code + ' – ' + (CURRENCY_NAMES[code] || code);
+        if (code === currentCurrency) opt.selected = true;
+        invoiceCurrencySelect.appendChild(opt);
+      });
+      if (!currentCurrency || CURRENCY_LIST.indexOf(currentCurrency) === -1) invoiceCurrencySelect.value = 'EUR';
+    } else if (currentCurrency) invoiceCurrencySelect.value = currentCurrency;
+    invoiceCurrencySelect.addEventListener('change', function () {
+      draft.header = draft.header || {};
+      draft.header.currencyCode = invoiceCurrencySelect.value;
+    });
+  }
+
+  // --- General panel: Invoice Type (codes 380, 384, etc. in JS only; labels without codes) ---
+  var invoiceTypeSelect = document.getElementById('invoice-type-select');
+  var invoiceTypeSubtext = document.getElementById('invoice-type-subtext');
+  var invoiceTypeSubtexts = {
+    '380': 'Standard invoice for goods or services supplied.',
+    '384': 'Replaces or corrects a previously issued invoice.',
+    '381': 'Credit note that reduces the amount due from the buyer.',
+    '326': 'Invoice covering only part of an order or contract.',
+    '389': 'Invoice issued by the buyer (self-billing arrangement).',
+    '875': 'Invoice for partial progress on a construction project.',
+    '876': 'Invoice for a partial final stage of a construction project.',
+    '877': 'Final invoice for completion of a construction project.'
+  };
+  function updateInvoiceTypeSubtext() {
+    if (invoiceTypeSubtext && invoiceTypeSelect) invoiceTypeSubtext.textContent = invoiceTypeSubtexts[invoiceTypeSelect.value] || '';
+  }
+  if (invoiceTypeSelect) {
+    if (draft.header && draft.header.typeCode) invoiceTypeSelect.value = draft.header.typeCode;
+    updateInvoiceTypeSubtext();
+    invoiceTypeSelect.addEventListener('change', function () {
+      draft.header = draft.header || {};
+      draft.header.typeCode = invoiceTypeSelect.value;
+      updateInvoiceTypeSubtext();
+    });
+  }
+
+  // --- General panel: Payment Type (select), conditional bank visibility ---
+  var paymentTypeSelect = document.getElementById('payment-type-select');
+  if (paymentTypeSelect) {
+    if (draft.payment && draft.payment.meansTypeCode) paymentTypeSelect.value = String(draft.payment.meansTypeCode);
+    paymentTypeSelect.addEventListener('change', function () {
+      var means = paymentTypeSelect.value;
+      draft.payment = draft.payment || {};
+      draft.payment.meansTypeCode = means;
+      updatePaymentMeansDisplayName();
+      applyPaymentDetailsVisibility(means);
+      var liveEl = document.getElementById('payment-type-live');
+      if (liveEl) {
+        if (means === '10') liveEl.textContent = 'Bank details hidden. Payment status: Paid by Cash.';
+        else if (means === '48') liveEl.textContent = 'Bank details hidden. Payment status: Paid by Credit Card.';
+        else liveEl.textContent = 'Bank details required for bank transfer.';
+      }
+    });
+  }
+  function updatePaymentMeansDisplayName() {
+    var means = (draft.payment && draft.payment.meansTypeCode) || '30';
+    draft.payment = draft.payment || {};
+    if (means === '10') draft.payment.paymentMeansDisplayName = 'Paid by Cash';
+    else if (means === '48') draft.payment.paymentMeansDisplayName = 'Paid by Credit Card';
+    else draft.payment.paymentMeansDisplayName = 'Bank Transfer';
+  }
+  function querySelectorIncludingShadow(root, selector) {
+    if (!root) return null;
+    var el = root.querySelector(selector);
+    if (el) return el;
+    if (root.shadowRoot) {
+      el = root.shadowRoot.querySelector(selector);
+      if (el) return el;
+      var children = root.shadowRoot.children || [];
+      for (var i = 0; i < children.length; i++) {
+        el = querySelectorIncludingShadow(children[i], selector);
+        if (el) return el;
+      }
+    }
+    return null;
+  }
+  function getElementByIdIncludingShadow(id) {
+    var el = document.getElementById(id);
+    if (el) return el;
+    var roots = document.querySelectorAll('.seller-sheet-root, .buyer-sheet-root, [class*="sheet-root"]');
+    for (var r = 0; r < roots.length; r++) {
+      el = querySelectorIncludingShadow(roots[r], '#' + id);
+      if (el) return el;
+    }
+    function walkShadowRoots(node) {
+      if (node.id === id) return node;
+      if (node.querySelector) {
+        el = node.querySelector('#' + CSS.escape(id));
+        if (el) return el;
+      }
+      if (node.shadowRoot) {
+        el = node.shadowRoot.querySelector('#' + CSS.escape(id));
+        if (el) return el;
+        for (var i = 0; i < node.shadowRoot.children.length; i++) {
+          el = walkShadowRoots(node.shadowRoot.children[i]);
+          if (el) return el;
+        }
+      }
+      for (var j = 0; node.children && j < node.children.length; j++) {
+        el = walkShadowRoots(node.children[j]);
+        if (el) return el;
+      }
+      return null;
+    }
+    el = walkShadowRoots(document.body);
+    if (el) return el;
+    return document.querySelector('[id="' + CSS.escape(id) + '"]');
+  }
+  function applyPaymentDetailsVisibility(means) {
+    var hideBank = means === '10' || means === '48';
+    var sellerPaymentSection = getElementByIdIncludingShadow('seller-payment-details-section');
+    var buyerPaymentSection = getElementByIdIncludingShadow('buyer-payment-details-section');
+    if (sellerPaymentSection) sellerPaymentSection.hidden = hideBank;
+    if (buyerPaymentSection) buyerPaymentSection.hidden = hideBank;
+    if (sellerIbanBlock) sellerIbanBlock.hidden = hideBank;
+    if (buyerIbanBlock) buyerIbanBlock.hidden = hideBank;
+  }
+  function getPaymentMeansFromGeneral() {
+    var sel = document.getElementById('payment-type-select');
+    return (sel && sel.value) ? sel.value : (draft.payment && draft.payment.meansTypeCode) || '30';
+  }
+  updatePaymentMeansDisplayName();
+
   var sellerSheetTemplate = document.getElementById('seller-sheet-template');
   var sellerBottomSheet = null;
   var sellerForm = null;
@@ -526,7 +728,6 @@
   var sellerIbanBlock = null;
   var sellerCancelBtn = null;
   var sellerCloseBtn = null;
-  var paymentMeansRadios = document.querySelectorAll('input[name="payment-means"]');
 
   var buyerSheetTemplate = document.getElementById('buyer-sheet-template');
   var buyerBottomSheet = null;
@@ -599,6 +800,7 @@
     var buyerSheetRoot = document.querySelector('.buyer-bottom-sheet');
     if (buyerSheetRoot) buyerSheetRoot.setAttribute('inert', '');
   }
+  applyPaymentDetailsVisibility(getPaymentMeansFromGeneral());
 
   function getFocusables() {
     if (!sellerForm) return [];
@@ -657,9 +859,8 @@
     if (sheetRoot) sheetRoot.removeAttribute('inert');
 
     var means = (p.meansTypeCode || '30').toString();
-    var paymentRadios = document.querySelectorAll('input[name="payment-means"]');
-    paymentRadios.forEach(function (r) { r.checked = r.value === means; });
-    if (sellerIbanBlock) sellerIbanBlock.hidden = means !== '30';
+    if (paymentTypeSelect) paymentTypeSelect.value = means;
+    applyPaymentDetailsVisibility(means);
     var accounts = (p.accounts && p.accounts.length) ? p.accounts : (p.accountId ? [{ accountId: p.accountId, bankName: p.bankName || null }] : [{ accountId: '', bankName: null }]);
     var normalized = accounts.map(function (acc, idx) {
       return {
@@ -723,7 +924,9 @@
     }
     var finalCountry = buyerCountryInput ? buyerCountryInput.value : '';
     updateBuyerAddressCountryDisplay(finalCountry || '');
-    if (buyerIbanBlock) buyerIbanBlock.hidden = (p.meansTypeCode || '30') !== '30';
+    var means = (p.meansTypeCode || '30').toString();
+    if (paymentTypeSelect) paymentTypeSelect.value = means;
+    applyPaymentDetailsVisibility(means);
     var accounts = (p.accounts && p.accounts.length) ? p.accounts : (p.accountId ? [{ accountId: p.accountId, bankName: p.bankName || null }] : [{ accountId: '', bankName: null }]);
     var normalized = accounts.map(function (acc, idx) {
       return {
@@ -887,7 +1090,7 @@
       showFieldError('seller-email', 'Invalid email address');
       valid = false;
     }
-    var means = (document.querySelector('input[name="payment-means"]:checked') || {}).value || '30';
+    var means = getPaymentMeansFromGeneral();
     if (means === '30') {
       var store = typeof Alpine !== 'undefined' && Alpine.store && Alpine.store('sellerBankAccounts');
       var accounts = store ? Alpine.store('sellerBankAccounts') : [];
@@ -965,9 +1168,10 @@
     draft.seller = s;
     s.address = a;
     s.contact = c;
-    var means = (document.querySelector('input[name="payment-means"]:checked') || {}).value || '30';
+    var means = getPaymentMeansFromGeneral();
     draft.payment = draft.payment || {};
     draft.payment.meansTypeCode = means;
+    updatePaymentMeansDisplayName();
     if (means === '30') {
       var storeAccounts = (typeof Alpine !== 'undefined' && Alpine.store) ? Alpine.store('sellerBankAccounts') : [];
       var accounts = storeAccounts.map(function (acc) {
@@ -1077,11 +1281,10 @@
       showBuyerFieldError('buyer-email', 'Invalid email address');
       valid = false;
     }
-    var means = (document.querySelector('input[name="payment-means"]:checked') || {}).value || '30';
+    var means = getPaymentMeansFromGeneral();
     if (means === '30') {
       var store = typeof Alpine !== 'undefined' && Alpine.store && Alpine.store('buyerBankAccounts');
       var accounts = store ? Alpine.store('buyerBankAccounts') : [];
-      var hasOne = false;
       var allValid = true;
       var i;
       for (i = 0; i < accounts.length; i++) {
@@ -1089,25 +1292,15 @@
       }
       for (i = 0; i < accounts.length; i++) {
         var ibanVal = (accounts[i].iban || '').trim();
-        if (ibanVal) {
-          hasOne = true;
-          if (v && v.validIban && !v.validIban(ibanVal)) {
-            allValid = false;
-            accounts[i].ibanError = 'Invalid IBAN';
-          }
+        if (ibanVal && v && v.validIban && !v.validIban(ibanVal)) {
+          allValid = false;
+          accounts[i].ibanError = 'Invalid IBAN';
         }
       }
       var ibanErr = document.getElementById('buyer-iban-error');
-      if (ibanErr) {
-        ibanErr.hidden = true;
-        ibanErr.textContent = '';
-      }
+      if (ibanErr) ibanErr.hidden = true;
       if (buyerIbanBlock) buyerIbanBlock.classList.remove('has-error');
-      if (!hasOne) {
-        if (ibanErr) { ibanErr.textContent = 'At least one IBAN is required for credit transfer'; ibanErr.hidden = false; }
-        if (buyerIbanBlock) buyerIbanBlock.classList.add('has-error');
-        valid = false;
-      } else if (!allValid) {
+      if (!allValid) {
         if (buyerIbanBlock) buyerIbanBlock.classList.add('has-error');
         valid = false;
       }
@@ -1155,9 +1348,10 @@
     draft.buyer = b;
     b.address = a;
     b.contact = c;
-    var means = (document.querySelector('input[name="payment-means"]:checked') || {}).value || '30';
+    var means = getPaymentMeansFromGeneral();
     draft.payment = draft.payment || {};
     draft.payment.meansTypeCode = means;
+    updatePaymentMeansDisplayName();
     if (means === '30') {
       var storeAccounts = (typeof Alpine !== 'undefined' && Alpine.store) ? Alpine.store('buyerBankAccounts') : [];
       var accounts = storeAccounts.map(function (acc) {
@@ -1313,13 +1507,13 @@
       card.className = 'card';
       card.id = 'buyer-card';
       var img = document.createElement('img');
-      img.src = 'assets/men-holding-papers.webp';
+      img.src = 'assets/image-men-holding-an-invoice.webp';
       img.alt = 'Buyer details illustration';
       img.className = 'card-image';
       img.width = 248;
       var h3 = document.createElement('h3');
       h3.id = 'buyer-card-summary';
-      h3.textContent = 'Enter your business details';
+      h3.textContent = 'Enter your customers details';
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'btn btn--primary btn--icon-left';
@@ -1445,15 +1639,6 @@
       return;
     }
   });
-  if (paymentMeansRadios && paymentMeansRadios.length) {
-    paymentMeansRadios.forEach(function (radio) {
-      radio.addEventListener('change', function () {
-        draft.payment = draft.payment || {};
-        draft.payment.meansTypeCode = radio.value;
-      });
-    });
-  }
-
   // Initialize native selects with local country dataset.
   loadWorldCountries().then(function () {
     fillNativeCountrySelects();

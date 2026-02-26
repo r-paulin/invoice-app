@@ -49,6 +49,7 @@ function buildInvoiceXML(draft, totals) {
   if (h.dueDate) addChild(root, elCbc(doc, 'DueDate', h.dueDate));
   addChild(root, elCbc(doc, 'InvoiceTypeCode', h.typeCode || '380'));
   addChild(root, elCbc(doc, 'DocumentCurrencyCode', cc));
+  if (h.languageCode) addChild(root, elCbc(doc, 'Note', 'Document language: ' + h.languageCode.toUpperCase()));
   if (h.buyerReference) addChild(root, elCbc(doc, 'BuyerReference', h.buyerReference));
   if (h.note) addChild(root, elCbc(doc, 'Note', h.note));
 
@@ -118,25 +119,27 @@ function buildInvoiceXML(draft, totals) {
   addChild(customerParty, customerPartyParty);
   addChild(root, customerParty);
 
-  // PaymentMeans (if accountId or bank)
+  // PaymentMeans (always output; payment status text when Cash/Credit Card)
   const payment = draft.payment || {};
-  if (payment.meansTypeCode || payment.accountId) {
-    const paymentMeans = elCac(doc, 'PaymentMeans');
-    addChild(paymentMeans, elCbc(doc, 'PaymentMeansCode', payment.meansTypeCode || '30'));
-    if (payment.accountId) {
-      const payeeFin = elCac(doc, 'PayeeFinancialAccount');
-      addChild(payeeFin, elCbc(doc, 'ID', payment.accountId));
-      if (payment.bankName) {
-        const finBranch = elCac(doc, 'FinancialInstitutionBranch');
-        const finInst = elCac(doc, 'FinancialInstitution');
-        addChild(finInst, elCbc(doc, 'Name', payment.bankName));
-        addChild(finBranch, finInst);
-        addChild(payeeFin, finBranch);
-      }
-      addChild(paymentMeans, payeeFin);
-    }
-    addChild(root, paymentMeans);
+  const means = payment.meansTypeCode || '30';
+  const paymentMeans = elCac(doc, 'PaymentMeans');
+  addChild(paymentMeans, elCbc(doc, 'PaymentMeansCode', means));
+  if (payment.paymentMeansDisplayName && (means === '10' || means === '48')) {
+    addChild(root, elCbc(doc, 'Note', payment.paymentMeansDisplayName));
   }
+  if (payment.accountId && means === '30') {
+    const payeeFin = elCac(doc, 'PayeeFinancialAccount');
+    addChild(payeeFin, elCbc(doc, 'ID', payment.accountId));
+    if (payment.bankName) {
+      const finBranch = elCac(doc, 'FinancialInstitutionBranch');
+      const finInst = elCac(doc, 'FinancialInstitution');
+      addChild(finInst, elCbc(doc, 'Name', payment.bankName));
+      addChild(finBranch, finInst);
+      addChild(payeeFin, finBranch);
+    }
+    addChild(paymentMeans, payeeFin);
+  }
+  addChild(root, paymentMeans);
 
   // TaxTotal (BG-23)
   const taxTotal = elCac(doc, 'TaxTotal');
