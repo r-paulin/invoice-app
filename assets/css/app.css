@@ -1772,6 +1772,16 @@ input::placeholder {
     max-width: none;
     width: 100%;
   }
+
+  .seller-modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .seller-modal-actions .btn {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 .seller-modal-actions .btn {

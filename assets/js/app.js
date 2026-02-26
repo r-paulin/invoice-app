@@ -574,10 +574,12 @@
     }
     var field = input.closest('.form-field') || input.closest('.field');
     if (field) field.classList.toggle('has-error', !!hasError);
+    var hintEl = document.getElementById(id + '-hint');
+    if (hintEl) hintEl.hidden = !!hasError;
   }
 
   function hideFieldErrors() {
-    ['seller-registration', 'seller-vat', 'seller-phone', 'seller-email'].forEach(function (id) {
+    ['seller-country', 'seller-name', 'seller-registration', 'seller-vat', 'seller-street', 'seller-city', 'seller-postal', 'seller-phone', 'seller-email'].forEach(function (id) {
       var err = document.getElementById(id + '-error');
       if (err) { err.hidden = true; err.textContent = ''; }
       syncFieldErrorA11y(id, false);
@@ -586,26 +588,69 @@
 
   function showFieldError(id, message) {
     var err = document.getElementById(id + '-error');
-    if (err) { err.textContent = message || ''; err.hidden = !message; }
+    if (err) { err.textContent = message || ''; err.hidden = !message; err.removeAttribute('x-cloak'); }
+    var hintEl = document.getElementById(id + '-hint');
+    if (hintEl) hintEl.hidden = !!message;
     syncFieldErrorA11y(id, !!message);
   }
 
   function validateSellerForm() {
     var countryCode = sellerCountryInput ? parseCountryCodeFromInput(sellerCountryInput.value) : '';
+    var countryRaw = sellerCountryInput ? (sellerCountryInput.value || '').trim() : '';
     var regEl = document.getElementById('seller-registration');
-    var isOrganisation = regEl && regEl.closest('.form-field') && regEl.closest('.form-field').offsetParent !== null;
+    var regField = regEl && regEl.closest('.form-field');
+    var isOrganisation = regField && regField.offsetParent !== null;
     var reg = regEl ? regEl.value : '';
-    var vat = document.getElementById('seller-vat').value;
+    var nameEl = document.getElementById('seller-name');
+    var name = nameEl ? nameEl.value.trim() : '';
+    var streetEl = document.getElementById('seller-street');
+    var street = streetEl ? streetEl.value.trim() : '';
+    var cityEl = document.getElementById('seller-city');
+    var city = cityEl ? cityEl.value.trim() : '';
+    var postalEl = document.getElementById('seller-postal');
+    var postal = postalEl ? postalEl.value.trim() : '';
+    var vat = document.getElementById('seller-vat') ? document.getElementById('seller-vat').value.trim() : '';
     var phone = getComposedPhoneValue();
     var email = document.getElementById('seller-email').value;
     var valid = true;
     hideFieldErrors();
+    if (!countryRaw) {
+      showFieldError('seller-country', 'Country is required');
+      valid = false;
+    }
+    if (!name) {
+      showFieldError('seller-name', isOrganisation ? 'Legal name is required' : 'Name and surname is required');
+      valid = false;
+    }
+    if (isOrganisation) {
+      if (!reg) {
+        showFieldError('seller-registration', 'Registration number is required');
+        valid = false;
+      }
+    } else {
+      if (!vat) {
+        showFieldError('seller-vat', 'Tax number is required');
+        valid = false;
+      }
+    }
+    if (!street) {
+      showFieldError('seller-street', 'Address is required');
+      valid = false;
+    }
+    if (!city) {
+      showFieldError('seller-city', 'City is required');
+      valid = false;
+    }
+    if (!postal) {
+      showFieldError('seller-postal', 'Postal code is required');
+      valid = false;
+    }
     var v = window.InvioValidation;
-    if (isOrganisation && v && v.validRegistrationId && !v.validRegistrationId(reg, countryCode)) {
+    if (isOrganisation && reg && v && v.validRegistrationId && !v.validRegistrationId(reg, countryCode)) {
       showFieldError('seller-registration', 'Invalid registration number for selected country');
       valid = false;
     }
-    if (isOrganisation && v && v.validVatId && vat && !v.validVatId(vat, countryCode)) {
+    if (isOrganisation && vat && v && v.validVatId && !v.validVatId(vat, countryCode)) {
       showFieldError('seller-vat', 'Invalid VAT number for selected country');
       valid = false;
     }

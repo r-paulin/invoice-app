@@ -163,37 +163,42 @@
                           </span>
                         </div>
                         <small class="field-helper form-help" id="seller-country-hint">Country of registration</small>
+                        <span class="field-error form-error field-error-reserved" id="seller-country-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="seller-name"><span class="form-label">Legal name <span class="required-mark">*</span></span></label>
-                        <input class="form-control" type="text" name="seller-name" id="seller-name" required placeholder="Enter legal name of company / person" maxlength="200" aria-describedby="seller-name-hint">
-                        <small class="field-helper form-help" id="seller-name-hint">Legal name of company or person</small>
+                        <label for="seller-name"><span class="form-label"><span x-text="sellerTab === 'individual' ? 'Name and surname' : 'Legal name'"></span> <span class="required-mark">*</span></span></label>
+                        <input class="form-control" type="text" name="seller-name" id="seller-name" required :placeholder="sellerTab === 'individual' ? 'Enter name and surname' : 'Enter legal name of company / organisation'" maxlength="200" aria-describedby="seller-name-hint">
+                        <small class="field-helper form-help" id="seller-name-hint" x-text="sellerTab === 'individual' ? 'Name and surname' : 'Official registered name of the company or organisation'"></small>
+                        <span class="field-error form-error field-error-reserved" id="seller-name-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" x-show="sellerTab === 'organisation'" x-cloak :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
                         <label for="seller-registration"><span class="form-label">Registration number <span class="required-mark">*</span></span></label>
                         <input class="form-control" type="text" name="seller-registration" id="seller-registration" required placeholder="Enter registration number" aria-describedby="seller-registration-error">
                         <span class="field-error form-error field-error-reserved" id="seller-registration-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
-                      <div class="form-group form-field" x-data="{ focused: false }" x-show="sellerTab === 'organisation'" x-cloak :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="seller-vat"><span class="form-label">Tax number</span> <span class="label-optional">(Optional)</span></label>
-                        <input class="form-control" type="text" name="seller-vat" id="seller-vat" placeholder="Enter tax number" aria-describedby="seller-vat-error">
+                      <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                        <label for="seller-vat"><span class="form-label">Tax number <span class="required-mark" x-show="sellerTab === 'individual'" x-cloak>*</span><span class="label-optional" x-show="sellerTab === 'organisation'">(Optional)</span></span></label>
+                        <input class="form-control" type="text" name="seller-vat" id="seller-vat" :required="sellerTab === 'individual'" placeholder="Enter tax number" aria-describedby="seller-vat-error">
                         <span class="field-error form-error field-error-reserved" id="seller-vat-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
                         <label for="seller-street"><span class="form-label">Address <span class="required-mark">*</span></span></label>
                         <input class="form-control" type="text" name="seller-street" id="seller-street" required placeholder="Enter address" aria-describedby="seller-street-hint">
-                        <small class="field-helper form-help" id="seller-street-hint">Street and number</small>
+                        <small class="field-helper form-help" id="seller-street-hint" x-text="sellerTab === 'individual' ? 'Enter address as it should appear on invoices' : 'Enter the company’s legal address as it should appear on invoices'"></small>
+                        <span class="field-error form-error field-error-reserved" id="seller-street-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="seller-field-row">
                         <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
                           <label for="seller-city"><span class="form-label">City <span class="required-mark">*</span></span></label>
                           <input class="form-control" type="text" name="seller-city" id="seller-city" required placeholder="Enter city" aria-describedby="seller-city-hint">
                           <small class="field-helper form-help" id="seller-city-hint">City or town</small>
+                          <span class="field-error form-error field-error-reserved" id="seller-city-error" role="alert" aria-live="polite" hidden x-cloak></span>
                         </div>
                         <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
                           <label for="seller-postal"><span class="form-label">Postal code <span class="required-mark">*</span></span></label>
                           <input class="form-control" type="text" name="seller-postal" id="seller-postal" required placeholder="Enter postal code" aria-describedby="seller-postal-hint">
                           <small class="field-helper form-help" id="seller-postal-hint">Postal or ZIP code</small>
+                          <span class="field-error form-error field-error-reserved" id="seller-postal-error" role="alert" aria-live="polite" hidden x-cloak></span>
                         </div>
                       </div>
                     </div>
@@ -212,7 +217,7 @@
                         <template x-for="(account, index) in $store.sellerBankAccounts" :key="account._id">
                           <div class="iban-item">
                             <div class="form-group form-field">
-                              <label :for="'seller-iban-' + index"><span class="form-label">Bank account number<span class="required-mark">*</span></label>
+                              <label :for="'seller-iban-' + index"><span class="form-label">Bank account number <span class="required-mark">*</span></label>
                               <input class="form-control" :id="'seller-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" placeholder="Enter IBAN number" :aria-describedby="'seller-iban-' + index + '-error'" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
                               <span class="field-error form-error field-error-reserved" :id="'seller-iban-' + index + '-error'" role="alert" aria-live="polite" x-show="account.ibanError" x-cloak x-text="account.ibanError"></span>
                             </div>
