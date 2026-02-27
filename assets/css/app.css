@@ -410,9 +410,9 @@ h3{
 }
 
 .hero h1 {
-  font-size: 2.875rem;
+  font-size: 2.825rem;
   font-weight: 600;
-  letter-spacing: -0.046875rem;
+  letter-spacing: -0.04em;
   line-height: 1.1;
   margin: 0 0 0.75rem;
   max-width: 42.5rem;
@@ -421,12 +421,12 @@ h3{
 
 .hero p {
   color: var(--grey-700);
-  font-size: 1.1875rem;
-  font-weight: 600;
-  letter-spacing: -0.015625rem;
-  line-height: 1.25;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
   margin: 0;
-  max-width: 47.5rem;
+  max-width: 42.5rem;
   text-align: left;
 }
 
