@@ -1155,6 +1155,11 @@ input::placeholder {
   border-bottom: none;
 }
 
+/* Cell focus: highlight entire cell when input inside is focused */
+.items-table tbody td:focus-within {
+  box-shadow: inset 0 0 0 2px #FB8B24;
+}
+
 /* Disabled / read-only cells */
 .cell-disabled {
   cursor: not-allowed;
