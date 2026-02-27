@@ -268,12 +268,13 @@ h3{
   position: relative;
 }
 
-.lang-select-wrapper {
+/* Language switcher (Alpine): button-style visual + transparent native select overlay */
+.lang-switcher {
   position: relative;
+  display: inline-block;
   min-height: 2.5rem;
   min-width: 7.125rem;
-  max-width: 16rem;
-  width: 100%;
+  max-width: 20rem;
   background: var(--color-surface);
   border: var(--border-width-input) solid var(--color-border);
   border-radius: var(--radius-input);
@@ -281,59 +282,94 @@ h3{
   transition: border-color 0.12s ease;
 }
 
-.lang-control:hover .lang-select-wrapper {
+.lang-control:hover .lang-switcher {
   border-color: var(--color-border-hover);
 }
 
-.lang-select-wrapper:focus-within {
+.lang-switcher:focus-within {
   border-color: var(--color-border-focus);
   box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
 }
 
-.lang-select-display {
+.lang-switcher-sizer {
+  font-size: var(--font-size-value);
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 0 var(--space-lg);
+  white-space: nowrap;
+  visibility: hidden;
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  display: inline-block;
+  min-height: 2.5rem;
+  box-sizing: border-box;
+}
+
+.lang-switcher-flag-spacer {
+  display: inline-block;
+  width: 1.5rem;
+  margin-right: var(--space-md);
+  vertical-align: middle;
+}
+
+.lang-switcher-sizer-text {
+  vertical-align: middle;
+}
+
+.lang-switcher-button {
   align-items: center;
   display: flex;
   gap: var(--space-md);
-  inset: 0;
   padding: 0 var(--space-lg);
   pointer-events: none;
   position: absolute;
+  inset: 0;
+  min-height: 2.5rem;
   border-radius: var(--radius-input);
+  box-sizing: border-box;
 }
 
-.lang-select-flag {
+.lang-switcher-flag {
   flex-shrink: 0;
   height: 1rem;
   width: 1.5rem;
 }
 
-.lang-select-flag.fi:not([class*="fi-"]) {
+.lang-switcher-flag.fi:not([class*="fi-"]) {
   visibility: hidden;
 }
 
-.lang-select-name {
+.lang-switcher-name {
   font-size: var(--font-size-value);
   font-weight: 600;
   color: var(--color-text);
   line-height: 1.2;
-  min-width: 0;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.lang-select-wrapper .lang-select-label {
-  position: relative;
+.lang-switcher-select {
+  position: absolute;
+  inset: 0;
   z-index: 1;
-  display: block;
-  min-width: 0;
+  width: 100%;
+  min-height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  font-size: inherit;
+  border: none;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-.lang-select-wrapper .lang-select-label .native-select__control {
-  opacity: 0;
-  min-height: 2.5rem;
-  cursor: pointer;
-  width: 100%;
+.lang-switcher-select:focus {
+  outline: none;
 }
 
 @keyframes header-float {
@@ -491,6 +527,7 @@ h3{
   background: var(--btn-primary-bg);
   border-color: var(--btn-primary-border);
   color: var(--btn-primary-text);
+  min-height: 48px;
 }
 
 .btn--primary:hover:not(:disabled):not([aria-disabled="true"]) {
@@ -1513,7 +1550,6 @@ input::placeholder {
     grid-template-columns: 1fr auto;
     margin: 0 1.5rem 3rem;
     min-height: 4.75rem;
-    padding: 0 0.75rem;
   }
 
   .ready p {
@@ -1730,19 +1766,6 @@ input::placeholder {
   display: grid;
   min-width: 100%;
   position: relative;
-}
-
-.select.native-select::after {
-  border-bottom: 0.125rem solid var(--green-700);
-  border-left: 0.125rem solid var(--green-700);
-  content: "";
-  height: 0.5rem;
-  justify-self: end;
-  margin-right: 0.875rem;
-  pointer-events: none;
-  position: absolute;
-  transform: rotate(-45deg) translateY(-0.125rem);
-  width: 0.5rem;
 }
 
 .native-select__control {

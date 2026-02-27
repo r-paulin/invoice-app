@@ -325,53 +325,6 @@
 
   setActive('invoice-data');
 
-  // --- Header language picker: same design as country selector (flag + label, native select overlaid) ---
-  const langButtonLabel = document.getElementById('lang-button-label');
-  const langButtonFlag = document.getElementById('lang-button-flag');
-  const langSelect = document.getElementById('lang-select');
-
-  if (langSelect && langButtonLabel && langButtonFlag) {
-    var languageToCountry = {
-      bg: 'bg',
-      hr: 'hr',
-      cs: 'cz',
-      da: 'dk',
-      nl: 'nl',
-      en: 'gb',
-      et: 'ee',
-      fi: 'fi',
-      fr: 'fr',
-      de: 'de',
-      el: 'gr',
-      hu: 'hu',
-      ga: 'ie',
-      it: 'it',
-      lv: 'lv',
-      lt: 'lt',
-      mt: 'mt',
-      pl: 'pl',
-      pt: 'pt',
-      ro: 'ro',
-      sk: 'sk',
-      sl: 'si',
-      es: 'es',
-      sv: 'se'
-    };
-
-    function syncLangDisplay() {
-      var selectedOption = langSelect.options[langSelect.selectedIndex];
-      if (selectedOption) {
-        langButtonLabel.textContent = selectedOption.textContent || 'English';
-        var countryCode = languageToCountry[langSelect.value] || 'gb';
-        langButtonFlag.className = 'lang-select-flag fi fi-' + countryCode.toLowerCase();
-      }
-    }
-
-    langSelect.addEventListener('change', syncLangDisplay);
-
-    syncLangDisplay();
-  }
-
   // --- Basic details: issue date & due date (ISO 8601, 14-day rule, no past due) ---
   const issueDateInput = document.getElementById('issue-date');
   const dueDateInput = document.getElementById('due-date');
