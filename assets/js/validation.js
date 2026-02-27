@@ -14,6 +14,16 @@ const IBAN_LENGTH_BY_COUNTRY = {
 const VAT_CATEGORY_CODES = ['S', 'Z', 'E', 'G', 'O', 'K', 'L', 'M', 'N', 'A'];
 const UNIT_CODES = ['C62', 'DAY', 'HUR', 'KGM', 'LTR', 'MTR', 'MTK', 'MTQ', 'PCE', 'KMT'];
 
+/** ISO 4217 currency codes allowed for export (BT-5). Must match app currency dropdown. */
+const ALLOWED_CURRENCY_CODES = [
+  'EUR', 'USD', 'GBP', 'CHF', 'JPY', 'CNY', 'CAD', 'AUD', 'HKD', 'SGD', 'SEK', 'NOK', 'DKK', 'PLN', 'CZK', 'HUF', 'RON', 'BGN', 'ISK', 'HRK', 'RUB', 'TRY', 'INR', 'BRL', 'MXN', 'ZAR', 'KRW',
+  'ALL', 'AMD', 'AZN', 'BAM', 'BYN', 'GEL', 'MDL', 'MKD', 'RSD', 'UAH', 'GIP', 'JEP', 'GGP', 'IMP'
+];
+
+/** Peppol BIS 3.0 required values for export validation. */
+const PEPPOL_CUSTOMIZATION_ID = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';
+const PEPPOL_PROFILE_ID_PATTERN = /^urn:fdc:peppol\.eu:2017:poacc:billing:\d{2}:1\.0$/;
+
 /** MVP: per-country registration ID regex (alphanumeric + hyphen, reasonable length) */
 const REGISTRATION_REGEX = {
   LV: /^[0-9]{11}$/,
@@ -184,18 +194,27 @@ function validateDraft(draft) {
   if (!validIsoDate(h.issueDate)) errors.push('Invoice date (BT-2) must be a valid ISO date (YYYY-MM-DD)');
   // BT-3
   if (!nonEmpty(h.typeCode)) errors.push('Invoice type code (BT-3) is required');
-  // BT-5
-  if (!nonEmpty(h.currencyCode)) errors.push('Currency code (BT-5) is required');
+  // BT-5: currency must be from allowed ISO 4217 list
+  const currencyCode = (h.currencyCode || '').trim().toUpperCase();
+  if (!currencyCode) {
+    errors.push('Currency code (BT-5) is required');
+  } else if (!ALLOWED_CURRENCY_CODES.includes(currencyCode)) {
+    errors.push('Currency code (BT-5) must be a valid ISO 4217 code from the allowed list');
+  }
 
-  // Seller BT-27, BG-5, BT-40
+  // Seller BT-27, BG-5, BT-40 (country: ISO 3166-1 alpha-2)
   if (!nonEmpty(seller.name)) errors.push('Seller name (BT-27) is required');
   if (!nonEmpty(addrS.city)) errors.push('Seller city is required');
-  if (!nonEmpty(addrS.countryCode)) errors.push('Seller country (BT-40) is required');
+  const sellerCountry = (addrS.countryCode || '').trim().toUpperCase();
+  if (!sellerCountry) errors.push('Seller country (BT-40) is required');
+  else if (sellerCountry.length !== 2) errors.push('Seller country (BT-40) must be a 2-letter ISO 3166-1 code');
 
-  // Buyer BT-44, BG-8, BT-55
+  // Buyer BT-44, BG-8, BT-55 (country: ISO 3166-1 alpha-2)
   if (!nonEmpty(buyer.name)) errors.push('Buyer name (BT-44) is required');
   if (!nonEmpty(addrB.city)) errors.push('Buyer city is required');
-  if (!nonEmpty(addrB.countryCode)) errors.push('Buyer country (BT-55) is required');
+  const buyerCountry = (addrB.countryCode || '').trim().toUpperCase();
+  if (!buyerCountry) errors.push('Buyer country (BT-55) is required');
+  else if (buyerCountry.length !== 2) errors.push('Buyer country (BT-55) must be a 2-letter ISO 3166-1 code');
 
   // At least one line (BG-25)
   if (!lines.length) errors.push('At least one invoice line (BG-25) is required');
@@ -248,11 +267,27 @@ function validateDraft(draft) {
 }
 
 /**
- * Run validation and reconciliation; export should call this and block if !result.valid
+ * Run validation and reconciliation; export should call this and block if !result.valid.
+ * Includes Peppol BIS 3.0 fatal checks: ProfileID (BT-23), CustomizationID (BT-24).
  */
 function validateForExport(draft) {
   const v = validateDraft(draft);
   if (!v.valid) return v;
+
+  const errors = [];
+  const h = draft.header || {};
+
+  // Peppol BIS 3.0: ProfileID (BT-23) mandatory, format urn:fdc:peppol.eu:2017:poacc:billing:NN:1.0
+  const profileId = (h.profileId || '').trim();
+  if (!profileId) errors.push('ProfileID (BT-23) is required for Peppol BIS 3.0 export');
+  else if (!PEPPOL_PROFILE_ID_PATTERN.test(profileId)) errors.push('ProfileID (BT-23) must match format urn:fdc:peppol.eu:2017:poacc:billing:NN:1.0');
+
+  // Peppol BIS 3.0: CustomizationID (BT-24) must have the required value
+  const customizationId = (h.customizationId || h.specificationId || '').trim();
+  if (!customizationId) errors.push('CustomizationID (BT-24) is required for Peppol BIS 3.0 export');
+  else if (customizationId !== PEPPOL_CUSTOMIZATION_ID) errors.push('CustomizationID (BT-24) must be the Peppol BIS Billing 3.0 value for compliant export');
+
+  if (errors.length) return { valid: false, errors };
 
   if (typeof window !== 'undefined' && window.InvioCalc) {
     const recon = window.InvioCalc.checkReconciliation(draft);
@@ -281,6 +316,7 @@ if (typeof window !== 'undefined') {
     validVatId,
     validPhone,
     VAT_CATEGORY_CODES,
-    UNIT_CODES
+    UNIT_CODES,
+    ALLOWED_CURRENCY_CODES
   };
 }

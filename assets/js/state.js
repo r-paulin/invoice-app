@@ -3,10 +3,16 @@
  * EN 16931-1 / PEPPOL BIS Billing 3.0 aligned
  */
 
+/** Peppol BIS Billing 3.0: specification identifier (BT-24). R004 requires this exact value. */
+const PEPPOL_CUSTOMIZATION_ID = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';
+/** Peppol BIS 3.0: business process (BT-23). R001: mandatory; format urn:fdc:peppol.eu:2017:poacc:billing:NN:1.0 */
+const PEPPOL_PROFILE_ID = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
+
+/** @deprecated Use customizationId for Peppol export. Kept for backward compatibility. */
 const INVIO_SPECIFICATION_ID = 'urn:cen.eu:en16931:2017';
 
 /**
- * Default header (BT-1, BT-2, BT-3, BT-5, BT-24, etc.)
+ * Default header (BT-1, BT-2, BT-3, BT-5, BT-23, BT-24, etc.)
  * languageCode: ISO 639-1 for XML/PDF and document target language.
  */
 function defaultHeader() {
@@ -20,6 +26,8 @@ function defaultHeader() {
     currencyCode: 'EUR',
     languageCode: 'en',
     specificationId: INVIO_SPECIFICATION_ID,
+    customizationId: PEPPOL_CUSTOMIZATION_ID,
+    profileId: PEPPOL_PROFILE_ID,
     dueDate: due.toISOString().slice(0, 10),
     buyerReference: null,
     note: null
@@ -232,6 +240,8 @@ if (typeof window !== 'undefined') {
     updateLine,
     defaultHeader,
     defaultLine,
-    INVIO_SPECIFICATION_ID
+    INVIO_SPECIFICATION_ID,
+    PEPPOL_CUSTOMIZATION_ID,
+    PEPPOL_PROFILE_ID
   };
 }

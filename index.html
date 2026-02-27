@@ -72,6 +72,7 @@
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
   <div class="page-surface">
      <header class="top">
         <div class="header-grid container">
@@ -107,9 +108,9 @@
             <p>Generate downloadable PDF invoices and compliant e-invoices directly in your browser.</p>
           </div>
 
-          <nav class="tabs header-grid__tabs" aria-label="Invoice tabs">
-            <button type="button" class="btn btn--tab tab active" data-target="invoice-data">Invoice data</button>
-            <button type="button" class="btn btn--tab tab" data-target="invoice-settings">General</button>
+          <nav class="tabs header-grid__tabs" role="tablist" aria-label="Invoice sections">
+            <button type="button" class="btn btn--tab tab active" id="tab-invoice-data" role="tab" aria-selected="true" aria-controls="panel-invoice-data" data-target="invoice-data">Invoice data</button>
+            <button type="button" class="btn btn--tab tab" id="tab-invoice-settings" role="tab" aria-selected="false" aria-controls="panel-invoice-settings" data-target="invoice-settings">General</button>
           </nav>
 
           <div class="header-decoration-wrap header-grid__decoration" aria-hidden="true">
@@ -118,21 +119,24 @@
         </div>
       </header>
     <div class="container page-content">
-      <main class="main">
+      <main class="main" id="main-content">
+          <div id="export-validation-alert" class="export-validation-alert" role="alert" aria-live="polite" hidden></div>
           <p id="countries-load-status" class="countries-load-status" aria-live="polite" role="status" hidden></p>
-          <section class="panel panel-invoice-data active" data-panel="invoice-data">
+          <section class="panel panel-invoice-data active" id="panel-invoice-data" role="tabpanel" aria-labelledby="tab-invoice-data" aria-hidden="false" data-panel="invoice-data">
             <section class="section">
               <h2>Basic details</h2>
               <div class="section-content">
-                <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                <div class="form-group form-field" id="invoice-number-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
                   <label for="invoice-number"><span class="form-label">Invoice number <span class="required-mark">*</span></span></label>
-                  <input class="form-control" type="text" id="invoice-number" name="invoice-number" placeholder="Enter invoice number" maxlength="80" required aria-describedby="invoice-number-help">
+                  <input class="form-control" type="text" id="invoice-number" name="invoice-number" placeholder="Enter invoice number" maxlength="80" required aria-describedby="invoice-number-help invoice-number-error" aria-invalid="false">
                   <small class="field-helper form-help" id="invoice-number-help">Make sure the number you enter follows your established accounting sequence</small>
+                  <span class="field-error form-error" id="invoice-number-error" role="alert" aria-live="polite" hidden></span>
                 </div>
-                <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
+                <div class="form-group form-field" id="payment-reference-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
                   <label for="payment-reference"><span class="form-label">Payment reference <span class="required-mark">*</span></span></label>
-                  <input class="form-control" type="text" id="payment-reference" name="payment-reference" placeholder="Enter payment reference" aria-describedby="payment-reference-hint">
+                  <input class="form-control" type="text" id="payment-reference" name="payment-reference" placeholder="Enter payment reference" aria-describedby="payment-reference-hint payment-reference-error" aria-invalid="false">
                   <small class="field-helper form-help" id="payment-reference-hint">Reference used for payment matching (e.g. invoice number)</small>
+                  <span class="field-error form-error" id="payment-reference-error" role="alert" aria-live="polite" hidden></span>
                 </div>
                 <div class="field-row">
                   <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
@@ -178,7 +182,7 @@
                   <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'organisation' }" :aria-selected="sellerTab === 'organisation'" @click="sellerTab = 'organisation'" id="seller-tab-organisation" data-seller-tab="organisation">Organisation</button>
                   <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'individual' }" :aria-selected="sellerTab === 'individual'" @click="sellerTab = 'individual'; $nextTick(() => { const r = document.getElementById('seller-registration'); const v = document.getElementById('seller-vat'); if (r) r.value = ''; if (v) v.value = ''; })" id="seller-tab-individual" data-seller-tab="individual">Individual</button>
                 </div>
-                <form id="seller-form" class="seller-form" novalidate>
+                <form id="seller-form" class="seller-form" novalidate role="tabpanel" :aria-labelledby="sellerTab === 'organisation' ? 'seller-tab-organisation' : 'seller-tab-individual'">
                   <div class="seller-form-alert-wrap" x-show="$store.sellerFormAlert.show" x-cloak>
                     <div class="seller-form-alert" id="seller-form-errors" role="alert" tabindex="-1" aria-live="polite" :aria-hidden="!$store.sellerFormAlert.show ? 'true' : 'false'">
                       <span class="seller-form-alert__icon" aria-hidden="true"><span class="material-symbols-rounded" aria-hidden="true">warning</span></span>
@@ -323,7 +327,7 @@
                   <button type="button" class="btn btn--tab buyer-tab" role="tab" :class="{ 'active': buyerTab === 'organisation' }" :aria-selected="buyerTab === 'organisation'" @click="buyerTab = 'organisation'" id="buyer-tab-organisation" data-buyer-tab="organisation">Organisation</button>
                   <button type="button" class="btn btn--tab buyer-tab" role="tab" :class="{ 'active': buyerTab === 'individual' }" :aria-selected="buyerTab === 'individual'" @click="buyerTab = 'individual'; $nextTick(() => { const r = document.getElementById('buyer-registration'); const v = document.getElementById('buyer-vat'); if (r) r.value = ''; if (v) v.value = ''; })" id="buyer-tab-individual" data-buyer-tab="individual">Individual</button>
                 </div>
-                <form id="buyer-form" class="buyer-form" novalidate>
+                <form id="buyer-form" class="buyer-form" novalidate role="tabpanel" :aria-labelledby="buyerTab === 'organisation' ? 'buyer-tab-organisation' : 'buyer-tab-individual'">
                   <div class="buyer-form-alert-wrap" x-show="$store.buyerFormAlert.show" x-cloak>
                     <div class="buyer-form-alert" id="buyer-form-errors" role="alert" tabindex="-1" aria-live="polite" :aria-hidden="!$store.buyerFormAlert.show ? 'true' : 'false'">
                       <span class="buyer-form-alert__icon" aria-hidden="true"><span class="material-symbols-rounded" aria-hidden="true">warning</span></span>
@@ -565,11 +569,11 @@
 
             <section class="ready">
               <p>Invoice all set and ready to go?</p>
-              <button type="button" class="btn btn--primary btn--full">Create a invoice</button>
+              <button type="button" class="btn btn--primary btn--full" id="create-invoice-btn">Create Invoice</button>
             </section>
           </section>
 
-          <section class="panel panel-invoice-settings" data-panel="invoice-settings" hidden>
+          <section class="panel panel-invoice-settings" id="panel-invoice-settings" role="tabpanel" aria-labelledby="tab-invoice-settings" aria-hidden="true" data-panel="invoice-settings" hidden>
             <section class="section">
               <h2>General</h2>
               <div class="section-content general-settings-content" aria-live="polite" aria-atomic="false">
@@ -649,14 +653,18 @@
         </main>
 
         <footer class="foot">
-          <img class="logo footer-logo" src="assets/logo-invio.svg" alt="invio" width="114" height="42">
+          <img class="logo footer-logo" src="assets/logo-invio.svg" alt="Invio" width="114" height="42">
           <a href="#privacy">Privacy policy</a>
           <a href="#terms">Terms and conditions</a>
       </footer>
     </div>
   </div>
 
-  <!-- Script load order: state → eu-countries → temp-email-domains → iban-bank → calc → validation → xml → Plainsheet → app -->
+  <!-- Logger stub (context-aware; replace in production with reporting if needed) -->
+  <script>
+    window.InvioLog = window.InvioLog || { error: function (context, err) { /* no-op; use reporting in production */ } };
+  </script>
+  <!-- Script load order: state → eu-countries → temp-email-domains → iban-bank → calc → validation → xml → export → Plainsheet → app -->
   <script src="assets/js/state.js"></script>
   <script src="assets/js/eu-countries.js"></script>
   <script src="assets/js/temp-email-domains.js"></script>
@@ -664,6 +672,7 @@
   <script src="assets/js/calc.js"></script>
   <script src="assets/js/validation.js"></script>
   <script src="assets/js/xml.js"></script>
+  <script src="assets/js/export.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@plainsheet/core@1.0.1/dist/plainsheet-core.umd.js" integrity="sha384-/AaH5fdpvrRdRjDBTIPAc8s0hBEq/gTdx4agKGRaBWHFlkaZDvFMTd6G3EgjuRHF" crossorigin="anonymous"></script>
   <script src="assets/js/app.js"></script>
 </body>

@@ -248,6 +248,73 @@ function checkReconciliation(draft) {
   };
 }
 
+const EPSILON = 1e-6;
+
+/**
+ * Export-oriented calculation contract for XML and PDF.
+ * Single source of truth; no recalculation in PDF/XML.
+ * Returns: { lines, subtotal, documentDiscount, documentCharge, taxBreakdown, totalVAT, prepaidAmount, roundingAmount, payableAmount, currencyCode }
+ */
+function calcInvoice(draft) {
+  const cc = (draft.header && draft.header.currencyCode) || 'EUR';
+  const dec = currencyDecimals(cc);
+  const lines = (draft.lines || []).map(function (l) {
+    return {
+      id: l.id,
+      lineNetAmount: lineNet(l, cc),
+      lineTaxAmount: lineTaxAmount(l, cc),
+      lineGrossAmount: lineTotal(l, cc)
+    };
+  });
+  const subtotal = roundAmount(
+    lines.reduce(function (sum, l) { return sum + l.lineNetAmount; }, 0),
+    dec
+  );
+  const { allowanceSum, chargeSum } = documentAllowanceChargeTotals(draft, cc);
+  const documentDiscount = roundAmount(allowanceSum, dec);
+  const documentCharge = roundAmount(chargeSum, dec);
+  const taxBreakdown = vatBreakdown(draft, cc);
+  const totalVAT = roundAmount(
+    taxBreakdown.reduce(function (s, b) { return s + b.taxAmount; }, 0),
+    2
+  );
+  const prepaidAmt = prepaidAmount(draft, cc);
+  const roundingAmt = roundAmount(Number(draft.header && draft.header.roundingAmount) || 0, dec);
+  const payableAmt = payableAmount(draft, cc);
+
+  return {
+    lines,
+    subtotal,
+    documentDiscount,
+    documentCharge,
+    taxBreakdown,
+    totalVAT,
+    prepaidAmount: prepaidAmt,
+    roundingAmount: roundingAmt,
+    payableAmount: payableAmt,
+    currencyCode: cc
+  };
+}
+
+/**
+ * Run reconciliation assertions on calcInvoice result. Throws if any fail.
+ */
+function assertExportReconciliation(computed) {
+  const sumLineNet = computed.lines.reduce(function (s, l) { return s + l.lineNetAmount; }, 0);
+  if (Math.abs(sumLineNet - computed.subtotal) >= EPSILON) {
+    throw new Error('Export reconciliation failed: sum(lineNetAmount) !== subtotal');
+  }
+  const sumTax = computed.taxBreakdown.reduce(function (s, b) { return s + b.taxAmount; }, 0);
+  if (Math.abs(sumTax - computed.totalVAT) >= EPSILON) {
+    throw new Error('Export reconciliation failed: sum(taxBreakdown.taxAmount) !== totalVAT');
+  }
+  const expectedPayable = computed.subtotal - computed.documentDiscount + computed.documentCharge +
+    computed.totalVAT - computed.prepaidAmount + computed.roundingAmount;
+  if (Math.abs(expectedPayable - computed.payableAmount) >= EPSILON) {
+    throw new Error('Export reconciliation failed: payableAmount does not match formula');
+  }
+}
+
 if (typeof window !== 'undefined') {
   window.InvioCalc = {
     currencyDecimals,
@@ -264,6 +331,8 @@ if (typeof window !== 'undefined') {
     taxInclusiveAmount,
     payableAmount,
     computeTotals,
-    checkReconciliation
+    checkReconciliation,
+    calcInvoice,
+    assertExportReconciliation
   };
 }

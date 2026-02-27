@@ -307,13 +307,16 @@
 
   function setActive(target) {
     tabs.forEach((tab) => {
-      tab.classList.toggle('active', tab.dataset.target === target);
+      const isSelected = tab.dataset.target === target;
+      tab.classList.toggle('active', isSelected);
+      tab.setAttribute('aria-selected', isSelected ? 'true' : 'false');
     });
 
     panels.forEach((panel) => {
       const isActive = panel.dataset.panel === target;
       panel.hidden = !isActive;
       panel.classList.toggle('active', isActive);
+      panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
     });
   }
 
@@ -325,9 +328,37 @@
 
   setActive('invoice-data');
 
-  // --- Basic details: issue date & due date (ISO 8601, 14-day rule, no past due) ---
+  // --- Basic details: invoice number, payment reference, issue date, due date — sync with draft ---
   const issueDateInput = document.getElementById('issue-date');
   const dueDateInput = document.getElementById('due-date');
+  const invoiceNumberInput = document.getElementById('invoice-number');
+  const paymentReferenceInput = document.getElementById('payment-reference');
+
+  function syncBasicDetailsToDraft() {
+    var d = window.__invioDraft;
+    if (!d) return;
+    d.header = d.header || {};
+    d.payment = d.payment || {};
+    if (invoiceNumberInput) d.header.invoiceNumber = (invoiceNumberInput.value || '').trim() || '';
+    if (paymentReferenceInput) d.payment.paymentId = (paymentReferenceInput.value || '').trim() || null;
+    if (issueDateInput && issueDateInput.value) d.header.issueDate = issueDateInput.value;
+    if (dueDateInput && dueDateInput.value) d.header.dueDate = dueDateInput.value;
+  }
+
+  function setBasicDetailsFromDraft() {
+    var d = window.__invioDraft;
+    if (!d) return;
+    if (invoiceNumberInput && d.header && d.header.invoiceNumber) invoiceNumberInput.value = d.header.invoiceNumber;
+    if (paymentReferenceInput && d.payment && d.payment.paymentId) paymentReferenceInput.value = d.payment.paymentId;
+    if (issueDateInput && d.header && d.header.issueDate) issueDateInput.value = d.header.issueDate;
+    if (dueDateInput && d.header && d.header.dueDate) dueDateInput.value = d.header.dueDate;
+  }
+
+  if (typeof window !== 'undefined') {
+    window.InvioExport = window.InvioExport || {};
+    window.InvioExport.syncBasicDetailsToDraft = syncBasicDetailsToDraft;
+    window.InvioExport.setBasicDetailsFromDraft = setBasicDetailsFromDraft;
+  }
 
   if (issueDateInput && dueDateInput) {
     function toISO(date) {
@@ -389,6 +420,7 @@
     function onIssueDateChange() {
       updateDueMin();
       setDueFromIssue();
+      syncBasicDetailsToDraft();
     }
 
     issueDateInput.addEventListener('input', onIssueDateChange);
@@ -396,8 +428,19 @@
 
     dueDateInput.addEventListener('change', function () {
       dueDateManuallySet = true;
+      syncBasicDetailsToDraft();
     });
+  }
 
+  if (invoiceNumberInput) {
+    invoiceNumberInput.addEventListener('input', function () { syncBasicDetailsToDraft(); if (window.clearExportValidationState) window.clearExportValidationState(); });
+    invoiceNumberInput.addEventListener('change', syncBasicDetailsToDraft);
+    invoiceNumberInput.addEventListener('focus', function () { if (window.clearExportValidationState) window.clearExportValidationState(); });
+  }
+  if (paymentReferenceInput) {
+    paymentReferenceInput.addEventListener('input', function () { syncBasicDetailsToDraft(); if (window.clearExportValidationState) window.clearExportValidationState(); });
+    paymentReferenceInput.addEventListener('change', syncBasicDetailsToDraft);
+    paymentReferenceInput.addEventListener('focus', function () { if (window.clearExportValidationState) window.clearExportValidationState(); });
   }
 
   // --- Native country selector dataset + helpers ---
@@ -645,6 +688,22 @@
     }
   }
 
+  function applyGeoPrefillIfEmptyBuyer() {
+    var addressSelect = document.getElementById('buyer-country');
+    var phoneSelect = document.getElementById('buyer-phone-country');
+    if (!addressSelect || !phoneSelect) return;
+    if (addressSelect.value || phoneSelect.value) return;
+
+    var guessedIso2 = inferIso2FromLocale();
+    if (!guessedIso2) return;
+    if (findCountryByIso2(guessedIso2)) {
+      addressSelect.value = guessedIso2;
+      phoneSelect.value = guessedIso2;
+      updateBuyerAddressCountryDisplay(guessedIso2);
+      updateBuyerPhoneCountryDisplay(guessedIso2);
+    }
+  }
+
   var lastAddressCountryForPhone = '';
 
   function bindNativeCountrySelectEvents() {
@@ -687,6 +746,65 @@
   // --- Seller modal: dialog, focus trap, form bindings, Save/Cancel ---
   var draft = (typeof window !== 'undefined' && window.__invioDraft) ? window.__invioDraft : (window.InvioState && window.InvioState.createDefaultDraft());
   if (typeof window !== 'undefined') window.__invioDraft = draft;
+  if (typeof window !== 'undefined' && window.InvioExport && window.InvioExport.setBasicDetailsFromDraft) {
+    window.InvioExport.setBasicDetailsFromDraft();
+  }
+
+  function clearExportValidationState() {
+    var alertEl = document.getElementById('export-validation-alert');
+    if (alertEl) alertEl.hidden = true;
+    var sellerCard = document.getElementById('seller-card');
+    if (sellerCard) sellerCard.classList.remove('card--error');
+    var buyerCard = document.getElementById('buyer-card');
+    if (buyerCard) buyerCard.classList.remove('card--error');
+    var invNumField = document.getElementById('invoice-number-field');
+    if (invNumField) invNumField.classList.remove('has-error');
+    var invNumInput = document.getElementById('invoice-number');
+    if (invNumInput) invNumInput.setAttribute('aria-invalid', 'false');
+    var invNumErr = document.getElementById('invoice-number-error');
+    if (invNumErr) { invNumErr.hidden = true; invNumErr.textContent = ''; }
+    var payRefField = document.getElementById('payment-reference-field');
+    if (payRefField) payRefField.classList.remove('has-error');
+    var payRefInput = document.getElementById('payment-reference');
+    if (payRefInput) payRefInput.setAttribute('aria-invalid', 'false');
+    var payRefErr = document.getElementById('payment-reference-error');
+    if (payRefErr) { payRefErr.hidden = true; payRefErr.textContent = ''; }
+  }
+  if (typeof window !== 'undefined') window.clearExportValidationState = clearExportValidationState;
+
+  window.onInvioExportValidationFailed = function (errors) {
+    if (!errors || !errors.length) return;
+    var alertEl = document.getElementById('export-validation-alert');
+    var genericTitle = 'Missing required information';
+    var genericMessage = 'Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again.';
+    if (alertEl) {
+      alertEl.innerHTML = '<b>' + genericTitle + '</b><span>' + genericMessage + '</span>';
+      alertEl.hidden = false;
+      alertEl.removeAttribute('x-cloak');
+    }
+    var hasSellerError = errors.some(function (e) { return e.indexOf('Seller') !== -1; });
+    var hasBuyerError = errors.some(function (e) { return e.indexOf('Buyer') !== -1; });
+    var sellerCard = document.getElementById('seller-card');
+    if (sellerCard) sellerCard.classList.toggle('card--error', !!hasSellerError);
+    var buyerCard = document.getElementById('buyer-card');
+    if (buyerCard) buyerCard.classList.toggle('card--error', !!hasBuyerError);
+    var invNumField = document.getElementById('invoice-number-field');
+    var invNumInput = document.getElementById('invoice-number');
+    var invNumErr = document.getElementById('invoice-number-error');
+    if (invNumField) invNumField.classList.add('has-error');
+    if (invNumInput) invNumInput.setAttribute('aria-invalid', 'true');
+    if (invNumErr) { invNumErr.hidden = false; invNumErr.textContent = ''; }
+    var payRefField = document.getElementById('payment-reference-field');
+    var payRefInput = document.getElementById('payment-reference');
+    var payRefErr = document.getElementById('payment-reference-error');
+    if (payRefField) payRefField.classList.add('has-error');
+    if (payRefInput) payRefInput.setAttribute('aria-invalid', 'true');
+    if (payRefErr) { payRefErr.hidden = false; payRefErr.textContent = ''; }
+    var scrollTarget = document.getElementById('export-validation-alert');
+    if (scrollTarget) {
+      scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   // --- General panel: Invoice Language (flag + name, ISO 639-1), pre-fill from website language ---
   var invoiceLanguageSelect = document.getElementById('invoice-language-select');
@@ -1095,6 +1213,7 @@
       if (!buyerPhoneCountryInput.value && countryCode) buyerPhoneCountryInput.value = countryCode;
       updateBuyerPhoneCountryDisplay(buyerPhoneCountryInput.value);
     }
+    applyGeoPrefillIfEmptyBuyer();
     var finalCountry = buyerCountryInput ? buyerCountryInput.value : '';
     updateBuyerAddressCountryDisplay(finalCountry || '');
     var means = (p.meansTypeCode || '30').toString();
@@ -1362,6 +1481,7 @@
     }
     closeSellerModal();
     updateSellerCardSummary();
+    if (window.clearExportValidationState) window.clearExportValidationState();
   }
 
   function hideBuyerFieldErrors() {
@@ -1542,6 +1662,7 @@
     }
     closeBuyerModal();
     updateBuyerCardSummary();
+    if (window.clearExportValidationState) window.clearExportValidationState();
   }
 
   function clearSellerSectionContent() {
@@ -1773,6 +1894,14 @@
   document.addEventListener('click', function (event) {
     var target = event.target;
     if (!target) return;
+    var createInvoiceBtn = target.closest('#create-invoice-btn');
+    if (createInvoiceBtn) {
+      event.preventDefault();
+      if (window.InvioExport && window.InvioExport.startExport) {
+        window.InvioExport.startExport();
+      }
+      return;
+    }
     var modalTrigger = target.closest('[data-seller-modal-trigger]');
     if (modalTrigger) {
       event.preventDefault();
@@ -1822,8 +1951,8 @@
     logError('initCountries', err);
     var statusEl = document.getElementById('countries-load-status');
     if (statusEl) {
-      statusEl.textContent = 'Country list could not be loaded. You can still use the form with the available options.';
-      statusEl.hidden = false;
+      statusEl.textContent = 'Country list could not be loaded. You can still use the form.';
+      statusEl.removeAttribute('hidden');
     }
     fillNativeCountrySelects();
     bindNativeCountrySelectEvents();
