@@ -125,6 +125,8 @@ function defaultLine(id = 1) {
     netPrice: 0,
     vatCategoryCode: 'S',
     vatRate: 21,
+    discountPercent: 0,
+    discountAmount: 0,
     lineAllowances: [],
     lineCharges: []
   };

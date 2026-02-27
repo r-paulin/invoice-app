@@ -15,13 +15,54 @@ function roundAmount(amount, decimals) {
 }
 
 /**
- * Line net amount (BT-131): quantity * netPrice rounded to currency precision
+ * Line subtotal (qty * netPrice) before discount, rounded to currency precision
  */
-function lineNet(line, currencyCode) {
+function lineSubtotal(line, currencyCode) {
   const q = Number(line.quantity);
   const p = Number(line.netPrice);
   const dec = currencyDecimals(currencyCode);
   return roundAmount(q * p, dec);
+}
+
+/**
+ * Line discount amount from percentage, clamped >= 0
+ */
+function lineDiscountAmount(line, currencyCode) {
+  const pct = Math.max(0, Number(line.discountPercent) || 0);
+  if (pct === 0) return 0;
+  const sub = lineSubtotal(line, currencyCode);
+  const dec = currencyDecimals(currencyCode);
+  return roundAmount(sub * pct / 100, dec);
+}
+
+/**
+ * Line net amount (BT-131): subtotal minus discount, rounded to currency precision
+ */
+function lineNet(line, currencyCode) {
+  const sub = lineSubtotal(line, currencyCode);
+  const disc = lineDiscountAmount(line, currencyCode);
+  const dec = currencyDecimals(currencyCode);
+  return roundAmount(sub - disc, dec);
+}
+
+/**
+ * Line VAT amount: lineNet * vatRate / 100, rounded to currency precision
+ */
+function lineTaxAmount(line, currencyCode) {
+  const net = lineNet(line, currencyCode);
+  const rate = Number(line.vatRate) || 0;
+  const dec = currencyDecimals(currencyCode);
+  return roundAmount(net * rate / 100, dec);
+}
+
+/**
+ * Line total including tax: lineNet + lineTaxAmount
+ */
+function lineTotal(line, currencyCode) {
+  const net = lineNet(line, currencyCode);
+  const tax = lineTaxAmount(line, currencyCode);
+  const dec = currencyDecimals(currencyCode);
+  return roundAmount(net + tax, dec);
 }
 
 /**
@@ -211,7 +252,11 @@ if (typeof window !== 'undefined') {
   window.InvioCalc = {
     currencyDecimals,
     roundAmount,
+    lineSubtotal,
+    lineDiscountAmount,
     lineNet,
+    lineTaxAmount,
+    lineTotal,
     sumLineNets,
     taxExclusiveAmount,
     vatBreakdown,

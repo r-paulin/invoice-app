@@ -411,38 +411,124 @@
               </div>
             </template>
 
-            <section class="section items">
+            <section class="section items" x-data="invoiceItems">
               <h2>Items</h2>
               <div class="section-content">
                 <div class="chips">
                   <span class="chips-title">Add fields:</span>
-                  <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left chip"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Tax rate</span></button>
-                  <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left chip"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Discount</span></button>
-                  <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left chip"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">ID code</span></button>
-                  <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left chip"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Note</span></button>
+                  <button type="button" class="chip-toggle" :class="showDiscount ? 'chip-active' : 'chip-inactive'" @click="toggleDiscount()" :aria-pressed="String(showDiscount)" aria-label="Toggle discount column">
+                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showDiscount ? 'check' : 'add'"></span>
+                    <span class="chip-label">Discount</span>
+                    <span class="material-symbols-rounded chip-close" aria-hidden="true" x-show="showDiscount" x-cloak>close</span>
+                  </button>
+                  <button type="button" class="chip-toggle" :class="showNote ? 'chip-active' : 'chip-inactive'" @click="toggleNote()" :aria-pressed="String(showNote)" aria-label="Toggle note">
+                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showNote ? 'check' : 'add'"></span>
+                    <span class="chip-label">Note</span>
+                    <span class="material-symbols-rounded chip-close" aria-hidden="true" x-show="showNote" x-cloak>close</span>
+                  </button>
                 </div>
-                <div class="line-head">
-                  <label for="line-item-name-0"><span class="form-label">Service / Product</span> <span class="required-mark">*</span></label>
-                  <span>Quantity</span>
-                  <span>Unit price</span>
-                  <span>Total</span>
+
+                <div class="items-table-wrap">
+                  <table class="items-table" role="grid">
+                    <thead>
+                      <tr>
+                        <th class="col-name" scope="col">Service / Product</th>
+                        <th class="col-qty col-right" scope="col">Quantity</th>
+                        <th class="col-price col-right" scope="col">Unit price <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
+                        <th class="col-subtotal col-right" scope="col">Subtotal <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
+                        <th class="col-discount col-right" scope="col" x-show="showDiscount" x-cloak>Discount <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
+                        <th class="col-taxrate col-right" scope="col">Tax rate</th>
+                        <th class="col-taxamt col-right" scope="col">Tax amount <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
+                        <th class="col-total col-right" scope="col">Total <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
+                        <th class="col-actions" scope="col"><span class="visually-hidden">Actions</span></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template x-for="(line, i) in lines" :key="line.id">
+                        <tr class="line-row">
+                          <td class="cell-name">
+                            <textarea class="line-name-input" placeholder="Enter name" maxlength="200" x-model="line.itemName" :id="'line-name-' + i" :aria-label="'Service or product name, line ' + (i + 1)" rows="1"></textarea>
+                          </td>
+                          <td class="cell-qty cell-right">
+                            <div class="qty-group">
+                              <input class="qty-input" type="number" step="any" min="0" x-model.number="line.quantity" @change="clampQuantity(line)" :aria-label="'Quantity, line ' + (i + 1)">
+                              <select class="qty-unit" x-model="line.unitCode" :aria-label="'Unit of measure, line ' + (i + 1)">
+                                <template x-for="u in unitCodes" :key="u.code">
+                                  <option :value="u.code" x-text="u.label"></option>
+                                </template>
+                              </select>
+                              <span class="material-symbols-rounded qty-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                            </div>
+                          </td>
+                          <td class="cell-price cell-right">
+                            <input class="price-input" type="number" step="any" min="0" x-model.number="line.netPrice" @change="clampPrice(line); syncDiscountAmount(line)" :aria-label="'Unit price, line ' + (i + 1)">
+                          </td>
+                          <td class="cell-subtotal cell-numeric">
+                            <span class="cell-amount" x-text="fmt(getSubtotal(line))"></span>
+                          </td>
+                          <td class="cell-discount cell-numeric" x-show="showDiscount" x-cloak>
+                            <span class="cell-amount" x-text="fmt(getDiscount(line))"></span>
+                            <div class="discount-pct-row">
+                              <input class="discount-input" type="number" step="any" min="0" max="100" x-model.number="line.discountPercent" @change="clampDiscount(line); syncDiscountAmount(line)" :aria-label="'Discount percent, line ' + (i + 1)">
+                              <span class="discount-pct-symbol">%</span>
+                            </div>
+                          </td>
+                          <td class="cell-taxrate cell-right">
+                            <div class="taxrate-group">
+                              <input class="taxrate-input" type="number" step="any" min="0" x-model.number="line.vatRate" @change="clampVatRate(line)" :aria-label="'Tax rate, line ' + (i + 1)">
+                              <span class="taxrate-symbol">%</span>
+                            </div>
+                          </td>
+                          <td class="cell-taxamt cell-numeric">
+                            <span class="cell-amount" x-text="fmt(getTaxAmount(line))"></span>
+                          </td>
+                          <td class="cell-total cell-numeric">
+                            <span class="cell-amount cell-amount--bold" x-text="fmt(getTotal(line))"></span>
+                          </td>
+                          <td class="cell-actions">
+                            <button type="button" class="line-remove-btn" @click="removeLine(i)" :disabled="lines.length <= 1" :aria-label="'Remove line ' + (i + 1)">
+                              <span class="material-symbols-rounded" aria-hidden="true">close</span>
+                            </button>
+                          </td>
+                        </tr>
+                      </template>
+                    </tbody>
+                  </table>
                 </div>
-                <div class="line-row">
-                  <div class="line-item-name-cell">
-                    <input class="form-control" type="text" id="line-item-name-0" placeholder="Enter name" name="line-item-name-0" aria-describedby="line-item-name-0-hint">
-                    <small class="visually-hidden" id="line-item-name-0-hint">Service or product name</small>
-                  </div>
-                  <button type="button" class="btn btn--secondary btn--sm btn--icon-right mini-select"><span class="btn__label">1 pcs</span><span class="material-symbols-rounded btn__icon" aria-hidden="true">keyboard_arrow_down</span></button>
-                  <span class="price">0.00 EUR</span>
-                  <div class="line-total">
-                    <span>0.00 EUR</span>
-                    <button type="button" class="btn btn--transparent btn--icon-only btn--sm minus" aria-label="Remove line item"><span class="material-symbols-rounded btn__icon" aria-hidden="true">remove</span></button>
-                  </div>
-                </div>
-                <button type="button" class="btn btn--primary btn--icon-left"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add item</span></button>
+
+                <button type="button" class="btn btn--primary btn--icon-left add-item-btn" @click="addLine()">
+                  <span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span>
+                  <span class="btn__label">Add item</span>
+                </button>
+
                 <div class="sum">
-                  <div><span>Subtotal</span><span>0.00 EUR</span></div>
-                  <div class="sum-total"><span>Total</span><span>0.00 EUR</span></div>
+                  <div class="sum-row">
+                    <span>Subtotal</span>
+                    <span class="sum-amount" x-text="fmtCurrency(summarySubtotal())"></span>
+                  </div>
+                  <div class="sum-row" x-show="showDiscount && summaryDiscountTotal() > 0" x-cloak>
+                    <span>Discount</span>
+                    <span class="sum-amount" x-text="'- ' + fmtCurrency(summaryDiscountTotal())"></span>
+                  </div>
+                  <template x-for="tax in summaryTaxBreakdown()" :key="tax.categoryCode + tax.rate">
+                    <div class="sum-row">
+                      <span>Tax <span class="sum-tax-rate" x-text="tax.rate + '%'"></span></span>
+                      <span class="sum-amount" x-text="fmtCurrency(tax.amount)"></span>
+                    </div>
+                  </template>
+                  <div class="sum-row sum-total">
+                    <span>Total</span>
+                    <span class="sum-amount" x-text="fmtCurrency(summaryTotal())"></span>
+                  </div>
+                </div>
+
+                <div class="items-note" x-show="showNote" x-cloak>
+                  <label for="invoice-note" class="form-label">Note</label>
+                  <textarea id="invoice-note" class="note-textarea" placeholder="Add a note to this invoice" x-model="noteText" @input="syncNote()" aria-label="Invoice note"></textarea>
+                </div>
+
+                <div class="note-display" x-show="!showNote && noteText && noteText.trim()" x-cloak>
+                  <p class="note-display-text" x-text="noteText"></p>
                 </div>
               </div>
             </section>

@@ -134,6 +134,7 @@ html,
 body {
   height: 100%;
   margin: 0;
+  overflow-x: hidden;
   padding: 0;
   scrollbar-gutter: stable;
 }
@@ -580,6 +581,7 @@ h3{
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-width: 0;
   padding: 1.5rem;
 }
 
@@ -595,6 +597,7 @@ h3{
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .seller-summary,
@@ -971,119 +974,485 @@ input::placeholder {
   text-align: center;
 }
 
+/* --- Chips / toggle badges --- */
+
 .chips {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.375rem;
+  gap: 0.5rem;
 }
 
 .chips-title {
-  color: #525252;
+  color: var(--grey-500);
   font-size: 1rem;
   font-weight: 400;
   letter-spacing: -0.0125em;
 }
 
-.line-head {
+.chip-toggle {
+  align-items: center;
+  border: 1px solid;
+  border-radius: 22.5rem;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  gap: 0;
+  padding: 0.375rem;
+}
+
+.chip-toggle:focus-visible {
+  outline: 2px solid #FB8B24;
+  outline-offset: 0.1rem;
+}
+
+.chip-inactive {
+  background: var(--grey-100);
+  border-color: var(--grey-300);
+}
+
+.chip-inactive .chip-icon {
+  color: var(--grey-600);
+  font-size: 1.25rem;
+}
+
+.chip-inactive .chip-label {
   color: var(--grey-800);
-  display: grid;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
-  grid-template-columns: 2.2fr 1fr 1fr 1fr;
-  line-height: 1.4;
-  margin-bottom: 0.25rem;
+  line-height: 1.5;
+  padding: 0 0.25rem;
+}
+
+.chip-active {
+  background: #f0fdf4;
+  border-color: #00c950;
+}
+
+.chip-active .chip-icon {
+  color: var(--green-700);
+  font-size: 1.25rem;
+}
+
+.chip-active .chip-label {
+  color: var(--green-900);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  padding: 0 0.25rem;
+}
+
+.chip-active .chip-close {
+  color: var(--green-700);
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
+/* --- Items table --- */
+  
+.items-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.items-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 1rem;
   width: 100%;
 }
 
-.line-head label {
-  cursor: default;
-  font-weight: inherit;
+.items-table thead th {
+  background: transparent;
+  border: none;
+  color: var(--grey-800);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 0.4em 0.2em;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.items-table thead th.col-right {
+  text-align: right;
+  border-bottom: 1px solid var(--grey-300);
+}
+
+.th-currency {
+  color: var(--grey-500);
+  font-weight: 400;
+}
+
+.items-table .col-name { min-width: 15rem; width: auto;border-bottom: 1px solid var(--grey-300); }
+.items-table .col-qty { min-width: 6.25rem; width: 6.25rem; }
+.items-table .col-price { min-width: 6.25rem; width: 6.25rem; }
+.items-table .col-subtotal { min-width: 6.25rem; width: 6.25rem; }
+.items-table .col-discount { min-width: 6.25rem; width: 6.25rem; }
+.items-table .col-taxrate { min-width: 5.625rem; width: 5.625rem; }
+.items-table .col-taxamt { min-width: 7.25rem; width: 6.25rem; }
+.items-table .col-total { min-width: 6.25rem; width: 6.25rem; }
+.items-table .col-actions { width: 3rem; }
+
+.items-table tbody td {
+  background: var(--white);
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0.25em 0.5em 0.25em 0.25em;
+  vertical-align: middle;
+}
+
+.items-table .cell-actions {
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Right-aligned cells (inputs and computed values) */
+.cell-right,
+.cell-numeric {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.cell-numeric {
+  white-space: nowrap;
+}
+
+.cell-amount {
+  color: var(--grey-800);
+}
+
+.cell-amount--bold {
+  font-weight: 600;
+}
+
+/* --- Name textarea (Notion-like, auto-growing) --- */
+
+.line-name-input {
+  background: transparent;
+  border: none;
+  color: var(--grey-800);
+  field-sizing: content;
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: -0.0125em;
+  line-height: 1.5;
+  max-height: 10lh;
+  min-height: 1.5lh;
+  outline: none;
+  padding: 0.4rem;
+  resize: none;
+  vertical-align: middle;
+  width: 100%;
+}
+
+.line-name-input::placeholder {
+  color: var(--grey-400);
+}
+
+/* --- Shared table input resets (fix shadows, touch targets) --- */
+
+.items-table input,
+.items-table select,
+.items-table textarea {
+  box-shadow: none;
+}
+
+.items-table input[type="number"],
+.items-table select {
+  min-height: 1.5rem;
+  min-width: 1.5rem;
+}
+
+/* --- Quantity cell --- */
+
+.qty-group {
+  align-items: center;
+  display: flex;
+  gap: 0.25rem;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.qty-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--grey-800);
+  font-family: inherit;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  min-height: 1.5rem;
+  outline: none;
+  padding: 0;
+  text-align: right;
+  width: 2.5rem;
+}
+
+.qty-input::-webkit-inner-spin-button,
+.qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
   margin: 0;
 }
 
-.line-row {
-  display: grid;
-  grid-template-columns: 2.2fr 1fr 1fr 1fr;
-  width: 100%;
-}
-
-.line-row input,
-.mini-select,
-.price {
-  border-radius: 0;
-  font-size: 0.9rem;
-  height: 2.5rem;
-}
-
-.line-item-name-cell {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.line-row input {
-  border-right: 0;
-}
-
-.mini-select {
-  min-width: 0;
-  border-right: 0;
-  border-radius: 0;
+.qty-unit {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
   box-shadow: none;
-  justify-content: space-between;
+  color: var(--grey-500);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  min-height: 1.5rem;
+  outline: none;
+  padding: 0 1.25rem 0 0;
+  text-align: end;
+}
+
+.qty-chevron {
+  color: var(--grey-500);
+  font-size: 1.25rem;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* --- Price cell --- */
+
+.price-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--grey-800);
+  font-family: inherit;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  min-height: 1.5rem;
+  outline: none;
+  padding: 0;
+  text-align: right;
   width: 100%;
 }
 
-.price {
+.price-input::-webkit-inner-spin-button,
+.price-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* --- Discount cell --- */
+
+.discount-pct-row {
   align-items: center;
-  background: #fafaf9;
-  border: 1px solid var(--grey-200);
-  border-right: 0;
-  color: var(--grey-600);
   display: flex;
+  gap: 0.125rem;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.discount-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--grey-500);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  min-height: 1.5rem;
+  outline: none;
+  padding: 0;
+  text-align: right;
+  width: 2.5rem;
+}
+
+.discount-input::-webkit-inner-spin-button,
+.discount-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.discount-pct-symbol {
+  color: var(--grey-500);
+  font-size: 0.875rem;
+}
+
+/* --- Tax rate cell --- */
+
+.taxrate-group {
+  align-items: center;
+  display: flex;
+  gap: 0.125rem;
+  justify-content: flex-end;
+}
+
+.taxrate-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--grey-800);
+  font-family: inherit;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  min-height: 1.5rem;
+  outline: none;
+  padding: 0;
+  text-align: right;
+  width: 2.5rem;
+}
+
+.taxrate-input::-webkit-inner-spin-button,
+.taxrate-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.taxrate-symbol {
+  color: var(--grey-500);
+  font-size: 1rem;
+}
+
+/* --- Remove button --- */
+
+.line-remove-btn {
+  align-items: center;
+  background: var(--white);
+  border: 1px solid var(--grey-200);
+  border-radius: 3rem;
+  box-shadow: 0 0.0625rem 0.125rem rgba(18, 18, 23, 0.05);
+  color: var(--green-700);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1.25rem;
   justify-content: center;
-}
-
-.line-total {
-  align-items: center;
-  background: #fafaf9;
-  border: 1px solid var(--grey-200);
-  color: var(--grey-600);
-  display: flex;
-  font-size: 0.9rem;
-  justify-content: space-between;
-  padding: 0 0.375rem 0 0.5rem;
-}
-
-.minus {
-  align-self: center;
-  border: 0;
-  box-shadow: none;
   min-height: 2rem;
   min-width: 2rem;
-  padding: 0;
-  width: 2rem;
+  padding: 0.375rem;
 }
+
+.line-remove-btn:hover {
+  background: var(--grey-100);
+}
+
+.line-remove-btn:disabled {
+  cursor: not-allowed;
+}
+
+.line-remove-btn:disabled .material-symbols-rounded {
+  opacity: 0.35;
+}
+
+.line-remove-btn:focus-visible {
+  outline: 2px solid #FB8B24;
+  outline-offset: 0.1rem;
+}
+
+/* --- Summary --- */
 
 .sum {
   align-self: flex-end;
   margin-top: 1.125rem;
-  width: 7.5rem;
+  width: auto;
 }
 
-.sum div {
-  color: var(--grey-600);
+.sum-row {
+  color: var(--grey-800);
   display: flex;
   font-size: 1rem;
-  justify-content: space-between;
+  gap: 1rem;
+  justify-content: flex-end;
   line-height: 1.5;
-  margin-bottom: 0.25rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.sum-amount {
+  font-variant-numeric: tabular-nums;
+  min-width: 7.5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sum-currency {
+  color: var(--grey-500);
+}
+
+.sum-tax-rate {
+  color: var(--grey-500);
 }
 
 .sum-total {
-  color: var(--grey-800) !important;
-  font-weight: 700;
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.015625rem;
+}
+
+.sum-total .sum-amount {
+  font-weight: 600;
+}
+
+/* --- Note --- */
+
+.items-note {
+  margin-top: 1rem;
+}
+
+.note-textarea {
+  background: var(--white);
+  border: 1px solid var(--grey-200);
+  border-radius: var(--radius-input);
+  box-shadow: var(--shadow-input);
+  color: var(--grey-800);
+  field-sizing: content;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  min-height: 4.5lh;
+  outline: none;
+  padding: var(--space-md) var(--space-lg);
+  resize: vertical;
+  width: 100%;
+}
+
+.note-textarea:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
+}
+
+.note-textarea::placeholder {
+  color: var(--grey-400);
+}
+
+.note-display {
+  margin-top: 1.5rem;
+}
+
+.note-display-text {
+  color: var(--grey-700);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* --- Add item button: full-width on mobile only --- */
+
+.add-item-btn {
+  width: 100%;
 }
 
 .ready {
@@ -1136,19 +1505,8 @@ input::placeholder {
     grid-template-columns: 1fr;
   }
 
-  .line-head {
-    font-size: 0.9rem;
-  }
-
-  .line-row input,
-  .mini-select,
-  .price,
-  .line-total {
-    font-size: 0.9rem;
-  }
-
-  .sum {
-    width: 10rem;
+  .add-item-btn {
+    width: fit-content;
   }
 
   .ready {

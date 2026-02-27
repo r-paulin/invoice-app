@@ -91,6 +91,219 @@
         }
       };
     });
+
+    var UNIT_CODES = [
+      { code: 'C62', label: 'pcs' },
+      { code: 'H87', label: 'piece' },
+      { code: 'HUR', label: 'hr' },
+      { code: 'DAY', label: 'day' },
+      { code: 'MON', label: 'mo' },
+      { code: 'ANN', label: 'yr' },
+      { code: 'KGM', label: 'kg' },
+      { code: 'GRM', label: 'g' },
+      { code: 'LTR', label: 'l' },
+      { code: 'MTR', label: 'm' },
+      { code: 'MTK', label: 'm\u00B2' },
+      { code: 'MTQ', label: 'm\u00B3' },
+      { code: 'E48', label: 'svc' },
+      { code: 'EA',  label: 'ea' }
+    ];
+
+    Alpine.data('invoiceItems', function () {
+      var d = (window.__invioDraft) || (window.InvioState && window.InvioState.createDefaultDraft());
+      return {
+        lines: d.lines,
+        showDiscount: false,
+        showNote: false,
+        noteText: d.header.note || '',
+        unitCodes: UNIT_CODES,
+        _cc: (d.header && d.header.currencyCode) || 'EUR',
+        _nf: null,
+        _nfCurrency: null,
+
+        init: function () {
+          var self = this;
+          this._buildFormatter();
+          document.addEventListener('invio:currency-changed', function (e) {
+            self._cc = (e.detail && e.detail.code) || 'EUR';
+            self._buildFormatter();
+          });
+        },
+
+        _buildFormatter: function () {
+          var locale = this._resolveLocale();
+          var dec = this.decimals;
+          try {
+            this._nf = new Intl.NumberFormat(locale, {
+              minimumFractionDigits: dec,
+              maximumFractionDigits: dec
+            });
+            this._nfCurrency = new Intl.NumberFormat(locale, {
+              style: 'currency',
+              currency: this._cc,
+              currencyDisplay: 'code'
+            });
+          } catch (err) {
+            this._nf = null;
+            this._nfCurrency = null;
+          }
+        },
+
+        _resolveLocale: function () {
+          var d = window.__invioDraft;
+          var lang = (d && d.header && d.header.languageCode) || 'en';
+          var localeMap = {
+            bg: 'bg-BG', hr: 'hr-HR', cs: 'cs-CZ', da: 'da-DK', nl: 'nl-NL',
+            en: 'en-IE', et: 'et-EE', fi: 'fi-FI', fr: 'fr-FR', de: 'de-DE',
+            el: 'el-GR', hu: 'hu-HU', ga: 'ga-IE', it: 'it-IT', lv: 'lv-LV',
+            lt: 'lt-LT', mt: 'mt-MT', pl: 'pl-PL', pt: 'pt-PT', ro: 'ro-RO',
+            sk: 'sk-SK', sl: 'sl-SI', es: 'es-ES', sv: 'sv-SE'
+          };
+          return localeMap[lang] || 'en-IE';
+        },
+
+        get currencyCode() {
+          return this._cc;
+        },
+
+        get decimals() {
+          return window.InvioCalc ? window.InvioCalc.currencyDecimals(this._cc) : 2;
+        },
+
+        unitLabel: function (code) {
+          for (var i = 0; i < UNIT_CODES.length; i++) {
+            if (UNIT_CODES[i].code === code) return UNIT_CODES[i].label;
+          }
+          return code;
+        },
+
+        addLine: function () {
+          var ids = this.lines.map(function (l) { return parseInt(l.id, 10); }).filter(function (n) { return !isNaN(n); });
+          var nextId = ids.length ? Math.max.apply(null, ids) + 1 : 1;
+          this.lines.push(window.InvioState.defaultLine(nextId));
+        },
+
+        removeLine: function (index) {
+          if (this.lines.length <= 1) return;
+          this.lines.splice(index, 1);
+        },
+
+        clampQuantity: function (line) {
+          var v = Number(line.quantity);
+          if (isNaN(v) || v < 0) line.quantity = 0;
+        },
+
+        clampPrice: function (line) {
+          var v = Number(line.netPrice);
+          if (isNaN(v) || v < 0) line.netPrice = 0;
+        },
+
+        clampDiscount: function (line) {
+          var v = Number(line.discountPercent);
+          if (isNaN(v) || v < 0) line.discountPercent = 0;
+          if (v > 100) line.discountPercent = 100;
+        },
+
+        clampVatRate: function (line) {
+          var v = Number(line.vatRate);
+          if (isNaN(v) || v < 0) line.vatRate = 0;
+        },
+
+        getSubtotal: function (line) {
+          return window.InvioCalc.lineSubtotal(line, this._cc);
+        },
+
+        getDiscount: function (line) {
+          return window.InvioCalc.lineDiscountAmount(line, this._cc);
+        },
+
+        getNet: function (line) {
+          return window.InvioCalc.lineNet(line, this._cc);
+        },
+
+        getTaxAmount: function (line) {
+          return window.InvioCalc.lineTaxAmount(line, this._cc);
+        },
+
+        getTotal: function (line) {
+          return window.InvioCalc.lineTotal(line, this._cc);
+        },
+
+        fmt: function (value) {
+          if (this._nf) return this._nf.format(Number(value));
+          return Number(value).toFixed(this.decimals);
+        },
+
+        fmtCurrency: function (value) {
+          if (this._nfCurrency) return this._nfCurrency.format(Number(value));
+          return Number(value).toFixed(this.decimals) + ' ' + this._cc;
+        },
+
+        summarySubtotal: function () {
+          var self = this;
+          return this.lines.reduce(function (sum, l) { return sum + self.getSubtotal(l); }, 0);
+        },
+
+        summaryDiscountTotal: function () {
+          var self = this;
+          return this.lines.reduce(function (sum, l) { return sum + self.getDiscount(l); }, 0);
+        },
+
+        summaryTaxBreakdown: function () {
+          var self = this;
+          var buckets = {};
+          this.lines.forEach(function (line) {
+            var rate = Number(line.vatRate) || 0;
+            var cat = line.vatCategoryCode || 'S';
+            var key = cat + '|' + rate;
+            if (!buckets[key]) buckets[key] = { categoryCode: cat, rate: rate, amount: 0 };
+            buckets[key].amount += self.getTaxAmount(line);
+          });
+          var result = [];
+          var keys = Object.keys(buckets);
+          for (var i = 0; i < keys.length; i++) {
+            var b = buckets[keys[i]];
+            if (b.amount !== 0 || b.rate !== 0) {
+              result.push(b);
+            }
+          }
+          return result;
+        },
+
+        summaryTotal: function () {
+          var self = this;
+          return this.lines.reduce(function (sum, l) { return sum + self.getTotal(l); }, 0);
+        },
+
+        toggleDiscount: function () {
+          this.showDiscount = !this.showDiscount;
+          if (!this.showDiscount) {
+            this.lines.forEach(function (line) {
+              line.discountPercent = 0;
+              line.discountAmount = 0;
+            });
+          }
+        },
+
+        toggleNote: function () {
+          this.showNote = !this.showNote;
+          if (!this.showNote) {
+            this.noteText = '';
+            if (window.__invioDraft) window.__invioDraft.header.note = null;
+          }
+        },
+
+        syncNote: function () {
+          if (window.__invioDraft) {
+            window.__invioDraft.header.note = this.noteText || null;
+          }
+        },
+
+        syncDiscountAmount: function (line) {
+          line.discountAmount = this.getDiscount(line);
+        }
+      };
+    });
   });
 
   const tabs = document.querySelectorAll('.tab[data-target]');
@@ -612,6 +825,9 @@
     invoiceCurrencySelect.addEventListener('change', function () {
       draft.header = draft.header || {};
       draft.header.currencyCode = invoiceCurrencySelect.value;
+      document.dispatchEvent(new CustomEvent('invio:currency-changed', {
+        detail: { code: invoiceCurrencySelect.value }
+      }));
     });
   }
 
