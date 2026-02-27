@@ -1096,11 +1096,17 @@ input::placeholder {
 .items-table .col-actions { width: 3rem; }
 
 .items-table tbody td {
-  background: var(--white);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--grey-300);
   font-size: 1rem;
   line-height: 1.5;
   padding: 0.25em 0.5em 0.25em 0.25em;
   vertical-align: middle;
+}
+
+.items-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .items-table .cell-actions {
@@ -1109,6 +1115,19 @@ input::placeholder {
   padding: 0.25rem;
   text-align: center;
   vertical-align: middle;
+}
+
+.items-table tbody tr:last-child .cell-actions {
+  border-bottom: none;
+}
+
+/* Disabled / read-only cells */
+.cell-disabled {
+  cursor: default;
+}
+
+.cell-disabled .cell-amount {
+  color: var(--grey-500);
 }
 
 /* Right-aligned cells (inputs and computed values) */
@@ -1254,40 +1273,19 @@ input::placeholder {
 
 /* --- Discount cell --- */
 
-.discount-pct-row {
-  align-items: center;
-  display: flex;
-  gap: 0.125rem;
-  justify-content: flex-end;
-  margin-top: 0.25rem;
-}
-
 .discount-input {
-  -moz-appearance: textfield;
-  appearance: textfield;
   background: transparent;
   border: none;
   box-shadow: none;
-  color: var(--grey-500);
+  color: var(--grey-800);
   font-family: inherit;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-variant-numeric: tabular-nums;
   min-height: 1.5rem;
   outline: none;
   padding: 0;
   text-align: right;
-  width: 2.5rem;
-}
-
-.discount-input::-webkit-inner-spin-button,
-.discount-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.discount-pct-symbol {
-  color: var(--grey-500);
-  font-size: 0.875rem;
+  width: 100%;
 }
 
 /* --- Tax rate cell --- */

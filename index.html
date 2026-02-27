@@ -461,17 +461,13 @@
                             </div>
                           </td>
                           <td class="cell-price cell-right">
-                            <input class="price-input" type="number" step="any" min="0" x-model.number="line.netPrice" @change="clampPrice(line); syncDiscountAmount(line)" :aria-label="'Unit price, line ' + (i + 1)">
+                            <input class="price-input" type="text" inputmode="decimal" x-init="$el.value = fmt(line.netPrice)" @focus="$el.value = line.netPrice || ''" @blur="line.netPrice = parseFloat($el.value) || 0; clampPrice(line); $el.value = fmt(line.netPrice)" @input="line.netPrice = parseFloat($el.value) || 0" :aria-label="'Unit price, line ' + (i + 1)">
                           </td>
-                          <td class="cell-subtotal cell-numeric">
+                          <td class="cell-subtotal cell-numeric cell-disabled">
                             <span class="cell-amount" x-text="fmt(getSubtotal(line))"></span>
                           </td>
-                          <td class="cell-discount cell-numeric" x-show="showDiscount" x-cloak>
-                            <span class="cell-amount" x-text="fmt(getDiscount(line))"></span>
-                            <div class="discount-pct-row">
-                              <input class="discount-input" type="number" step="any" min="0" max="100" x-model.number="line.discountPercent" @change="clampDiscount(line); syncDiscountAmount(line)" :aria-label="'Discount percent, line ' + (i + 1)">
-                              <span class="discount-pct-symbol">%</span>
-                            </div>
+                          <td class="cell-discount cell-right" x-show="showDiscount" x-cloak>
+                            <input class="discount-input" type="text" inputmode="decimal" x-init="$el.value = fmt(line.discountAmount)" @focus="$el.value = line.discountAmount || ''" @blur="line.discountAmount = parseFloat($el.value) || 0; clampDiscount(line); $el.value = fmt(line.discountAmount)" @input="line.discountAmount = parseFloat($el.value) || 0" :aria-label="'Discount amount, line ' + (i + 1)">
                           </td>
                           <td class="cell-taxrate cell-right">
                             <div class="taxrate-group">
@@ -479,10 +475,10 @@
                               <span class="taxrate-symbol">%</span>
                             </div>
                           </td>
-                          <td class="cell-taxamt cell-numeric">
+                          <td class="cell-taxamt cell-numeric cell-disabled">
                             <span class="cell-amount" x-text="fmt(getTaxAmount(line))"></span>
                           </td>
-                          <td class="cell-total cell-numeric">
+                          <td class="cell-total cell-numeric cell-disabled">
                             <span class="cell-amount cell-amount--bold" x-text="fmt(getTotal(line))"></span>
                           </td>
                           <td class="cell-actions">

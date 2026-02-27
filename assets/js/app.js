@@ -199,9 +199,10 @@
         },
 
         clampDiscount: function (line) {
-          var v = Number(line.discountPercent);
-          if (isNaN(v) || v < 0) line.discountPercent = 0;
-          if (v > 100) line.discountPercent = 100;
+          var v = Number(line.discountAmount);
+          if (isNaN(v) || v < 0) line.discountAmount = 0;
+          var sub = this.getSubtotal(line);
+          if (v > sub) line.discountAmount = sub;
         },
 
         clampVatRate: function (line) {
@@ -279,7 +280,6 @@
           this.showDiscount = !this.showDiscount;
           if (!this.showDiscount) {
             this.lines.forEach(function (line) {
-              line.discountPercent = 0;
               line.discountAmount = 0;
             });
           }
@@ -297,10 +297,6 @@
           if (window.__invioDraft) {
             window.__invioDraft.header.note = this.noteText || null;
           }
-        },
-
-        syncDiscountAmount: function (line) {
-          line.discountAmount = this.getDiscount(line);
         }
       };
     });

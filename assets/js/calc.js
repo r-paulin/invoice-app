@@ -25,14 +25,14 @@ function lineSubtotal(line, currencyCode) {
 }
 
 /**
- * Line discount amount from percentage, clamped >= 0
+ * Line discount amount (fixed amount), clamped between 0 and subtotal
  */
 function lineDiscountAmount(line, currencyCode) {
-  const pct = Math.max(0, Number(line.discountPercent) || 0);
-  if (pct === 0) return 0;
+  const amt = Math.max(0, Number(line.discountAmount) || 0);
+  if (amt === 0) return 0;
   const sub = lineSubtotal(line, currencyCode);
   const dec = currencyDecimals(currencyCode);
-  return roundAmount(sub * pct / 100, dec);
+  return roundAmount(Math.min(amt, sub), dec);
 }
 
 /**
