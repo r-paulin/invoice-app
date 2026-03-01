@@ -57,10 +57,11 @@ function computedToTotals(computed) {
 
 /**
  * Build UBL 2.1 Invoice from validated draft and calcInvoice(draft) result.
+ * Optional settings { accentColor } adds a comment for border/accent styling (invio extension).
  * Element order follows InvoiceType sequence (cvc-complex-type.2.4.a compliant).
  * Call assertExportReconciliation(computed) before calling this.
  */
-function buildInvoiceXML(draft, computed) {
+function buildInvoiceXML(draft, computed, settings) {
   const impl = typeof document !== 'undefined' ? document.implementation : null;
   if (!impl) return null;
   const totals = computed && computed.lines ? computedToTotals(computed) : computed;
@@ -69,6 +70,10 @@ function buildInvoiceXML(draft, computed) {
   root.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', NS_INVOICE);
   root.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cac', NS_CAC);
   root.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:cbc', NS_CBC);
+
+  const accentHex = (settings && settings.accentColor && /^#[0-9A-Fa-f]{6}$/.test(settings.accentColor)) ? settings.accentColor : '#000000';
+  const accentComment = doc.createComment(' invio:accentColor ' + accentHex + ' ');
+  root.insertBefore(accentComment, root.firstChild);
 
   const h = draft.header || {};
   const cc = (totals.currencyCode || h.currencyCode || 'EUR').trim().toUpperCase();

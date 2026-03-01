@@ -87,7 +87,8 @@ function defaultBuyer() {
     vatId: null,
     address: defaultAddress(),
     contact: defaultContact(),
-    electronicAddress: null
+    electronicAddress: null,
+    bankAccounts: []
   };
 }
 
@@ -187,6 +188,12 @@ function normalizeDraft(draft) {
   const sellerContact = { ...defaultContact(), ...(seller.contact || {}) };
   const buyerAddr = { ...defaultAddress(), ...(buyer.address || {}) };
   const buyerContact = { ...defaultContact(), ...(buyer.contact || {}) };
+  const buyerBankAccounts = Array.isArray(buyer.bankAccounts)
+    ? buyer.bankAccounts.map((acc) => ({
+      accountId: acc && acc.accountId ? String(acc.accountId) : '',
+      bankName: acc && acc.bankName ? String(acc.bankName) : null
+    })).filter((acc) => acc.accountId)
+    : [];
   const lines = Array.isArray(draft.lines) && draft.lines.length
     ? draft.lines.map((l, i) => ({ ...defaultLine(i + 1), ...l }))
     : def.lines;
@@ -194,7 +201,7 @@ function normalizeDraft(draft) {
     ...draft,
     header: h,
     seller: { ...defaultSeller(), ...seller, address: sellerAddr, contact: sellerContact },
-    buyer: { ...defaultBuyer(), ...buyer, address: buyerAddr, contact: buyerContact },
+    buyer: { ...defaultBuyer(), ...buyer, address: buyerAddr, contact: buyerContact, bankAccounts: buyerBankAccounts },
     payment,
     lines
   };

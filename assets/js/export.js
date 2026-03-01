@@ -148,9 +148,32 @@
       finishError('Calculations do not reconcile. Review your data.');
       return;
     }
+
+    function toSolidHex(hex) {
+      if (!hex || typeof hex !== 'string') return '#008236';
+      var h = hex.trim();
+      if (h.charAt(0) !== '#') h = '#' + h;
+      if (/^#[0-9A-Fa-f]{6}$/.test(h)) return h;
+      if (/^#[0-9A-Fa-f]{3}$/.test(h)) return '#' + h[1] + h[1] + h[2] + h[2] + h[3] + h[3];
+      if (/^#[0-9A-Fa-f]{8}$/.test(h)) return h.slice(0, 7);
+      return '#008236';
+    }
+    var settings = null;
+    try {
+      var settingsJson = typeof localStorage !== 'undefined' && localStorage.getItem('invio_settings');
+      if (settingsJson) {
+        var parsed = JSON.parse(settingsJson);
+        settings = {
+          accentColor: toSolidHex(parsed.accentColor),
+          logo: parsed.logo || null
+        };
+      }
+    } catch (e) {}
+    if (!settings) settings = { accentColor: '#008236', logo: null };
+
     var doc;
     try {
-      doc = window.InvioXML.buildInvoiceXML(draft, computed);
+      doc = window.InvioXML.buildInvoiceXML(draft, computed, settings);
     } catch (err) {
       logError('runExportJob.xml', err);
       finishError('Invoice wasn\'t created. Try again.');
@@ -168,7 +191,7 @@
     var pdfBase64 = null;
     if (window.InvioPDF && typeof window.InvioPDF.buildPdfBase64 === 'function') {
       try {
-        pdfBase64 = window.InvioPDF.buildPdfBase64(draft, computed);
+        pdfBase64 = window.InvioPDF.buildPdfBase64(draft, computed, settings);
       } catch (err) {
         logError('runExportJob.pdf', err);
         finishError('PDF could not be created. Try again.');

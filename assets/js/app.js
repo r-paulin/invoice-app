@@ -806,7 +806,7 @@
     }
   };
 
-  // --- General panel: Invoice Language (flag + name, ISO 639-1), pre-fill from website language ---
+  // --- Settings panel: Invoice Language (flag + name, ISO 639-1), pre-fill from website language ---
   var invoiceLanguageSelect = document.getElementById('invoice-language-select');
   var invoiceLanguageName = document.getElementById('invoice-language-name');
   var invoiceLanguageFlag = document.getElementById('invoice-language-flag');
@@ -858,7 +858,7 @@
     });
   }
 
-  // --- General panel: Currency (ISO 4217), all European + major world; code + name ---
+  // --- Settings panel: Currency (ISO 4217), all European + major world; code + name ---
   var CURRENCY_NAMES = {
     EUR: 'Euro', USD: 'US dollar', GBP: 'Pound sterling', CHF: 'Swiss franc', JPY: 'Japanese yen', CNY: 'Chinese yuan',
     CAD: 'Canadian dollar', AUD: 'Australian dollar', HKD: 'Hong Kong dollar', SGD: 'Singapore dollar',
@@ -898,7 +898,7 @@
     });
   }
 
-  // --- General panel: Invoice Type (codes 380, 384, etc. in JS only; labels without codes) ---
+  // --- Settings panel: Invoice Type (codes 380, 384, etc. in JS only; labels without codes) ---
   var invoiceTypeSelect = document.getElementById('invoice-type-select');
   var invoiceTypeSubtext = document.getElementById('invoice-type-subtext');
   var invoiceTypeSubtexts = {
@@ -924,7 +924,7 @@
     });
   }
 
-  // --- General panel: Payment Type (select), conditional bank visibility ---
+  // --- Settings panel: Payment Type (select), conditional bank visibility ---
   var paymentTypeSelect = document.getElementById('payment-type-select');
   if (paymentTypeSelect) {
     if (draft.payment && draft.payment.meansTypeCode) paymentTypeSelect.value = String(draft.payment.meansTypeCode);
@@ -1219,7 +1219,7 @@
     var means = (p.meansTypeCode || '30').toString();
     if (paymentTypeSelect) paymentTypeSelect.value = means;
     applyPaymentDetailsVisibility(means);
-    var accounts = (p.accounts && p.accounts.length) ? p.accounts : (p.accountId ? [{ accountId: p.accountId, bankName: p.bankName || null }] : [{ accountId: '', bankName: null }]);
+    var accounts = (b.bankAccounts && b.bankAccounts.length) ? b.bankAccounts : [{ accountId: '', bankName: null }];
     var normalized = accounts.map(function (acc, idx) {
       return {
         iban: (acc.accountId || '').trim(),
@@ -1652,13 +1652,9 @@
         var bankName = (acc.bankName || '').trim() || null;
         return { accountId: iban, bankName: bankName };
       }).filter(function (a) { return a.accountId; });
-      draft.payment.accounts = accounts;
-      draft.payment.accountId = accounts[0] ? accounts[0].accountId : null;
-      draft.payment.bankName = accounts[0] ? accounts[0].bankName : null;
+      b.bankAccounts = accounts;
     } else {
-      draft.payment.accounts = [];
-      draft.payment.accountId = null;
-      draft.payment.bankName = null;
+      b.bankAccounts = [];
     }
     closeBuyerModal();
     updateBuyerCardSummary();
@@ -1856,8 +1852,8 @@
       pAddr.textContent = addrLine;
       wrap.appendChild(pAddr);
     }
-    if (p.meansTypeCode === '30' && p.accounts && p.accounts.length) {
-      p.accounts.forEach(function (acc, idx) {
+    if (p.meansTypeCode === '30' && b.bankAccounts && b.bankAccounts.length) {
+      b.bankAccounts.forEach(function (acc, idx) {
         var iban = (acc.accountId || '').trim();
         if (!iban) return;
         var bankName = (acc.bankName || '').trim() || '';
