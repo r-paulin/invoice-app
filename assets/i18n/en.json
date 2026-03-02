@@ -1,0 +1,18 @@
+{
+  "app": {
+    "title": "Invio",
+    "save": "Save",
+    "close": "Close",
+    "nextStep": "Next Step",
+    "previousStep": "Previous Step",
+    "generateExport": "Generate XML & PDF"
+  },
+  "steps": {
+    "details": "New Invoice",
+    "items": "Invoice Items",
+    "seller": "Seller details",
+    "buyer": "Buyer details",
+    "payment": "Payment details",
+    "summary": "Invoice Summary"
+  }
+}

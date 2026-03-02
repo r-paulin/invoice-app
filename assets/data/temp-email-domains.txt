@@ -1,0 +1,20 @@
+# Maintained denylist for temporary/disposable email domains (one domain per line; # = comment)
+# Add domains as needed. See https://github.com/disposable-email-domains/disposable-email-domains
+10minutemail.com
+10minutemail.net
+guerrillamail.com
+guerrillamail.net
+mailinator.com
+temp-mail.org
+tempmail.com
+throwaway.email
+yopmail.com
+getnada.com
+fakeinbox.com
+trashmail.com
+sharklasers.com
+guerrillamail.org
+maildrop.cc
+tempail.com
+dispostable.com
+mailnesia.com
