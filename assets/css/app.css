@@ -2677,7 +2677,7 @@ input::placeholder {
 .toast-host__slot {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.8em;
   position: relative;
   overflow: hidden;
   pointer-events: auto;
@@ -2691,11 +2691,11 @@ input::placeholder {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.75rem;
-  padding: 6px 16px;
-  min-height: 2.5rem;
-  background: #2c2c2c;
-  color: #e5e5e5;
+  gap: 0.25em;
+  padding: 0.4em 0.6em 0.4em 0.6em;
+  min-height: 2.5em;
+  background: var(--grey-800);
+  color: var(--white);
   border-radius: 360px;
   font-size: 14px;
   font-weight: 500;
@@ -2704,6 +2704,9 @@ input::placeholder {
 }
 
 .toast--success .toast__icon { color: var(--toast-success); }
+.toast--success .toast__icon .material-symbols-rounded {
+  font-variation-settings: "opsz" 20, "wght" 400, "FILL" 1, "GRAD" 0;
+}
 .toast--error .toast__icon { color: var(--toast-error); }
 .toast--info .toast__icon { color: var(--toast-info); }
 
@@ -2716,7 +2719,7 @@ input::placeholder {
 
 .toast__icon .material-symbols-rounded {
   font-size: 1.25rem;
-  font-variation-settings: "opsz" 20, "wght" 400, "FILL" 0, "GRAD" 0;
+  font-variation-settings: "opsz" 20, "wght" 400, "FILL" 1, "GRAD" 0;
 }
 
 .toast-transition {
@@ -2724,7 +2727,7 @@ input::placeholder {
 }
 
 .toast-enter-start {
-  transform: translateY(20px);
+  transform: translateY(25px);
   opacity: 0;
 }
 
@@ -2760,9 +2763,9 @@ input::placeholder {
   min-height: 1.5rem;
   padding: 0;
   border: 0;
-  border-radius: var(--radius-input);
+  border-radius: 99px;
   background: transparent;
-  color: #b0b0b0;
+  color: var(--grey-500);
   cursor: pointer;
   flex-shrink: 0;
 }
