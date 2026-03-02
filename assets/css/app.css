@@ -2692,34 +2692,15 @@ input::placeholder {
   flex-direction: row;
   align-items: center;
   gap: 0.25em;
-  padding: 0.4em 0.6em 0.4em 0.6em;
+  padding: 0.4em 0.6em 0.4em 1.2em;
   min-height: 2.5em;
   background: var(--grey-800);
   color: var(--white);
   border-radius: 360px;
-  font-size: 14px;
+  font-size: 1rem;
   font-weight: 500;
   line-height: 1.4;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.toast--success .toast__icon { color: var(--toast-success); }
-.toast--success .toast__icon .material-symbols-rounded {
-  font-variation-settings: "opsz" 20, "wght" 400, "FILL" 1, "GRAD" 0;
-}
-.toast--error .toast__icon { color: var(--toast-error); }
-.toast--info .toast__icon { color: var(--toast-info); }
-
-.toast__icon {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.toast__icon .material-symbols-rounded {
-  font-size: 1.25rem;
-  font-variation-settings: "opsz" 20, "wght" 400, "FILL" 1, "GRAD" 0;
 }
 
 .toast-transition {

@@ -961,9 +961,6 @@
           x-transition:leave-end="toast-leave-end"
           x-cloak
         >
-          <span class="toast__icon" aria-hidden="true">
-            <span class="material-symbols-rounded" aria-hidden="true" x-text="toast.type === 'error' ? 'warning' : (toast.type === 'info' ? 'info' : 'check_circle')"></span>
-          </span>
           <span class="toast__text" x-text="toast.text"></span>
           <button type="button" class="toast__dismiss" aria-label="Close" @click="$store.toasts.removeToast(toast.id)">
             <span class="material-symbols-rounded" aria-hidden="true">close</span>
