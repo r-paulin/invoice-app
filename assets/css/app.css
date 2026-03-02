@@ -2609,8 +2609,7 @@ input::placeholder {
   border: 1px solid var(--color-error-border, var(--red-700));
   border-radius: var(--radius-input);
   padding: 0.75em 1em;
-  margin-bottom: 1em;
-  margin-top: 1em;
+  margin: 1em;
   width: 100%;
 }
 
