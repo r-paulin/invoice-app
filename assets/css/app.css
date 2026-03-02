@@ -2608,15 +2608,16 @@ input::placeholder {
   background: var(--red-50, #fff1f2);
   border: 1px solid var(--color-error-border, var(--red-700));
   border-radius: var(--radius-input);
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
+  padding: 0.75em 1em;
+  margin-bottom: 1em;
+  margin-top: 1em;
   width: 100%;
 }
 
 .export-validation-alert b {
   display: block;
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.25em;
 }
 
 .export-validation-alert span {
