@@ -1,4 +1,23 @@
 (function () {
+  /** Apply translations to all elements with data-i18n and data-i18n-placeholder. Call after InvioI18n.setLocale has resolved. */
+  function applyTranslations() {
+    var t = typeof window.t === 'function' ? window.t : null;
+    if (!t) return;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n');
+      if (k) el.textContent = t(k);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n-placeholder');
+      if (k) el.placeholder = t(k);
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n-aria-label');
+      if (k) el.setAttribute('aria-label', t(k));
+    });
+  }
+  window.invioApplyTranslations = applyTranslations;
+
   /** Minimal logger for errors; no-op by default; can be replaced with reporting in production. */
   function logError(context, err) {
     if (typeof window !== 'undefined' && window.InvioLog && typeof window.InvioLog.error === 'function') {
@@ -461,13 +480,22 @@
   var worldCountriesPromise = null;
   var worldCountriesCache = [];
 
+  function getAssetBaseUrl() {
+    var configured = (window.__INVIO_BASE_URL__ || '').replace(/\/+$/, '');
+    var pathname = (window.location && window.location.pathname) ? window.location.pathname : '/';
+    if (configured && (pathname === configured || pathname.indexOf(configured + '/') === 0)) return configured;
+    if (pathname === '/invoice-app' || pathname.indexOf('/invoice-app/') === 0) return '/invoice-app';
+    return '';
+  }
+
   /**
    * Load country list from assets/data/countries.json.
    * On failure the promise rejects; worldCountriesCache is set to [] so callers can still run with an empty list.
    */
   function loadWorldCountries() {
     if (worldCountriesPromise) return worldCountriesPromise;
-    worldCountriesPromise = fetch('assets/data/countries.json')
+    var base = getAssetBaseUrl();
+    worldCountriesPromise = fetch(base + '/assets/data/countries.json')
       .then(function (res) {
         if (!res.ok) throw new Error('Failed to load countries.json');
         return res.json();
@@ -692,12 +720,18 @@
     var phoneSelect = document.getElementById('seller-phone-country');
     if (!addressSelect || !phoneSelect) return;
     if (addressSelect.value || phoneSelect.value) return;
+    if (draft && draft.__sellerCountryTouched) return;
 
-    var guessedIso2 = inferIso2FromLocale();
+    var guessedIso2 = '';
+    if (window.InvioLocale && typeof window.InvioLocale.resolveDefaultCountry === 'function') {
+      guessedIso2 = window.InvioLocale.resolveDefaultCountry(window.InvioLocale.resolveAppLanguage());
+    }
+    if (!guessedIso2) guessedIso2 = inferIso2FromLocale();
     if (!guessedIso2) return;
     if (findCountryByIso2(guessedIso2)) {
       addressSelect.value = guessedIso2;
       phoneSelect.value = guessedIso2;
+      updateAddressCountryDisplay(guessedIso2);
       updatePhoneCountryDisplay(guessedIso2);
     }
   }
@@ -707,8 +741,13 @@
     var phoneSelect = document.getElementById('buyer-phone-country');
     if (!addressSelect || !phoneSelect) return;
     if (addressSelect.value || phoneSelect.value) return;
+    if (draft && draft.__buyerCountryTouched) return;
 
-    var guessedIso2 = inferIso2FromLocale();
+    var guessedIso2 = '';
+    if (window.InvioLocale && typeof window.InvioLocale.resolveDefaultCountry === 'function') {
+      guessedIso2 = window.InvioLocale.resolveDefaultCountry(window.InvioLocale.resolveAppLanguage());
+    }
+    if (!guessedIso2) guessedIso2 = inferIso2FromLocale();
     if (!guessedIso2) return;
     if (findCountryByIso2(guessedIso2)) {
       addressSelect.value = guessedIso2;
@@ -726,6 +765,7 @@
     if (addressSelect && phoneSelect) {
       addressSelect.addEventListener('change', function () {
         var iso2 = addressSelect.value;
+        draft.__sellerCountryTouched = true;
         updateAddressCountryDisplay(iso2);
         phoneSelect.value = iso2;
         updatePhoneCountryDisplay(iso2);
@@ -740,6 +780,7 @@
     if (buyerAddressSelect && buyerPhoneSelect) {
       buyerAddressSelect.addEventListener('change', function () {
         var iso2 = buyerAddressSelect.value;
+        draft.__buyerCountryTouched = true;
         updateBuyerAddressCountryDisplay(iso2);
         buyerPhoneSelect.value = iso2;
         updateBuyerPhoneCountryDisplay(iso2);
@@ -849,15 +890,16 @@
 
   // --- Settings panel: Invoice Language (flag + name, ISO 639-1), pre-fill from website language ---
   var invoiceLanguageSelect = document.getElementById('invoice-language-select');
+  var invoiceLanguageResetBtn = document.getElementById('invoice-language-reset');
   var invoiceLanguageName = document.getElementById('invoice-language-name');
   var invoiceLanguageFlag = document.getElementById('invoice-language-flag');
   var invoiceLanguageLive = document.getElementById('invoice-language-live');
   var invoiceLanguageToCountry = {
     bg: 'bg', hr: 'hr', cs: 'cz', da: 'dk', nl: 'nl', en: 'gb', et: 'ee', fi: 'fi', fr: 'fr', de: 'de',
     el: 'gr', hu: 'hu', ga: 'ie', it: 'it', lv: 'lv', lt: 'lt', mt: 'mt', pl: 'pl', pt: 'pt', ro: 'ro',
-    sk: 'sk', sl: 'si', es: 'es', sv: 'se'
+    sk: 'sk', sl: 'si', es: 'es', sv: 'se', uk: 'ua'
   };
-  var EU_24_LANG_CODES = ['bg', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'de', 'el', 'hu', 'ga', 'it', 'lv', 'lt', 'mt', 'pl', 'pt', 'ro', 'sk', 'sl', 'es', 'sv'];
+  var EU_24_LANG_CODES = ['bg', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'de', 'el', 'hu', 'ga', 'it', 'lv', 'lt', 'mt', 'pl', 'pt', 'ro', 'sk', 'sl', 'es', 'sv', 'uk'];
   function syncInvoiceLanguageDisplay() {
     if (!invoiceLanguageSelect || !invoiceLanguageName || !invoiceLanguageFlag) return;
     var opt = invoiceLanguageSelect.options[invoiceLanguageSelect.selectedIndex];
@@ -876,12 +918,21 @@
   }
   function setInvoiceLanguageFromWebsite() {
     if (!invoiceLanguageSelect) return;
-    var langSelect = document.getElementById('lang-select');
-    var websiteLang = langSelect ? langSelect.value : '';
-    if (websiteLang && EU_24_LANG_CODES.indexOf(websiteLang) !== -1) {
-      invoiceLanguageSelect.value = websiteLang;
+    var appLang = '';
+    if (window.InvioLocale && typeof window.InvioLocale.resolveAppLanguage === 'function') {
+      appLang = window.InvioLocale.resolveAppLanguage();
+    } else {
+      var langSelect = document.getElementById('lang-select');
+      appLang = langSelect ? langSelect.value : '';
+    }
+    var override = window.InvioLocale && typeof window.InvioLocale.getInvoiceLanguageOverride === 'function'
+      ? window.InvioLocale.getInvoiceLanguageOverride()
+      : '';
+    var selected = override || appLang;
+    if (selected && EU_24_LANG_CODES.indexOf(selected) !== -1) {
+      invoiceLanguageSelect.value = selected;
       draft.header = draft.header || {};
-      draft.header.languageCode = websiteLang;
+      draft.header.languageCode = selected;
     } else {
       invoiceLanguageSelect.value = 'en';
       draft.header = draft.header || {};
@@ -894,9 +945,26 @@
     invoiceLanguageSelect.addEventListener('change', function () {
       draft.header = draft.header || {};
       draft.header.languageCode = invoiceLanguageSelect.value;
+      if (window.InvioLocale && typeof window.InvioLocale.setInvoiceLanguageOverride === 'function') {
+        window.InvioLocale.setInvoiceLanguageOverride(invoiceLanguageSelect.value);
+      }
       syncInvoiceLanguageDisplay();
-      if (invoiceLanguageLive) invoiceLanguageLive.textContent = 'Labels and static text will be generated in ' + (invoiceLanguageSelect.options[invoiceLanguageSelect.selectedIndex].textContent || 'English') + '.';
-      showSuccessToast('Invoice language updated');
+      var langName = invoiceLanguageSelect.options[invoiceLanguageSelect.selectedIndex].textContent || 'English';
+      if (invoiceLanguageLive && typeof window.t === 'function') {
+        invoiceLanguageLive.textContent = window.t('invoiceLanguageLive.set').replace('{language}', langName);
+      } else if (invoiceLanguageLive) invoiceLanguageLive.textContent = 'Labels and static text will be generated in ' + langName + '.';
+      showSuccessToast(typeof window.t === 'function' ? window.t('toasts.invoiceLanguageUpdated') : 'Invoice language updated');
+    });
+  }
+  if (invoiceLanguageResetBtn) {
+    invoiceLanguageResetBtn.addEventListener('click', function () {
+      if (window.InvioLocale && typeof window.InvioLocale.clearInvoiceLanguageOverride === 'function') {
+        window.InvioLocale.clearInvoiceLanguageOverride();
+      }
+      setInvoiceLanguageFromWebsite();
+      if (invoiceLanguageLive && typeof window.t === 'function') invoiceLanguageLive.textContent = window.t('invoiceLanguageLive.reset');
+      else if (invoiceLanguageLive) invoiceLanguageLive.textContent = 'Invoice language now follows app language.';
+      showSuccessToast(typeof window.t === 'function' ? window.t('toasts.invoiceLanguageReset') : 'Invoice language reset');
     });
   }
 
@@ -937,34 +1005,28 @@
       document.dispatchEvent(new CustomEvent('invio:currency-changed', {
         detail: { code: invoiceCurrencySelect.value }
       }));
-      showSuccessToast('Invoice currency updated');
+      showSuccessToast(typeof window.t === 'function' ? window.t('toasts.currencyUpdated') : 'Invoice currency updated');
     });
   }
 
   // --- Settings panel: Invoice Type (codes 380, 384, etc. in JS only; labels without codes) ---
   var invoiceTypeSelect = document.getElementById('invoice-type-select');
   var invoiceTypeSubtext = document.getElementById('invoice-type-subtext');
-  var invoiceTypeSubtexts = {
-    '380': 'Standard invoice for goods or services supplied.',
-    '384': 'Replaces or corrects a previously issued invoice.',
-    '381': 'Credit note that reduces the amount due from the buyer.',
-    '326': 'Invoice covering only part of an order or contract.',
-    '389': 'Invoice issued by the buyer (self-billing arrangement).',
-    '875': 'Invoice for partial progress on a construction project.',
-    '876': 'Invoice for a partial final stage of a construction project.',
-    '877': 'Final invoice for completion of a construction project.'
-  };
+  var invoiceTypeSubtextKeys = { '380': 'form.invoiceTypeSubtext.380', '384': 'form.invoiceTypeSubtext.384', '381': 'form.invoiceTypeSubtext.381', '326': 'form.invoiceTypeSubtext.326', '389': 'form.invoiceTypeSubtext.389', '875': 'form.invoiceTypeSubtext.875', '876': 'form.invoiceTypeSubtext.876', '877': 'form.invoiceTypeSubtext.877' };
   function updateInvoiceTypeSubtext() {
-    if (invoiceTypeSubtext && invoiceTypeSelect) invoiceTypeSubtext.textContent = invoiceTypeSubtexts[invoiceTypeSelect.value] || '';
+    if (!invoiceTypeSubtext || !invoiceTypeSelect) return;
+    var key = invoiceTypeSubtextKeys[invoiceTypeSelect.value];
+    invoiceTypeSubtext.textContent = (typeof window.t === 'function' && key ? window.t(key) : '') || '';
   }
   if (invoiceTypeSelect) {
     if (draft.header && draft.header.typeCode) invoiceTypeSelect.value = draft.header.typeCode;
     updateInvoiceTypeSubtext();
+    document.addEventListener('invio:locale-ready', updateInvoiceTypeSubtext);
     invoiceTypeSelect.addEventListener('change', function () {
       draft.header = draft.header || {};
       draft.header.typeCode = invoiceTypeSelect.value;
       updateInvoiceTypeSubtext();
-      showSuccessToast('Invoice type updated');
+      showSuccessToast(typeof window.t === 'function' ? window.t('toasts.invoiceTypeUpdated') : 'Invoice type updated');
     });
   }
 
@@ -979,12 +1041,16 @@
       updatePaymentMeansDisplayName();
       applyPaymentDetailsVisibility(means);
       var liveEl = document.getElementById('payment-type-live');
-      if (liveEl) {
+      if (liveEl && typeof window.t === 'function') {
+        if (means === '10') liveEl.textContent = window.t('paymentTypeLive.cash');
+        else if (means === '48') liveEl.textContent = window.t('paymentTypeLive.card');
+        else liveEl.textContent = window.t('paymentTypeLive.transfer');
+      } else if (liveEl) {
         if (means === '10') liveEl.textContent = 'Bank details hidden. Payment status: Paid by Cash.';
         else if (means === '48') liveEl.textContent = 'Bank details hidden. Payment status: Paid by Credit Card.';
         else liveEl.textContent = 'Bank details required for bank transfer.';
       }
-      showSuccessToast('Payment type updated');
+      showSuccessToast(typeof window.t === 'function' ? window.t('toasts.paymentTypeUpdated') : 'Payment type updated');
     });
   }
   function updatePaymentMeansDisplayName() {
@@ -1994,7 +2060,7 @@
     logError('initCountries', err);
     var statusEl = document.getElementById('countries-load-status');
     if (statusEl) {
-      statusEl.textContent = 'Country list could not be loaded. You can still use the form.';
+      statusEl.textContent = (typeof window.t === 'function' && window.t('export.countryListError')) || 'Country list could not be loaded. You can still use the form.';
       statusEl.removeAttribute('hidden');
     }
     fillNativeCountrySelects();

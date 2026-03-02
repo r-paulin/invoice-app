@@ -1,0 +1,16 @@
+{% assign locale = page.locale | default: 'en' %}
+{% assign localePath = '' %}
+{% if locale != 'en' %}
+  {% assign localePath = '/' | append: locale %}
+{% endif %}
+{% assign pagePath = page.locale_page_path | default: '' %}
+{% assign canonical = site.url | append: site.baseurl | append: localePath | append: pagePath %}
+<link rel="canonical" href="{{ canonical }}">
+{% for item in site.data.locales %}
+  {% assign altLocalePath = '' %}
+  {% if item.code != 'en' %}
+    {% assign altLocalePath = '/' | append: item.code %}
+  {% endif %}
+  <link rel="alternate" hreflang="{{ item.code }}" href="{{ site.url }}{{ site.baseurl }}{{ altLocalePath }}{{ pagePath }}">
+{% endfor %}
+<link rel="alternate" hreflang="x-default" href="{{ site.url }}{{ site.baseurl }}{{ pagePath }}">

@@ -1,8 +1,8 @@
 # Invoice App - PEPPOL BIS Billing 3.0 Compliant
 title: Invoice App
 description: PEPPOL BIS Billing 3.0 compliant invoice generator
-baseurl: "/invoice-app"
-url: "https://reinis.paulins.github.io"
+baseurl: ""
+url: "https://invossa.app"
 
 # Build settings
 markdown: kramdown

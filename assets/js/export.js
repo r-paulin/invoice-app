@@ -12,6 +12,38 @@
   var STORAGE_KEY_INVOICE_NUMBER = 'invio_export_invoice_number';
   var MIN_PROCESSING_MS = 4000;
   var MIN_VISIBLE_MS = 1000;
+  function detectBaseUrl() {
+    var configured = (window.__INVIO_BASE_URL__ || '').replace(/\/+$/, '');
+    var pathname = (window.location && window.location.pathname) ? window.location.pathname : '/';
+    if (configured && (pathname === configured || pathname.indexOf(configured + '/') === 0)) {
+      return configured;
+    }
+    if (pathname === '/invoice-app' || pathname.indexOf('/invoice-app/') === 0) {
+      return '/invoice-app';
+    }
+    return '';
+  }
+  var BASE_URL = detectBaseUrl();
+
+  function getCurrentLocaleFromPath() {
+    var path = window.location.pathname || '/';
+    if (BASE_URL && path.indexOf(BASE_URL) === 0) path = path.slice(BASE_URL.length) || '/';
+    var parts = path.split('/').filter(Boolean);
+    if (!parts.length) return 'en';
+    var first = parts[0].toLowerCase();
+    var supported = ['bg', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'de', 'el', 'hu', 'ga', 'it', 'lv', 'lt', 'mt', 'pl', 'pt', 'ro', 'sk', 'sl', 'es', 'sv', 'uk'];
+    return supported.indexOf(first) !== -1 ? first : 'en';
+  }
+  function localeHref(filename) {
+    var locale = getCurrentLocaleFromPath();
+    if (locale === 'en') return (BASE_URL || '') + '/' + filename;
+    return (BASE_URL || '') + '/' + locale + '/' + filename;
+  }
+  function localeHomeHref() {
+    var locale = getCurrentLocaleFromPath();
+    if (locale === 'en') return (BASE_URL || '') + '/';
+    return (BASE_URL || '') + '/' + locale + '/';
+  }
 
   function getStorage(key) {
     try {
@@ -93,7 +125,7 @@
       }
       return { ok: false, errors: ['Could not save draft for export.'] };
     }
-    window.location.href = 'invoice-processing.html';
+    window.location.href = localeHref('invoice-processing.html');
     return { ok: true };
   }
 
@@ -105,7 +137,7 @@
     if (!draftJson) {
       setStorage(STORAGE_KEY_STATE, 'ERROR');
       setStorage(STORAGE_KEY_ERROR, 'No invoice data. Start from the beginning.');
-      window.location.href = 'invoice-error.html';
+      window.location.href = localeHref('invoice-error.html');
       return;
     }
     var draft;
@@ -114,7 +146,7 @@
     } catch (e) {
       setStorage(STORAGE_KEY_STATE, 'ERROR');
       setStorage(STORAGE_KEY_ERROR, 'Invalid saved data. Try again.');
-      window.location.href = 'invoice-error.html';
+      window.location.href = localeHref('invoice-error.html');
       return;
     }
     if (window.InvioState && window.InvioState.normalizeDraft) {
@@ -128,7 +160,7 @@
       setStorage(STORAGE_KEY_INVOICE_NUMBER, invoiceNumber || '');
       setStorage(STORAGE_KEY_STATE, 'READY');
       setStorage(STORAGE_KEY_ERROR, null);
-      window.location.href = 'invoice-ready.html';
+      window.location.href = localeHref('invoice-ready.html');
     }
 
     function finishError(msg) {
@@ -136,7 +168,7 @@
       setStorage(STORAGE_KEY_ERROR, msg || 'Your invoice wasn\'t created. Try again.');
       setStorage(STORAGE_KEY_XML, null);
       setStorage(STORAGE_KEY_PDF_B64, null);
-      window.location.href = 'invoice-error.html';
+      window.location.href = localeHref('invoice-error.html');
     }
 
     var computed;
@@ -267,6 +299,16 @@
     var el = document.getElementById('export-error-message');
     if (el && msg) el.textContent = msg;
   }
+  function localizeHomeLinks() {
+    var linkIds = ['export-new-invoice', 'export-try-again'];
+    var target = localeHomeHref();
+    for (var i = 0; i < linkIds.length; i += 1) {
+      var link = document.getElementById(linkIds[i]);
+      if (link) link.setAttribute('href', target);
+    }
+    var logoLinks = document.querySelectorAll('.logo-link');
+    for (var j = 0; j < logoLinks.length; j += 1) logoLinks[j].setAttribute('href', target);
+  }
 
   /**
    * On processing page: run export job after DOM ready.
@@ -283,12 +325,14 @@
   if (path.indexOf('invoice-processing') !== -1) {
     initProcessingPage();
   } else if (path.indexOf('invoice-ready') !== -1) {
+    localizeHomeLinks();
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initReadyPage);
     } else {
       initReadyPage();
     }
   } else if (path.indexOf('invoice-error') !== -1) {
+    localizeHomeLinks();
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initErrorPage);
     } else {
