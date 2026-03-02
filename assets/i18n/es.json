@@ -1,0 +1,259 @@
+{
+  "app": {
+    "title": "Invossa",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "nextStep": "Siguiente paso",
+    "previousStep": "Paso anterior",
+    "generateExport": "Generar XML y PDF"
+  },
+  "hero": {
+    "title": "Generador de facturas gratuito en el navegador",
+    "description": "Cree facturas profesionales, descargue PDFs listos para imprimir y emita facturas electrónicas conformes desde su navegador."
+  },
+  "steps": {
+    "details": "Nueva factura",
+    "items": "Líneas de factura",
+    "seller": "Datos del vendedor",
+    "buyer": "Datos del comprador",
+    "payment": "Datos de pago",
+    "summary": "Resumen de factura"
+  },
+  "a11y": {
+    "skipLink": "Saltar al contenido principal",
+    "language": "Idioma",
+    "chooseLanguage": "Elegir idioma",
+    "invoiceSections": "Secciones de la factura",
+    "dismissError": "Cerrar error",
+    "closeSellerModal": "Cerrar ventana del vendedor",
+    "closeBuyerModal": "Cerrar ventana del comprador",
+    "notifications": "Notificaciones",
+    "toastClose": "Cerrar",
+    "invioHome": "Inicio Invossa",
+    "openColorPicker": "Abrir selector de color",
+    "removeLogo": "Quitar logotipo",
+    "removeBankAccount": "Eliminar cuenta bancaria",
+    "toggleDiscount": "Mostrar u ocultar columna de descuento",
+    "toggleNote": "Mostrar u ocultar nota",
+    "actions": "Acciones",
+    "downloadXml": "Descargar factura XML",
+    "downloadPdf": "Descargar factura PDF",
+    "createNewInvoice": "Crear nueva factura"
+  },
+  "tabs": {
+    "invoiceData": "Datos de factura",
+    "settings": "Configuración"
+  },
+  "form": {
+    "basicDetails": "Datos básicos",
+    "invoiceNumber": "Número de factura",
+    "paymentReference": "Referencia de pago",
+    "issueDate": "Fecha de emisión",
+    "dueDate": "Fecha de vencimiento",
+    "seller": "Vendedor",
+    "buyer": "Comprador",
+    "organisation": "Empresa",
+    "individual": "Particular",
+    "country": "País",
+    "nameAndSurname": "Nombre y apellidos",
+    "legalName": "Razón social",
+    "registrationNumber": "CIF / NIF",
+    "taxNumber": "Número de identificación fiscal",
+    "address": "Dirección",
+    "city": "Localidad",
+    "postalCode": "Código postal",
+    "paymentDetails": "Datos de pago",
+    "addBankAccount": "Añadir cuenta bancaria",
+    "bankAccountNumber": "Número de cuenta bancaria",
+    "bankName": "Entidad bancaria",
+    "contacts": "Contacto",
+    "emailAddress": "Correo electrónico",
+    "phoneNumber": "Teléfono",
+    "optional": "(Opcional)",
+    "required": "*",
+    "selectCountry": "Seleccionar país",
+    "select": "Seleccionar",
+    "placeholder": {
+      "invoiceNumber": "Introduzca el número de factura",
+      "paymentReference": "Introduzca la referencia de pago",
+      "legalName": "Razón social de la empresa o organización",
+      "nameAndSurname": "Introduzca nombre y apellidos",
+      "registrationNumber": "Introduzca el CIF o NIF",
+      "taxNumber": "Introduzca el NIF",
+      "address": "Introduzca la dirección",
+      "city": "Introduzca la localidad",
+      "postalCode": "Introduzca el código postal",
+      "iban": "Introduzca el IBAN",
+      "bankName": "Introduzca la entidad bancaria",
+      "email": "Introduzca el correo electrónico",
+      "phone": "222222",
+      "lineName": "Introduzca el concepto",
+      "invoiceNote": "Añadir una nota a esta factura",
+      "accentColor": "#008236"
+    },
+    "hint": {
+      "invoiceNumber": "El número debe seguir su secuencia contable habitual",
+      "paymentReference": "Referencia para conciliación de pagos (p. ej. número de factura)",
+      "issueDate": "Fecha de emisión de la factura",
+      "dueDate": "Fecha de vencimiento del pago",
+      "country": "País de registro",
+      "sellerNameInd": "Nombre y apellidos",
+      "sellerNameOrg": "Razón social registrada de la empresa u organización",
+      "sellerAddressInd": "Dirección tal como debe figurar en las facturas",
+      "sellerAddressOrg": "Domicilio fiscal de la empresa para facturación",
+      "city": "Localidad o municipio",
+      "postalCode": "Código postal",
+      "invoiceLanguage": "Idioma de las etiquetas y texto en XML/PDF",
+      "invoiceCurrency": "Todas las cantidades se expresan en esta moneda",
+      "invoiceType": "Factura estándar de bienes o servicios.",
+      "paymentType": "Los datos bancarios solo se muestran para transferencia",
+      "invoiceLogo": "Subir logotipo PNG o JPEG (recom. 174 × 56 px, máx. 1 MB)",
+      "accentColor": "Introduzca el código hex o pulse el círculo para elegir color"
+    },
+    "aria": {
+      "issueDate": "Fecha de emisión de la factura (AAAA-MM-DD)",
+      "dueDate": "Fecha de vencimiento (AAAA-MM-DD)",
+      "phoneCountryCode": "Prefijo telefónico del país",
+      "invoiceLanguage": "Idioma de la factura",
+      "invoiceCurrency": "Moneda de la factura",
+      "invoiceType": "Tipo de factura",
+      "paymentType": "Forma de pago",
+      "accentColor": "Color de acento (hex)",
+      "invoiceNote": "Nota de la factura"
+    },
+    "maxBankAccounts": "Máximo 6 cuentas bancarias.",
+    "addDetails": "Añadir datos",
+    "cancel": "Cancelar",
+    "items": {
+      "title": "Líneas",
+      "addFields": "Añadir campos:",
+      "discount": "Descuento",
+      "note": "Nota",
+      "serviceProduct": "Servicio / Producto",
+      "quantity": "Cantidad",
+      "unitPrice": "Precio unitario",
+      "subtotal": "Subtotal",
+      "discountCol": "Descuento",
+      "taxRate": "Tipo de IVA",
+      "taxAmount": "Cuota de IVA",
+      "total": "Total",
+      "addItem": "Añadir línea",
+      "noteLabel": "Nota",
+      "subtotalSum": "Subtotal",
+      "discountSum": "Descuento",
+      "taxSum": "IVA",
+      "totalSum": "Total"
+    },
+    "settings": {
+      "general": "General",
+      "style": "Estilo",
+      "invoiceLanguage": "Idioma de la factura",
+      "invoiceCurrency": "Moneda de la factura",
+      "invoiceType": "Tipo de factura",
+      "paymentType": "Forma de pago",
+      "resetToAppLanguage": "Restablecer al idioma de la aplicación",
+      "invoiceLogo": "Logotipo de la factura",
+      "accentColor": "Color de acento",
+      "clickOrDrag": "Pulse para elegir archivo o arrastre aquí",
+      "chooseFile": "Elegir archivo",
+      "logoUploaded": "Logotipo cargado"
+    },
+    "invoiceType": {
+      "380": "Factura comercial",
+      "384": "Factura rectificativa",
+      "381": "Factura rectificativa (abono)",
+      "326": "Factura parcial",
+      "389": "Autofactura",
+      "875": "Factura parcial de obra",
+      "876": "Factura parcial de liquidación de obra",
+      "877": "Factura de liquidación final de obra"
+    },
+    "invoiceTypeSubtext": {
+      "380": "Factura estándar de suministro de bienes o servicios.",
+      "384": "Sustituye o corrige una factura emitida anteriormente.",
+      "381": "Abono que reduce el importe debido por el comprador.",
+      "326": "Factura que cubre solo parte de un pedido o contrato.",
+      "389": "Factura emitida por el comprador (autofacturación).",
+      "875": "Factura por avance parcial de obra.",
+      "876": "Factura por liquidación parcial de obra.",
+      "877": "Factura de liquidación final de obra."
+    },
+    "paymentType": {
+      "30": "Transferencia bancaria",
+      "10": "Efectivo",
+      "48": "Tarjeta de crédito"
+    }
+  },
+  "toasts": {
+    "itemAdded": "Línea añadida a la factura",
+    "sellerSaved": "Datos del vendedor guardados",
+    "buyerSaved": "Datos del comprador guardados",
+    "invoiceLanguageUpdated": "Idioma de la factura actualizado",
+    "invoiceLanguageReset": "Idioma de la factura restablecido",
+    "currencyUpdated": "Moneda de la factura actualizada",
+    "invoiceTypeUpdated": "Tipo de factura actualizado",
+    "paymentTypeUpdated": "Forma de pago actualizada",
+    "logoUpdated": "Logotipo actualizado.",
+    "logoRemoved": "Logotipo eliminado."
+  },
+  "validation": {
+    "required": {
+      "country": "El país es obligatorio",
+      "legalName": "La razón social es obligatoria",
+      "nameAndSurname": "Nombre y apellidos son obligatorios",
+      "registrationNumber": "El número de registro es obligatorio",
+      "taxNumber": "El NIF/CIF es obligatorio",
+      "address": "La dirección es obligatoria",
+      "city": "La ciudad es obligatoria",
+      "postalCode": "El código postal es obligatorio",
+      "phone": "Número de teléfono no válido",
+      "email": "Dirección de correo no válida"
+    },
+    "invalid": {
+      "registrationNumber": "Número de registro no válido para el país seleccionado",
+      "vatNumber": "NIF/CIF no válido para el país seleccionado",
+      "ibanRequired": "Se requiere al menos un IBAN para transferencia bancaria"
+    }
+  },
+  "settingsErrors": {
+    "logoImageOnly": "Elija un archivo de imagen (PNG o JPEG).",
+    "logoMaxSize": "Elija una imagen de menos de 1 MB."
+  },
+  "ready": {
+    "message": "¿Todo listo para generar la factura?",
+    "createInvoice": "Crear factura"
+  },
+  "invoiceLanguageLive": {
+    "set": "Las etiquetas y el texto se generarán en {language}.",
+    "reset": "El idioma de la factura sigue al de la aplicación."
+  },
+  "paymentTypeLive": {
+    "cash": "Datos bancarios ocultos. Estado: Pagado en efectivo.",
+    "card": "Datos bancarios ocultos. Estado: Pagado con tarjeta.",
+    "transfer": "Se requieren datos bancarios para transferencia."
+  },
+  "summary": {
+    "sellerEmpty": "Introduzca los datos de su empresa",
+    "buyerEmpty": "Introduzca los datos del cliente",
+    "edit": "Editar",
+    "addDetails": "Añadir datos",
+    "registrationNumber": "Número de registro:",
+    "taxNumber": "NIF/CIF:",
+    "phone": "Teléfono:",
+    "email": "Correo:",
+    "address": "Dirección",
+    "bankAccount": "Cuenta bancaria",
+    "editSeller": "Editar datos del vendedor",
+    "editBuyer": "Editar datos del comprador"
+  },
+  "footer": {
+    "privacyPolicy": "Política de privacidad",
+    "termsAndConditions": "Términos y condiciones"
+  },
+  "export": {
+    "updating": "Actualizando…",
+    "countryListError": "No se pudo cargar la lista de países. Puede seguir usando el formulario.",
+    "validationTitle": "Faltan datos obligatorios",
+    "validationMessage": "Rellene todos los campos obligatorios (número de factura, vendedor y comprador, nombre del artículo en la línea 1 y al menos un IBAN) e inténtelo de nuevo."
+  }
+}

@@ -1,30 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free online invoice generator - Invio</title>
+  <title>Free Online Invoice Generator – Invossa (ES)</title>
   <meta name="description" content="Generate downloadable PDF invoices and compliant e-invoices directly in your browser with our free online invoice generator.">
   <meta name="keywords" content="invoice generator, online invoice maker, free invoice template, PDF invoice, e-invoice, billing software">
-  <meta name="author" content="Invio">
+  <meta name="author" content="Invossa">
   <meta name="robots" content="index, follow">
-  <link rel="icon" href="assets/favicon/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" href="assets/favicon/favicon-32x32.png" sizes="32x32">
-  <link rel="icon" type="image/png" href="assets/favicon/favicon-16x16.png" sizes="16x16">
-  <link rel="manifest" href="assets/favicon/site.webmanifest">
-  <link rel="apple-touch-icon" sizes="57x57" href="assets/favicon/apple-touch-icon-57x57.png">
-  <link rel="apple-touch-icon" sizes="72x72" href="assets/favicon/apple-touch-icon-72x72.png">
-  <link rel="apple-touch-icon" sizes="114x114" href="assets/favicon/apple-touch-icon-114x114.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="assets/favicon/apple-touch-icon-120x120.png">
-  <link rel="apple-touch-icon" sizes="144x144" href="assets/favicon/apple-touch-icon-144x144.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="assets/favicon/apple-touch-icon-152x152.png">
+  <link rel="icon" href="../assets/favicon/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="../assets/favicon/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="../assets/favicon/favicon-16x16.png" sizes="16x16">
+  <link rel="manifest" href="../assets/favicon/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="57x57" href="../assets/favicon/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="../assets/favicon/apple-touch-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="../assets/favicon/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="../assets/favicon/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="../assets/favicon/apple-touch-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="../assets/favicon/apple-touch-icon-152x152.png">
   <meta name="application-name" content="Free browser-based invoice generator">
   <meta name="theme-color" content="#008236">
   <meta name="msapplication-TileColor" content="#008236">
-  <meta name="msapplication-TileImage" content="assets/favicon/mstile-144x144.png">
+  <meta name="msapplication-TileImage" content="../assets/favicon/mstile-144x144.png">
   <meta property="og:title" content="Free Online Invoice Generator">
   <meta property="og:description" content="Generate downloadable PDF invoices and compliant e-invoices directly in your browser with our free online invoice generator.">
   <meta property="og:image" content="https://invoicing.invio.com/assets/invoice-generator-preview.png">
+  <link rel="canonical" href="https://invossa.app/lv/">
+  <link rel="alternate" hreflang="bg" href="https://invossa.app/bg/">
+  <link rel="alternate" hreflang="hr" href="https://invossa.app/hr/">
+  <link rel="alternate" hreflang="cs" href="https://invossa.app/cs/">
+  <link rel="alternate" hreflang="da" href="https://invossa.app/da/">
+  <link rel="alternate" hreflang="nl" href="https://invossa.app/nl/">
+  <link rel="alternate" hreflang="en" href="https://invossa.app/">
+  <link rel="alternate" hreflang="et" href="https://invossa.app/et/">
+  <link rel="alternate" hreflang="fi" href="https://invossa.app/fi/">
+  <link rel="alternate" hreflang="fr" href="https://invossa.app/fr/">
+  <link rel="alternate" hreflang="de" href="https://invossa.app/de/">
+  <link rel="alternate" hreflang="el" href="https://invossa.app/el/">
+  <link rel="alternate" hreflang="hu" href="https://invossa.app/hu/">
+  <link rel="alternate" hreflang="ga" href="https://invossa.app/ga/">
+  <link rel="alternate" hreflang="it" href="https://invossa.app/it/">
+  <link rel="alternate" hreflang="lv" href="https://invossa.app/lv/">
+  <link rel="alternate" hreflang="lt" href="https://invossa.app/lt/">
+  <link rel="alternate" hreflang="mt" href="https://invossa.app/mt/">
+  <link rel="alternate" hreflang="pl" href="https://invossa.app/pl/">
+  <link rel="alternate" hreflang="pt" href="https://invossa.app/pt/">
+  <link rel="alternate" hreflang="ro" href="https://invossa.app/ro/">
+  <link rel="alternate" hreflang="sk" href="https://invossa.app/sk/">
+  <link rel="alternate" hreflang="sl" href="https://invossa.app/sl/">
+  <link rel="alternate" hreflang="es" href="https://invossa.app/es/">
+  <link rel="alternate" hreflang="sv" href="https://invossa.app/sv/">
+  <link rel="alternate" hreflang="uk" href="https://invossa.app/uk/">
+  <link rel="alternate" hreflang="x-default" href="https://invossa.app/">
+  <meta name="invio-edge-country" content="">
+  <meta name="invio-locale" content="es">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -117,6 +146,26 @@
       }
       var initialSettings = getStoredSettings();
       applyAccentColor(initialSettings.accentColor);
+      var resolvedAppLanguage = 'en';
+      if (window.InvioLocale && typeof window.InvioLocale.resolveAppLanguage === 'function') {
+        resolvedAppLanguage = window.InvioLocale.resolveAppLanguage();
+      }
+      var invoiceOverride = window.InvioLocale && typeof window.InvioLocale.getInvoiceLanguageOverride === 'function'
+        ? window.InvioLocale.getInvoiceLanguageOverride()
+        : '';
+      Alpine.store('localeState', {
+        appLanguage: resolvedAppLanguage,
+        invoiceLanguage: invoiceOverride || resolvedAppLanguage,
+        setAppLanguage: function (locale) {
+          this.appLanguage = locale;
+          if (!window.InvioLocale || !window.InvioLocale.getInvoiceLanguageOverride || !window.InvioLocale.getInvoiceLanguageOverride()) {
+            this.invoiceLanguage = locale;
+          }
+        },
+        setInvoiceLanguage: function (locale) {
+          this.invoiceLanguage = locale;
+        }
+      });
       Alpine.store('settings', {
         logo: initialSettings.logo,
         accentColor: initialSettings.accentColor,
@@ -249,7 +298,7 @@
         var languageToCountry = {
           bg: 'bg', hr: 'hr', cs: 'cz', da: 'dk', nl: 'nl', en: 'gb', et: 'ee', fi: 'fi', fr: 'fr', de: 'de',
           el: 'gr', hu: 'hu', ga: 'ie', it: 'it', lv: 'lv', lt: 'lt', mt: 'mt', pl: 'pl', pt: 'pt', ro: 'ro',
-          sk: 'sk', sl: 'si', es: 'es', sv: 'se'
+          sk: 'sk', sl: 'si', es: 'es', sv: 'se', uk: 'ua'
         };
         var options = [
           { value: 'bg', label: 'Български' }, { value: 'hr', label: 'Hrvatski' }, { value: 'cs', label: 'Čeština' },
@@ -259,7 +308,8 @@
           { value: 'ga', label: 'Gaeilge' }, { value: 'it', label: 'Italiano' }, { value: 'lv', label: 'Latviešu' },
           { value: 'lt', label: 'Lietuvių' }, { value: 'mt', label: 'Malti' }, { value: 'pl', label: 'Polski' },
           { value: 'pt', label: 'Português' }, { value: 'ro', label: 'Română' }, { value: 'sk', label: 'Slovenčina' },
-          { value: 'sl', label: 'Slovenščina' }, { value: 'es', label: 'Español' }, { value: 'sv', label: 'Svenska' }
+          { value: 'sl', label: 'Slovenščina' }, { value: 'es', label: 'Español' }, { value: 'sv', label: 'Svenska' },
+          { value: 'uk', label: 'Українська' }
         ];
         function navigateToLocaleFallback(locale) {
           var normalized = (locale || 'en').toLowerCase();
@@ -305,6 +355,9 @@
           },
           init: function () {
             var self = this;
+            if (window.InvioLocale && typeof window.InvioLocale.resolveAppLanguage === 'function') {
+              this.current = window.InvioLocale.resolveAppLanguage();
+            }
             this.$watch('current', function () { self.updateWidth(); });
             this.updateWidth();
           }
@@ -313,17 +366,17 @@
     });
   </script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
-  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
 </head>
 <body>
-  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#main-content" class="skip-link" data-i18n="a11y.skipLink">Skip to main content</a>
   <div class="page-surface">
      <header class="top">
         <div class="header-grid container">
-          <img class="logo header-grid__logo" src="assets/logo-invio.svg" alt="Invio" width="114" height="42">
+          <img class="logo header-grid__logo" src="../assets/logo-invio.svg" alt="Invossa" width="114" height="42">
           <div class="header-grid__lang lang-control" x-data="languageSwitcher()" x-init="init()" x-cloak>
             <div class="lang-switcher" x-ref="wrapper" role="group" aria-labelledby="lang-switcher-label">
-              <span id="lang-switcher-label" class="visually-hidden">Language</span>
+              <span id="lang-switcher-label" class="visually-hidden" data-i18n="a11y.language">Language</span>
               <span class="lang-switcher-sizer" x-ref="sizer" aria-hidden="true">
                 <span class="lang-switcher-flag-spacer"></span>
                 <span class="lang-switcher-sizer-text" x-text="currentLabel"></span>
@@ -335,11 +388,7 @@
               <select
                 id="lang-select"
                 x-model="current"
-<<<<<<< Updated upstream
-                @change="updateWidth()"
-=======
                 @change="navigateToSelectedLocale()"
->>>>>>> Stashed changes
                 class="lang-switcher-select"
                 aria-label="Choose language"
                 aria-describedby="lang-switcher-label"
@@ -352,17 +401,17 @@
           </div>
 
           <div class="hero header-grid__hero">
-            <h1>Free browser-based invoice generator</h1>
-            <p>Make professional invoices, download print-ready PDFs, and issue compliant e-invoices from your browser.</p>
+            <h1 data-i18n="hero.title">Free browser-based invoice generator</h1>
+            <p data-i18n="hero.description">Make professional invoices, download print-ready PDFs, and issue compliant e-invoices from your browser.</p>
           </div>
 
-          <nav class="tabs header-grid__tabs" role="tablist" aria-label="Invoice sections">
-            <button type="button" class="btn btn--tab tab active" id="tab-invoice-data" role="tab" aria-selected="true" aria-controls="panel-invoice-data" data-target="invoice-data">Invoice data</button>
-            <button type="button" class="btn btn--tab tab" id="tab-invoice-settings" role="tab" aria-selected="false" aria-controls="panel-invoice-settings" data-target="invoice-settings">Settings</button>
+          <nav class="tabs header-grid__tabs" role="tablist" :aria-label="typeof t !== 'undefined' ? t('a11y.invoiceSections') : 'Invoice sections'">
+            <button type="button" class="btn btn--tab tab active" id="tab-invoice-data" role="tab" aria-selected="true" aria-controls="panel-invoice-data" data-target="invoice-data" data-i18n="tabs.invoiceData" x-text="typeof t !== 'undefined' ? t('tabs.invoiceData') : 'Invoice data'">Invoice data</button>
+            <button type="button" class="btn btn--tab tab" id="tab-invoice-settings" role="tab" aria-selected="false" aria-controls="panel-invoice-settings" data-target="invoice-settings" data-i18n="tabs.settings" x-text="typeof t !== 'undefined' ? t('tabs.settings') : 'Settings'">Settings</button>
           </nav>
 
           <div class="header-decoration-wrap header-grid__decoration" aria-hidden="true">
-            <img class="header-decoration" src="assets/paper-stack-flying.png" alt="" fetchpriority="high">
+            <img class="header-decoration" src="../assets/paper-stack-flying.png" alt="" fetchpriority="high">
           </div>
         </div>
       </header>
@@ -372,35 +421,35 @@
           <p id="countries-load-status" class="countries-load-status" aria-live="polite" role="status" hidden></p>
           <section class="panel panel-invoice-data active" id="panel-invoice-data" role="tabpanel" aria-labelledby="tab-invoice-data" aria-hidden="false" data-panel="invoice-data">
             <section class="section">
-              <h2>Basic details</h2>
+              <h2 data-i18n="form.basicDetails">Basic details</h2>
               <div class="section-content">
                 <div class="form-group form-field" id="invoice-number-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                  <label for="invoice-number"><span class="form-label">Invoice number <span class="required-mark">*</span></span></label>
-                  <input class="form-control" type="text" id="invoice-number" name="invoice-number" placeholder="Enter invoice number" maxlength="80" required aria-describedby="invoice-number-help invoice-number-error" aria-invalid="false">
-                  <small class="field-helper form-help" id="invoice-number-help">Make sure the number you enter follows your established accounting sequence</small>
+                  <label for="invoice-number"><span class="form-label" data-i18n="form.invoiceNumber">Invoice number <span class="required-mark">*</span></span></label>
+                  <input class="form-control" type="text" id="invoice-number" name="invoice-number" data-i18n-placeholder="form.placeholder.invoiceNumber" placeholder="Enter invoice number" maxlength="80" required aria-describedby="invoice-number-help invoice-number-error" aria-invalid="false">
+                  <small class="field-helper form-help" id="invoice-number-help" data-i18n="form.hint.invoiceNumber">Make sure the number you enter follows your established accounting sequence</small>
                   <span class="field-error form-error" id="invoice-number-error" role="alert" aria-live="polite" hidden></span>
                 </div>
                 <div class="form-group form-field" id="payment-reference-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                  <label for="payment-reference"><span class="form-label">Payment reference <span class="required-mark">*</span></span></label>
-                  <input class="form-control" type="text" id="payment-reference" name="payment-reference" placeholder="Enter payment reference" required aria-describedby="payment-reference-hint payment-reference-error" aria-invalid="false">
-                  <small class="field-helper form-help" id="payment-reference-hint">Reference used for payment matching (e.g. invoice number)</small>
+                  <label for="payment-reference"><span class="form-label" data-i18n="form.paymentReference">Payment reference <span class="required-mark">*</span></span></label>
+                  <input class="form-control" type="text" id="payment-reference" name="payment-reference" data-i18n-placeholder="form.placeholder.paymentReference" placeholder="Enter payment reference" required aria-describedby="payment-reference-hint payment-reference-error" aria-invalid="false">
+                  <small class="field-helper form-help" id="payment-reference-hint" data-i18n="form.hint.paymentReference">Reference used for payment matching (e.g. invoice number)</small>
                   <span class="field-error form-error" id="payment-reference-error" role="alert" aria-live="polite" hidden></span>
                 </div>
                 <div class="field-row">
                   <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                    <label for="issue-date"><span class="form-label">Issue date <span class="required-mark">*</span></span></label>
+                    <label for="issue-date"><span class="form-label" data-i18n="form.issueDate">Issue date <span class="required-mark">*</span></span></label>
                     <div class="date-field">
                       <input class="form-control" type="date" id="issue-date" name="issue-date" required aria-describedby="issue-date-hint" aria-label="Invoice issue date (YYYY-MM-DD)">
                     </div>
-                    <small class="field-helper form-help" id="issue-date-hint">Date the invoice is issued</small>
+                    <small class="field-helper form-help" id="issue-date-hint" data-i18n="form.hint.issueDate">Date the invoice is issued</small>
                   </div>
                   <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                    <label for="due-date"><span class="form-label">Due date <span class="required-mark">*</span></span></label>
+                    <label for="due-date"><span class="form-label" data-i18n="form.dueDate">Due date <span class="required-mark">*</span></span></label>
                     <div class="date-field" id="due-date-field">
-                      <span class="date-updating" id="due-date-updating" aria-live="polite" hidden>Updating…</span>
+                      <span class="date-updating" id="due-date-updating" aria-live="polite" hidden data-i18n="export.updating">Updating…</span>
                       <input class="form-control" type="date" id="due-date" name="due-date" required aria-describedby="due-date-updating due-date-hint" aria-label="Due date (YYYY-MM-DD)">
                     </div>
-                    <small class="field-helper form-help" id="due-date-hint">Payment due date</small>
+                    <small class="field-helper form-help" id="due-date-hint" data-i18n="form.hint.dueDate">Payment due date</small>
                   </div>
                 </div>
               </div>
@@ -408,12 +457,12 @@
 
 
             <section class="section" id="seller-section">
-              <h2>Seller</h2>
+              <h2 data-i18n="form.seller">Seller</h2>
               <div class="section-content">
                 <div class="card" id="seller-card">
-                    <img src="assets/men-holding-papers.webp" alt="Seller details illustration" class="card-image" width="248" height="auto">
-                  <h3 id="seller-card-summary">Enter your business details</h3>
-                  <button type="button" class="btn btn--primary btn--icon-left" data-seller-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button>
+                    <img src="../assets/men-holding-papers.webp" alt="Seller details illustration" class="card-image" width="248" height="auto">
+                  <h3 id="seller-card-summary" data-i18n="summary.sellerEmpty">Enter your business details</h3>
+                  <button type="button" class="btn btn--primary btn--icon-left" data-seller-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label" data-i18n="form.addDetails">Add details</span></button>
                 </div>
               </div>
             </section>
@@ -421,38 +470,38 @@
             <template id="seller-sheet-template">
               <div class="seller-bottom-sheet" x-data="{ sellerTab: 'organisation' }" aria-labelledby="seller-dialog-title" aria-modal="true" role="dialog">
                 <header class="seller-modal-header">
-                  <h2 id="seller-dialog-title" class="seller-modal-title">Seller</h2>
-                  <button type="button" class="btn btn--secondary btn--icon-only seller-modal-close" id="seller-close" aria-label="Close seller modal">
+                  <h2 id="seller-dialog-title" class="seller-modal-title" data-i18n="form.seller">Seller</h2>
+                  <button type="button" class="btn btn--secondary btn--icon-only seller-modal-close" id="seller-close" aria-label="Close seller modal" data-i18n-aria-label="a11y.closeSellerModal">
                     <span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span>
                   </button>
                 </header>
                 <div class="seller-modal-tabs" role="tablist">
-                  <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'organisation' }" :aria-selected="sellerTab === 'organisation'" @click="sellerTab = 'organisation'" id="seller-tab-organisation" data-seller-tab="organisation">Organisation</button>
-                  <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'individual' }" :aria-selected="sellerTab === 'individual'" @click="sellerTab = 'individual'; $nextTick(() => { const r = document.getElementById('seller-registration'); const v = document.getElementById('seller-vat'); if (r) r.value = ''; if (v) v.value = ''; })" id="seller-tab-individual" data-seller-tab="individual">Individual</button>
+                  <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'organisation' }" :aria-selected="sellerTab === 'organisation'" @click="sellerTab = 'organisation'" id="seller-tab-organisation" data-seller-tab="organisation" data-i18n="form.organisation">Organisation</button>
+                  <button type="button" class="btn btn--tab seller-tab" role="tab" :class="{ 'active': sellerTab === 'individual' }" :aria-selected="sellerTab === 'individual'" @click="sellerTab = 'individual'; $nextTick(() => { const r = document.getElementById('seller-registration'); const v = document.getElementById('seller-vat'); if (r) r.value = ''; if (v) v.value = ''; })" id="seller-tab-individual" data-seller-tab="individual" data-i18n="form.individual">Individual</button>
                 </div>
                 <form id="seller-form" class="seller-form" novalidate role="tabpanel" :aria-labelledby="sellerTab === 'organisation' ? 'seller-tab-organisation' : 'seller-tab-individual'">
                   <div class="seller-form-alert-wrap" x-show="$store.sellerFormAlert.show" x-cloak>
                     <div class="seller-form-alert" id="seller-form-errors" role="alert" tabindex="-1" aria-live="polite" :aria-hidden="!$store.sellerFormAlert.show ? 'true' : 'false'">
                       <span class="seller-form-alert__icon" aria-hidden="true"><span class="material-symbols-rounded" aria-hidden="true">warning</span></span>
                       <span class="seller-form-alert__message" x-text="$store.sellerFormAlert.message"></span>
-                      <button type="button" class="seller-form-alert__dismiss" aria-label="Dismiss error" @click="$store.sellerFormAlert.show = false; $store.sellerFormAlert.message = ''"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
+                      <button type="button" class="seller-form-alert__dismiss" aria-label="Dismiss error" data-i18n-aria-label="a11y.dismissError" @click="$store.sellerFormAlert.show = false; $store.sellerFormAlert.message = ''"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
                     </div>
                   </div>
                   <div class="seller-modal-section">
-                    <div class="seller-section-title">Basic details</div>
+                    <div class="seller-section-title" data-i18n="form.basicDetails">Basic details</div>
                     <div class="seller-section-fields">
                       <div class="form-group form-field native-country-select-wrap">
-                        <label for="seller-country"><span class="form-label">Country <span class="required-mark">*</span></span></label>
+                        <label for="seller-country"><span class="form-label" data-i18n="form.country">Country <span class="required-mark">*</span></span></label>
                         <div class="country-select-wrapper" id="seller-country-wrapper">
-                          <span class="country-select-display" id="seller-country-display" aria-hidden="true"><span class="country-select-flag fi" id="seller-country-flag"></span><span class="country-select-name" id="seller-country-name">Select country</span></span>
+                          <span class="country-select-display" id="seller-country-display" aria-hidden="true"><span class="country-select-flag fi" id="seller-country-flag"></span><span class="country-select-name" id="seller-country-name" data-i18n="form.selectCountry">Select country</span></span>
                           <span class="select native-select country-select-label">
                             <select class="form-select native-select__control" name="seller-country" id="seller-country" required aria-label="Country" aria-describedby="seller-country-hint">
-                              <option value="">Select country</option>
+                              <option value="" data-i18n="form.selectCountry">Select country</option>
                             </select>
                           </span>
                           <span class="material-symbols-rounded country-select-chevron" aria-hidden="true">keyboard_arrow_down</span>
                         </div>
-                        <small class="field-helper form-help" id="seller-country-hint">Country of registration</small>
+                        <small class="field-helper form-help" id="seller-country-hint" data-i18n="form.hint.country">Country of registration</small>
                         <span class="field-error form-error field-error-reserved" id="seller-country-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
@@ -462,32 +511,32 @@
                         <span class="field-error form-error field-error-reserved" id="seller-name-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" x-show="sellerTab === 'organisation'" x-cloak :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="seller-registration"><span class="form-label">Registration number <span class="required-mark">*</span></span></label>
-                        <input class="form-control" type="text" name="seller-registration" id="seller-registration" required placeholder="Enter registration number" aria-describedby="seller-registration-error">
+                        <label for="seller-registration"><span class="form-label" data-i18n="form.registrationNumber">Registration number <span class="required-mark">*</span></span></label>
+                        <input class="form-control" type="text" name="seller-registration" id="seller-registration" required data-i18n-placeholder="form.placeholder.registrationNumber" placeholder="Enter registration number" aria-describedby="seller-registration-error">
                         <span class="field-error form-error field-error-reserved" id="seller-registration-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="seller-vat"><span class="form-label">Tax number <span class="required-mark" x-show="sellerTab === 'individual'" x-cloak>*</span><span class="label-optional" x-show="sellerTab === 'organisation'">(Optional)</span></span></label>
-                        <input class="form-control" type="text" name="seller-vat" id="seller-vat" :required="sellerTab === 'individual'" placeholder="Enter tax number" aria-describedby="seller-vat-error">
+                        <label for="seller-vat"><span class="form-label" data-i18n="form.taxNumber">Tax number <span class="required-mark" x-show="sellerTab === 'individual'" x-cloak>*</span><span class="label-optional" x-show="sellerTab === 'organisation'" data-i18n="form.optional">(Optional)</span></span></label>
+                        <input class="form-control" type="text" name="seller-vat" id="seller-vat" :required="sellerTab === 'individual'" data-i18n-placeholder="form.placeholder.taxNumber" placeholder="Enter tax number" aria-describedby="seller-vat-error">
                         <span class="field-error form-error field-error-reserved" id="seller-vat-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="seller-street"><span class="form-label">Address <span class="required-mark">*</span></span></label>
-                        <input class="form-control" type="text" name="seller-street" id="seller-street" required placeholder="Enter address" aria-describedby="seller-street-hint">
+                        <label for="seller-street"><span class="form-label" data-i18n="form.address">Address <span class="required-mark">*</span></span></label>
+                        <input class="form-control" type="text" name="seller-street" id="seller-street" required data-i18n-placeholder="form.placeholder.address" placeholder="Enter address" aria-describedby="seller-street-hint">
                         <small class="field-helper form-help" id="seller-street-hint" x-text="sellerTab === 'individual' ? 'Enter address as it should appear on invoices' : 'Enter the company’s legal address as it should appear on invoices'"></small>
                         <span class="field-error form-error field-error-reserved" id="seller-street-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="seller-field-row">
                         <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                          <label for="seller-city"><span class="form-label">City <span class="required-mark">*</span></span></label>
-                          <input class="form-control" type="text" name="seller-city" id="seller-city" required placeholder="Enter city" aria-describedby="seller-city-hint">
-                          <small class="field-helper form-help" id="seller-city-hint">City or town</small>
+                          <label for="seller-city"><span class="form-label" data-i18n="form.city">City <span class="required-mark">*</span></span></label>
+                          <input class="form-control" type="text" name="seller-city" id="seller-city" required data-i18n-placeholder="form.placeholder.city" placeholder="Enter city" aria-describedby="seller-city-hint">
+                          <small class="field-helper form-help" id="seller-city-hint" data-i18n="form.hint.city">City or town</small>
                           <span class="field-error form-error field-error-reserved" id="seller-city-error" role="alert" aria-live="polite" hidden x-cloak></span>
                         </div>
                         <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                          <label for="seller-postal"><span class="form-label">Postal code <span class="required-mark">*</span></span></label>
-                          <input class="form-control" type="text" name="seller-postal" id="seller-postal" required placeholder="Enter postal code" aria-describedby="seller-postal-hint">
-                          <small class="field-helper form-help" id="seller-postal-hint">Postal or ZIP code</small>
+                          <label for="seller-postal"><span class="form-label" data-i18n="form.postalCode">Postal code <span class="required-mark">*</span></span></label>
+                          <input class="form-control" type="text" name="seller-postal" id="seller-postal" required data-i18n-placeholder="form.placeholder.postalCode" placeholder="Enter postal code" aria-describedby="seller-postal-hint">
+                          <small class="field-helper form-help" id="seller-postal-hint" data-i18n="form.hint.postalCode">Postal or ZIP code</small>
                           <span class="field-error form-error field-error-reserved" id="seller-postal-error" role="alert" aria-live="polite" hidden x-cloak></span>
                         </div>
                       </div>
@@ -495,10 +544,10 @@
                   </div>
                   <div class="seller-modal-section" id="seller-payment-details-section" x-data="paymentDetails()">
                   <div>
-                    <div class="seller-section-title">Payment details</div>
+                    <div class="seller-section-title" data-i18n="form.paymentDetails">Payment details</div>
                     <div class="seller-payment-add-wrap">
-                      <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left seller-add-iban-anchor" id="seller-add-iban" :disabled="$store.sellerBankAccounts.length >= 6" :title="$store.sellerBankAccounts.length >= 6 ? 'Max number of 6 bank accounts are allowed.' : null" :aria-describedby="$store.sellerBankAccounts.length >= 6 ? 'seller-add-iban-tooltip' : null" @click="addAccount()"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add bank account</span></button>
-                      <span id="seller-add-iban-tooltip" class="seller-add-iban-tooltip" role="tooltip" x-show="$store.sellerBankAccounts.length >= 6" x-cloak>Max number of 6 bank accounts are allowed.</span>
+                      <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left seller-add-iban-anchor" id="seller-add-iban" :disabled="$store.sellerBankAccounts.length >= 6" :title="$store.sellerBankAccounts.length >= 6 ? 'Max number of 6 bank accounts are allowed.' : null" :aria-describedby="$store.sellerBankAccounts.length >= 6 ? 'seller-add-iban-tooltip' : null" @click="addAccount()"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label" data-i18n="form.addBankAccount">Add bank account</span></button>
+                      <span id="seller-add-iban-tooltip" class="seller-add-iban-tooltip" role="tooltip" x-show="$store.sellerBankAccounts.length >= 6" x-cloak data-i18n="form.maxBankAccounts">Max number of 6 bank accounts are allowed.</span>
                     </div>
                     </div>
                     <div class="seller-section-fields iban-fields">
@@ -507,30 +556,30 @@
                         <template x-for="(account, index) in $store.sellerBankAccounts" :key="account._id">
                           <div class="iban-item">
                             <div class="form-group form-field">
-                              <label :for="'seller-iban-' + index"><span class="form-label">Bank account number <span class="required-mark">*</span></label>
-                              <input class="form-control" :id="'seller-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" placeholder="Enter IBAN number" :aria-describedby="'seller-iban-' + index + '-error'" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
+                              <label :for="'seller-iban-' + index"><span class="form-label" data-i18n="form.bankAccountNumber">Bank account number <span class="required-mark">*</span></label>
+                              <input class="form-control" :id="'seller-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" data-i18n-placeholder="form.placeholder.iban" placeholder="Enter IBAN number" :aria-describedby="'seller-iban-' + index + '-error'" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
                               <span class="field-error form-error field-error-reserved" :id="'seller-iban-' + index + '-error'" role="alert" aria-live="polite" x-show="account.ibanError" x-cloak x-text="account.ibanError"></span>
                             </div>
                             <div class="form-group form-field">
-                              <label :for="'seller-iban-bank-' + index"><span class="form-label">Bank name</span> <span class="label-optional">(Optional)</span></label>
-                              <input class="form-control" :id="'seller-iban-bank-' + index" type="text" x-model="account.bankName" placeholder="Enter bank name" :name="'iban-bank-' + index">
+                              <label :for="'seller-iban-bank-' + index"><span class="form-label" data-i18n="form.bankName">Bank name</span> <span class="label-optional" data-i18n="form.optional">(Optional)</span></label>
+                              <input class="form-control" :id="'seller-iban-bank-' + index" type="text" x-model="account.bankName" data-i18n-placeholder="form.placeholder.bankName" placeholder="Enter bank name" :name="'iban-bank-' + index">
                             </div>
-                            <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left seller-remove-iban" @click="removeAccount(index)" :aria-label="'Remove bank account ' + (index + 1)" x-show="$store.sellerBankAccounts.length > 1" x-cloak><span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span><span class="btn__label">Remove</span></button>
+                            <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left seller-remove-iban" @click="removeAccount(index)" :aria-label="'Remove bank account ' + (index + 1)" x-show="$store.sellerBankAccounts.length > 1" x-cloak><span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span><span class="btn__label" data-i18n="a11y.removeBankAccount">Remove</span></button>
                           </div>
                         </template>
                       </div>
                     </div>
                   </div>
                   <div class="seller-modal-section">
-                    <div class="seller-section-title">Contacts</div>
+                    <div class="seller-section-title" data-i18n="form.contacts">Contacts</div>
                     <div class="seller-section-fields">
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="seller-email"><span class="form-label">Email address</span> <span class="label-optional">(Optional)</span></label>
-                        <input class="form-control" type="email" name="seller-email" id="seller-email" placeholder="Enter email address" aria-describedby="seller-email-error">
+                        <label for="seller-email"><span class="form-label" data-i18n="form.emailAddress">Email address</span> <span class="label-optional" data-i18n="form.optional">(Optional)</span></label>
+                        <input class="form-control" type="email" name="seller-email" id="seller-email" data-i18n-placeholder="form.placeholder.email" placeholder="Enter email address" aria-describedby="seller-email-error">
                         <span class="field-error form-error field-error-reserved" id="seller-email-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field phone-field-group" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="seller-phone" id="seller-phone-label"><span class="form-label">Phone number</span> <span class="label-optional">(Optional)</span></label>
+                        <label for="seller-phone" id="seller-phone-label"><span class="form-label" data-i18n="form.phoneNumber">Phone number</span> <span class="label-optional" data-i18n="form.optional">(Optional)</span></label>
                         <div class="phone-input-row">
                           <div class="phone-country-box">
                             <span class="phone-country-display" id="seller-phone-country-display" aria-hidden="true"><span class="phone-country-flag fi" id="seller-phone-country-flag"></span><span class="phone-country-dial" id="seller-phone-country-dial"></span></span>
@@ -546,20 +595,20 @@
                     </div>
                   </div>
                   <div class="seller-modal-actions">
-                    <button type="button" class="btn btn--secondary" id="seller-cancel">Cancel</button>
-                    <button type="submit" class="btn btn--primary" id="seller-save">Add details</button>
+                    <button type="button" class="btn btn--secondary" id="seller-cancel" data-i18n="form.cancel">Cancel</button>
+                    <button type="submit" class="btn btn--primary" id="seller-save" data-i18n="form.addDetails">Add details</button>
                   </div>
                 </form>
               </div>
             </template>
 
             <section class="section" id="buyer-section">
-              <h2>Buyer</h2>
+              <h2 data-i18n="form.buyer">Buyer</h2>
               <div class="section-content">
                 <div class="card" id="buyer-card">
-                  <img src="assets/image-men-holding-an-invoice.webp" alt="Buyer details illustration" class="card-image" width="248" height="auto">
-                  <h3 id="buyer-card-summary">Enter your customers details</h3>
-                  <button type="button" class="btn btn--primary btn--icon-left" data-buyer-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button>
+                  <img src="../assets/image-men-holding-an-invoice.webp" alt="Buyer details illustration" class="card-image" width="248" height="auto">
+                  <h3 id="buyer-card-summary" data-i18n="summary.buyerEmpty">Enter your customers details</h3>
+                  <button type="button" class="btn btn--primary btn--icon-left" data-buyer-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label" data-i18n="form.addDetails">Add details</span></button>
                 </div>
               </div>
             </section>
@@ -567,38 +616,38 @@
             <template id="buyer-sheet-template">
               <div class="buyer-bottom-sheet" x-data="{ buyerTab: 'organisation' }" aria-labelledby="buyer-dialog-title" aria-modal="true" role="dialog">
                 <header class="buyer-modal-header">
-                  <h2 id="buyer-dialog-title" class="buyer-modal-title">Buyer</h2>
-                  <button type="button" class="btn btn--secondary btn--icon-only buyer-modal-close" id="buyer-close" aria-label="Close buyer modal">
+                  <h2 id="buyer-dialog-title" class="buyer-modal-title" data-i18n="form.buyer">Buyer</h2>
+                  <button type="button" class="btn btn--secondary btn--icon-only buyer-modal-close" id="buyer-close" aria-label="Close buyer modal" data-i18n-aria-label="a11y.closeBuyerModal">
                     <span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span>
                   </button>
                 </header>
                 <div class="buyer-modal-tabs" role="tablist">
-                  <button type="button" class="btn btn--tab buyer-tab" role="tab" :class="{ 'active': buyerTab === 'organisation' }" :aria-selected="buyerTab === 'organisation'" @click="buyerTab = 'organisation'" id="buyer-tab-organisation" data-buyer-tab="organisation">Organisation</button>
-                  <button type="button" class="btn btn--tab buyer-tab" role="tab" :class="{ 'active': buyerTab === 'individual' }" :aria-selected="buyerTab === 'individual'" @click="buyerTab = 'individual'; $nextTick(() => { const r = document.getElementById('buyer-registration'); const v = document.getElementById('buyer-vat'); if (r) r.value = ''; if (v) v.value = ''; })" id="buyer-tab-individual" data-buyer-tab="individual">Individual</button>
+                  <button type="button" class="btn btn--tab buyer-tab" role="tab" :class="{ 'active': buyerTab === 'organisation' }" :aria-selected="buyerTab === 'organisation'" @click="buyerTab = 'organisation'" id="buyer-tab-organisation" data-buyer-tab="organisation" data-i18n="form.organisation">Organisation</button>
+                  <button type="button" class="btn btn--tab buyer-tab" role="tab" :class="{ 'active': buyerTab === 'individual' }" :aria-selected="buyerTab === 'individual'" @click="buyerTab = 'individual'; $nextTick(() => { const r = document.getElementById('buyer-registration'); const v = document.getElementById('buyer-vat'); if (r) r.value = ''; if (v) v.value = ''; })" id="buyer-tab-individual" data-buyer-tab="individual" data-i18n="form.individual">Individual</button>
                 </div>
                 <form id="buyer-form" class="buyer-form" novalidate role="tabpanel" :aria-labelledby="buyerTab === 'organisation' ? 'buyer-tab-organisation' : 'buyer-tab-individual'">
                   <div class="buyer-form-alert-wrap" x-show="$store.buyerFormAlert.show" x-cloak>
                     <div class="buyer-form-alert" id="buyer-form-errors" role="alert" tabindex="-1" aria-live="polite" :aria-hidden="!$store.buyerFormAlert.show ? 'true' : 'false'">
                       <span class="buyer-form-alert__icon" aria-hidden="true"><span class="material-symbols-rounded" aria-hidden="true">warning</span></span>
                       <span class="buyer-form-alert__message" x-text="$store.buyerFormAlert.message"></span>
-                      <button type="button" class="buyer-form-alert__dismiss" aria-label="Dismiss error" @click="$store.buyerFormAlert.show = false; $store.buyerFormAlert.message = ''"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
+                      <button type="button" class="buyer-form-alert__dismiss" aria-label="Dismiss error" data-i18n-aria-label="a11y.dismissError" @click="$store.buyerFormAlert.show = false; $store.buyerFormAlert.message = ''"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
                     </div>
                   </div>
                   <div class="buyer-modal-section">
-                    <div class="buyer-section-title">Basic details</div>
+                    <div class="buyer-section-title" data-i18n="form.basicDetails">Basic details</div>
                     <div class="buyer-section-fields">
                       <div class="form-group form-field native-country-select-wrap">
-                        <label for="buyer-country"><span class="form-label">Country <span class="required-mark">*</span></span></label>
+                        <label for="buyer-country"><span class="form-label" data-i18n="form.country">Country <span class="required-mark">*</span></span></label>
                         <div class="country-select-wrapper" id="buyer-country-wrapper">
-                          <span class="country-select-display" id="buyer-country-display" aria-hidden="true"><span class="country-select-flag fi" id="buyer-country-flag"></span><span class="country-select-name" id="buyer-country-name">Select country</span></span>
+                          <span class="country-select-display" id="buyer-country-display" aria-hidden="true"><span class="country-select-flag fi" id="buyer-country-flag"></span><span class="country-select-name" id="buyer-country-name" data-i18n="form.selectCountry">Select country</span></span>
                           <span class="select native-select country-select-label">
                             <select class="form-select native-select__control" name="buyer-country" id="buyer-country" required aria-label="Country" aria-describedby="buyer-country-hint">
-                              <option value="">Select country</option>
+                              <option value="" data-i18n="form.selectCountry">Select country</option>
                             </select>
                           </span>
                           <span class="material-symbols-rounded country-select-chevron" aria-hidden="true">keyboard_arrow_down</span>
                         </div>
-                        <small class="field-helper form-help" id="buyer-country-hint">Country of registration</small>
+                        <small class="field-helper form-help" id="buyer-country-hint" data-i18n="form.hint.country">Country of registration</small>
                         <span class="field-error form-error field-error-reserved" id="buyer-country-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
@@ -608,32 +657,32 @@
                         <span class="field-error form-error field-error-reserved" id="buyer-name-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" x-show="buyerTab === 'organisation'" x-cloak :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="buyer-registration"><span class="form-label">Registration number <span class="required-mark">*</span></span></label>
-                        <input class="form-control" type="text" name="buyer-registration" id="buyer-registration" required placeholder="Enter registration number" aria-describedby="buyer-registration-error">
+                        <label for="buyer-registration"><span class="form-label" data-i18n="form.registrationNumber">Registration number <span class="required-mark">*</span></span></label>
+                        <input class="form-control" type="text" name="buyer-registration" id="buyer-registration" required data-i18n-placeholder="form.placeholder.registrationNumber" placeholder="Enter registration number" aria-describedby="buyer-registration-error">
                         <span class="field-error form-error field-error-reserved" id="buyer-registration-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="buyer-vat"><span class="form-label">Tax number <span class="required-mark" x-show="buyerTab === 'individual'" x-cloak>*</span><span class="label-optional" x-show="buyerTab === 'organisation'">(Optional)</span></span></label>
-                        <input class="form-control" type="text" name="buyer-vat" id="buyer-vat" :required="buyerTab === 'individual'" placeholder="Enter tax number" aria-describedby="buyer-vat-error">
+                        <label for="buyer-vat"><span class="form-label" data-i18n="form.taxNumber">Tax number <span class="required-mark" x-show="buyerTab === 'individual'" x-cloak>*</span><span class="label-optional" x-show="buyerTab === 'organisation'" data-i18n="form.optional">(Optional)</span></span></label>
+                        <input class="form-control" type="text" name="buyer-vat" id="buyer-vat" :required="buyerTab === 'individual'" data-i18n-placeholder="form.placeholder.taxNumber" placeholder="Enter tax number" aria-describedby="buyer-vat-error">
                         <span class="field-error form-error field-error-reserved" id="buyer-vat-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="buyer-street"><span class="form-label">Address <span class="required-mark">*</span></span></label>
-                        <input class="form-control" type="text" name="buyer-street" id="buyer-street" required placeholder="Enter address" aria-describedby="buyer-street-hint">
+                        <label for="buyer-street"><span class="form-label" data-i18n="form.address">Address <span class="required-mark">*</span></span></label>
+                        <input class="form-control" type="text" name="buyer-street" id="buyer-street" required data-i18n-placeholder="form.placeholder.address" placeholder="Enter address" aria-describedby="buyer-street-hint">
                         <small class="field-helper form-help" id="buyer-street-hint" x-text="buyerTab === 'individual' ? 'Enter address as it should appear on invoices' : 'Enter the company\'s legal address as it should appear on invoices'"></small>
                         <span class="field-error form-error field-error-reserved" id="buyer-street-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="buyer-field-row">
                         <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                          <label for="buyer-city"><span class="form-label">City <span class="required-mark">*</span></span></label>
-                          <input class="form-control" type="text" name="buyer-city" id="buyer-city" required placeholder="Enter city" aria-describedby="buyer-city-hint">
-                          <small class="field-helper form-help" id="buyer-city-hint">City or town</small>
+                          <label for="buyer-city"><span class="form-label" data-i18n="form.city">City <span class="required-mark">*</span></span></label>
+                          <input class="form-control" type="text" name="buyer-city" id="buyer-city" required data-i18n-placeholder="form.placeholder.city" placeholder="Enter city" aria-describedby="buyer-city-hint">
+                          <small class="field-helper form-help" id="buyer-city-hint" data-i18n="form.hint.city">City or town</small>
                           <span class="field-error form-error field-error-reserved" id="buyer-city-error" role="alert" aria-live="polite" hidden x-cloak></span>
                         </div>
                         <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                          <label for="buyer-postal"><span class="form-label">Postal code <span class="required-mark">*</span></span></label>
-                          <input class="form-control" type="text" name="buyer-postal" id="buyer-postal" required placeholder="Enter postal code" aria-describedby="buyer-postal-hint">
-                          <small class="field-helper form-help" id="buyer-postal-hint">Postal or ZIP code</small>
+                          <label for="buyer-postal"><span class="form-label" data-i18n="form.postalCode">Postal code <span class="required-mark">*</span></span></label>
+                          <input class="form-control" type="text" name="buyer-postal" id="buyer-postal" required data-i18n-placeholder="form.placeholder.postalCode" placeholder="Enter postal code" aria-describedby="buyer-postal-hint">
+                          <small class="field-helper form-help" id="buyer-postal-hint" data-i18n="form.hint.postalCode">Postal or ZIP code</small>
                           <span class="field-error form-error field-error-reserved" id="buyer-postal-error" role="alert" aria-live="polite" hidden x-cloak></span>
                         </div>
                       </div>
@@ -641,10 +690,10 @@
                   </div>
                   <div class="buyer-modal-section" id="buyer-payment-details-section" x-data="buyerPaymentDetails()">
                   <div>
-                    <div class="buyer-section-title">Payment details</div>
+                    <div class="buyer-section-title" data-i18n="form.paymentDetails">Payment details</div>
                     <div class="buyer-payment-add-wrap">
-                      <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left buyer-add-iban-anchor" id="buyer-add-iban" :disabled="$store.buyerBankAccounts.length >= 6" :title="$store.buyerBankAccounts.length >= 6 ? 'Max number of 6 bank accounts are allowed.' : null" :aria-describedby="$store.buyerBankAccounts.length >= 6 ? 'buyer-add-iban-tooltip' : null" @click="addAccount()"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add bank account</span></button>
-                      <span id="buyer-add-iban-tooltip" class="buyer-add-iban-tooltip" role="tooltip" x-show="$store.buyerBankAccounts.length >= 6" x-cloak>Max number of 6 bank accounts are allowed.</span>
+                      <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left buyer-add-iban-anchor" id="buyer-add-iban" :disabled="$store.buyerBankAccounts.length >= 6" :title="$store.buyerBankAccounts.length >= 6 ? 'Max number of 6 bank accounts are allowed.' : null" :aria-describedby="$store.buyerBankAccounts.length >= 6 ? 'buyer-add-iban-tooltip' : null" @click="addAccount()"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label" data-i18n="form.addBankAccount">Add bank account</span></button>
+                      <span id="buyer-add-iban-tooltip" class="buyer-add-iban-tooltip" role="tooltip" x-show="$store.buyerBankAccounts.length >= 6" x-cloak data-i18n="form.maxBankAccounts">Max number of 6 bank accounts are allowed.</span>
                     </div>
                     </div>
                     <div class="buyer-section-fields iban-fields">
@@ -653,13 +702,13 @@
                         <template x-for="(account, index) in $store.buyerBankAccounts" :key="account._id">
                           <div class="iban-item">
                             <div class="form-group form-field">
-                              <label :for="'buyer-iban-' + index"><span class="form-label">Bank account number</span> <span class="label-optional">(Optional)</span></label>
-                              <input class="form-control" :id="'buyer-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" placeholder="Enter IBAN number" :aria-describedby="'buyer-iban-' + index + '-error'" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
+                              <label :for="'buyer-iban-' + index"><span class="form-label" data-i18n="form.bankAccountNumber">Bank account number</span> <span class="label-optional" data-i18n="form.optional">(Optional)</span></label>
+                              <input class="form-control" :id="'buyer-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" data-i18n-placeholder="form.placeholder.iban" placeholder="Enter IBAN number" :aria-describedby="'buyer-iban-' + index + '-error'" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
                               <span class="field-error form-error field-error-reserved" :id="'buyer-iban-' + index + '-error'" role="alert" aria-live="polite" x-show="account.ibanError" x-cloak x-text="account.ibanError"></span>
                             </div>
                             <div class="form-group form-field">
-                              <label :for="'buyer-iban-bank-' + index"><span class="form-label">Bank name</span> <span class="label-optional">(Optional)</span></label>
-                              <input class="form-control" :id="'buyer-iban-bank-' + index" type="text" x-model="account.bankName" placeholder="Enter bank name" :name="'iban-bank-' + index">
+                              <label :for="'buyer-iban-bank-' + index"><span class="form-label" data-i18n="form.bankName">Bank name</span> <span class="label-optional" data-i18n="form.optional">(Optional)</span></label>
+                              <input class="form-control" :id="'buyer-iban-bank-' + index" type="text" x-model="account.bankName" data-i18n-placeholder="form.placeholder.bankName" placeholder="Enter bank name" :name="'iban-bank-' + index">
                             </div>
                             <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left buyer-remove-iban" @click="removeAccount(index)" :aria-label="'Remove bank account ' + (index + 1)" x-show="$store.buyerBankAccounts.length > 1" x-cloak><span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span><span class="btn__label">Remove</span></button>
                           </div>
@@ -668,15 +717,15 @@
                     </div>
                   </div>
                   <div class="buyer-modal-section">
-                    <div class="buyer-section-title">Contacts</div>
+                    <div class="buyer-section-title" data-i18n="form.contacts">Contacts</div>
                     <div class="buyer-section-fields">
                       <div class="form-group form-field" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="buyer-email"><span class="form-label">Email address</span> <span class="label-optional">(Optional)</span></label>
-                        <input class="form-control" type="email" name="buyer-email" id="buyer-email" placeholder="Enter email address" aria-describedby="buyer-email-error">
+                        <label for="buyer-email"><span class="form-label" data-i18n="form.emailAddress">Email address</span> <span class="label-optional" data-i18n="form.optional">(Optional)</span></label>
+                        <input class="form-control" type="email" name="buyer-email" id="buyer-email" data-i18n-placeholder="form.placeholder.email" placeholder="Enter email address" aria-describedby="buyer-email-error">
                         <span class="field-error form-error field-error-reserved" id="buyer-email-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                       <div class="form-group form-field phone-field-group" x-data="{ focused: false }" :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
-                        <label for="buyer-phone" id="buyer-phone-label"><span class="form-label">Phone number</span> <span class="label-optional">(Optional)</span></label>
+                        <label for="buyer-phone" id="buyer-phone-label"><span class="form-label" data-i18n="form.phoneNumber">Phone number</span> <span class="label-optional" data-i18n="form.optional">(Optional)</span></label>
                         <div class="phone-input-row">
                           <div class="phone-country-box">
                             <span class="phone-country-display" id="buyer-phone-country-display" aria-hidden="true"><span class="phone-country-flag fi" id="buyer-phone-country-flag"></span><span class="phone-country-dial" id="buyer-phone-country-dial"></span></span>
@@ -692,25 +741,25 @@
                     </div>
                   </div>
                   <div class="buyer-modal-actions">
-                    <button type="button" class="btn btn--secondary" id="buyer-cancel">Cancel</button>
-                    <button type="submit" class="btn btn--primary" id="buyer-save">Add details</button>
+                    <button type="button" class="btn btn--secondary" id="buyer-cancel" data-i18n="form.cancel">Cancel</button>
+                    <button type="submit" class="btn btn--primary" id="buyer-save" data-i18n="form.addDetails">Add details</button>
                   </div>
                 </form>
               </div>
             </template>
 
             <section class="section items" x-data="invoiceItems">
-              <h2>Items</h2>
+              <h2 data-i18n="form.items.title">Items</h2>
               <div class="section-content">
                 <div class="chips">
-                  <span class="chips-title">Add fields:</span>
+                  <span class="chips-title" data-i18n="form.items.addFields">Add fields:</span>
                   <button type="button" class="chip-toggle" :class="showDiscount ? 'chip-active' : 'chip-inactive'" @click="toggleDiscount()" :aria-pressed="String(showDiscount)" aria-label="Toggle discount column">
                     <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showDiscount ? 'close' : 'add'"></span>
-                    <span class="chip-label">Discount</span>
+                    <span class="chip-label" data-i18n="form.items.discount">Discount</span>
                   </button>
                   <button type="button" class="chip-toggle" :class="showNote ? 'chip-active' : 'chip-inactive'" @click="toggleNote()" :aria-pressed="String(showNote)" aria-label="Toggle note">
                     <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showNote ? 'close' : 'add'"></span>
-                    <span class="chip-label">Note</span>
+                    <span class="chip-label" data-i18n="form.items.note">Note</span>
                   </button>
                 </div>
 
@@ -718,22 +767,22 @@
                   <table class="items-table" role="grid">
                     <thead>
                       <tr>
-                        <th class="col-name" scope="col">Service / Product</th>
-                        <th class="col-qty col-right" scope="col">Quantity</th>
+                        <th class="col-name" scope="col" data-i18n="form.items.serviceProduct">Service / Product</th>
+                        <th class="col-qty col-right" scope="col" data-i18n="form.items.quantity">Quantity</th>
                         <th class="col-price col-right" scope="col">Unit price <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
-                        <th class="col-subtotal col-right" scope="col">Subtotal <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
-                        <th class="col-discount col-right" scope="col" x-show="showDiscount" x-cloak>Discount <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
-                        <th class="col-taxrate col-right" scope="col">Tax rate</th>
-                        <th class="col-taxamt col-right" scope="col">Tax amount <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
-                        <th class="col-total col-right" scope="col">Total <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
-                        <th class="col-actions" scope="col"><span class="visually-hidden">Actions</span></th>
+                        <th class="col-subtotal col-right" scope="col" data-i18n="form.items.subtotal">Subtotal <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
+                        <th class="col-discount col-right" scope="col" x-show="showDiscount" x-cloak data-i18n="form.items.discountCol">Discount <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
+                        <th class="col-taxrate col-right" scope="col" data-i18n="form.items.taxRate">Tax rate</th>
+                        <th class="col-taxamt col-right" scope="col" data-i18n="form.items.taxAmount">Tax amount <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
+                        <th class="col-total col-right" scope="col" data-i18n="form.items.total">Total <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
+                        <th class="col-actions" scope="col"><span class="visually-hidden" data-i18n="a11y.actions">Actions</span></th>
                       </tr>
                     </thead>
                     <tbody>
                       <template x-for="(line, i) in lines" :key="line.id">
                         <tr class="line-row">
                           <td class="cell-name">
-                            <textarea class="line-name-input" placeholder="Enter name" maxlength="200" x-model="line.itemName" :id="'line-name-' + i" :aria-label="'Service or product name, line ' + (i + 1)" rows="1"></textarea>
+                            <textarea class="line-name-input" data-i18n-placeholder="form.placeholder.lineName" placeholder="Enter name" maxlength="200" x-model="line.itemName" :id="'line-name-' + i" :aria-label="'Service or product name, line ' + (i + 1)" rows="1"></textarea>
                           </td>
                           <td class="cell-qty cell-right">
                             <div class="qty-group">
@@ -780,33 +829,33 @@
 
                 <button type="button" class="btn btn--primary btn--icon-left add-item-btn" @click="addLine()">
                   <span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span>
-                  <span class="btn__label">Add item</span>
+                  <span class="btn__label" data-i18n="form.items.addItem">Add item</span>
                 </button>
 
                 <div class="sum">
                   <div class="sum-row">
-                    <span>Subtotal</span>
+                    <span data-i18n="form.items.subtotalSum">Subtotal</span>
                     <span class="sum-amount" x-text="fmtCurrency(summarySubtotal())"></span>
                   </div>
                   <div class="sum-row" x-show="showDiscount && summaryDiscountTotal() > 0" x-cloak>
-                    <span>Discount</span>
+                    <span data-i18n="form.items.discountSum">Discount</span>
                     <span class="sum-amount" x-text="'- ' + fmtCurrency(summaryDiscountTotal())"></span>
                   </div>
                   <template x-for="tax in summaryTaxBreakdown()" :key="tax.categoryCode + tax.rate">
                     <div class="sum-row">
-                      <span>Tax <span class="sum-tax-rate" x-text="tax.rate + '%'"></span></span>
+                      <span><span data-i18n="form.items.taxSum">Tax</span> <span class="sum-tax-rate" x-text="tax.rate + '%'"></span></span>
                       <span class="sum-amount" x-text="fmtCurrency(tax.amount)"></span>
                     </div>
                   </template>
                   <div class="sum-row sum-total">
-                    <span>Total</span>
+                    <span data-i18n="form.items.totalSum">Total</span>
                     <span class="sum-amount" x-text="fmtCurrency(summaryTotal())"></span>
                   </div>
                 </div>
 
                 <div class="items-note" x-show="showNote" x-cloak>
-                  <label for="invoice-note" class="form-label">Note</label>
-                  <textarea id="invoice-note" class="note-textarea" placeholder="Add a note to this invoice" x-model="noteText" @input="syncNote()" aria-label="Invoice note"></textarea>
+                  <label for="invoice-note" class="form-label" data-i18n="form.items.noteLabel">Note</label>
+                  <textarea id="invoice-note" class="note-textarea" data-i18n-placeholder="form.placeholder.invoiceNote" placeholder="Add a note to this invoice" x-model="noteText" @input="syncNote()" aria-label="Invoice note"></textarea>
                 </div>
 
                 <div class="note-display" x-show="!showNote && noteText && noteText.trim()" x-cloak>
@@ -816,21 +865,21 @@
             </section>
 
             <section class="ready">
-              <p>Invoice all set and ready to go?</p>
-              <button type="button" class="btn btn--primary btn--full" id="create-invoice-btn">Create Invoice</button>
+              <p data-i18n="ready.message" x-text="typeof t !== 'undefined' ? t('ready.message') : 'Invoice all set and ready to go?'">Invoice all set and ready to go?</p>
+              <button type="button" class="btn btn--primary btn--full" id="create-invoice-btn" data-i18n="ready.createInvoice" x-text="typeof t !== 'undefined' ? t('ready.createInvoice') : 'Create Invoice'">Create Invoice</button>
             </section>
           </section>
 
           <section class="panel panel-invoice-settings" id="panel-invoice-settings" role="tabpanel" aria-labelledby="tab-invoice-settings" aria-hidden="true" data-panel="invoice-settings" hidden>
             <section class="section">
-              <h2>General</h2>
+              <h2 data-i18n="form.settings.general">General</h2>
               <div class="section-content general-settings-content" aria-live="polite" aria-atomic="false">
                 <div class="form-group form-field native-country-select-wrap invoice-language-wrap">
-                  <label for="invoice-language-select"><span class="form-label">Invoice language</span></label>
+                  <label for="invoice-language-select"><span class="form-label" data-i18n="form.settings.invoiceLanguage">Invoice language</span></label>
                   <div class="country-select-wrapper invoice-language-select-wrapper" id="invoice-language-wrapper">
                     <span class="country-select-display invoice-language-display" id="invoice-language-display" aria-hidden="true">
                       <span class="country-select-flag fi fi-gb" id="invoice-language-flag"></span>
-                      <span class="country-select-name" id="invoice-language-name">English</span>
+                      <span class="country-select-name" id="invoice-language-name" data-i18n="form.settings.invoiceLanguage">English</span>
                     </span>
                     <span class="select native-select country-select-label">
                       <select class="form-select native-select__control" name="invoice-language" id="invoice-language-select" required aria-label="Invoice language" aria-describedby="invoice-language-hint invoice-language-live">
@@ -858,71 +907,73 @@
                         <option value="sl">Slovenščina</option>
                         <option value="es">Español</option>
                         <option value="sv">Svenska</option>
+                        <option value="uk">Українська</option>
                       </select>
                     </span>
                     <span class="material-symbols-rounded country-select-chevron" aria-hidden="true">keyboard_arrow_down</span>
                   </div>
-                  <small class="field-helper form-help" id="invoice-language-hint">Language for generated XML/PDF labels and static text</small>
+                  <small class="field-helper form-help" id="invoice-language-hint" data-i18n="form.hint.invoiceLanguage">Language for generated XML/PDF labels and static text</small>
                   <span id="invoice-language-live" class="visually-hidden" aria-live="polite" aria-atomic="true"></span>
+                  <button type="button" class="btn btn--secondary btn--sm" id="invoice-language-reset" data-i18n="form.settings.resetToAppLanguage">Reset to app language</button>
                 </div>
                 <div class="form-group form-field">
-                  <label for="invoice-currency-select"><span class="form-label">Invoice currency <span class="required-mark">*</span></span></label>
+                  <label for="invoice-currency-select"><span class="form-label" data-i18n="form.settings.invoiceCurrency">Invoice currency <span class="required-mark">*</span></span></label>
                   <div class="select-icon-wrap">
                     <select class="form-control form-select" id="invoice-currency-select" name="invoice-currency" required aria-describedby="invoice-currency-hint" aria-label="Invoice currency">
                       <option value="EUR" selected>EUR</option>
                     </select>
                     <span class="material-symbols-rounded select-chevron" aria-hidden="true">keyboard_arrow_down</span>
                   </div>
-                  <small class="field-helper form-help" id="invoice-currency-hint">All calculations use this currency</small>
+                  <small class="field-helper form-help" id="invoice-currency-hint" data-i18n="form.hint.invoiceCurrency">All calculations use this currency</small>
                 </div>
                 <div class="form-group form-field">
-                  <label for="invoice-type-select"><span class="form-label">Invoice type</span></label>
+                  <label for="invoice-type-select"><span class="form-label" data-i18n="form.settings.invoiceType">Invoice type</span></label>
                   <div class="select-icon-wrap">
                     <select class="form-control form-select" id="invoice-type-select" name="invoice-type" aria-describedby="invoice-type-subtext" aria-label="Invoice type">
-                      <option value="380" selected>Commercial invoice</option>
-                      <option value="384">Corrected invoice</option>
-                      <option value="381">Credit note</option>
-                      <option value="326">Partial invoice</option>
-                      <option value="389">Self-billed invoice</option>
-                      <option value="875">Partial construction invoice</option>
-                      <option value="876">Partial final construction invoice</option>
-                      <option value="877">Final construction invoice</option>
+                      <option value="380" selected data-i18n="form.invoiceType.380">Commercial invoice</option>
+                      <option value="384" data-i18n="form.invoiceType.384">Corrected invoice</option>
+                      <option value="381" data-i18n="form.invoiceType.381">Credit note</option>
+                      <option value="326" data-i18n="form.invoiceType.326">Partial invoice</option>
+                      <option value="389" data-i18n="form.invoiceType.389">Self-billed invoice</option>
+                      <option value="875" data-i18n="form.invoiceType.875">Partial construction invoice</option>
+                      <option value="876" data-i18n="form.invoiceType.876">Partial final construction invoice</option>
+                      <option value="877" data-i18n="form.invoiceType.877">Final construction invoice</option>
                     </select>
                     <span class="material-symbols-rounded select-chevron" aria-hidden="true">keyboard_arrow_down</span>
                   </div>
-                  <small class="field-helper form-help" id="invoice-type-subtext" aria-live="polite" aria-atomic="true">Standard invoice for goods or services.</small>
+                  <small class="field-helper form-help" id="invoice-type-subtext" aria-live="polite" aria-atomic="true">Standard invoice for goods or services supplied.</small>
                 </div>
                 <div class="form-group form-field">
-                  <label for="payment-type-select"><span class="form-label">Payment type</span></label>
+                  <label for="payment-type-select"><span class="form-label" data-i18n="form.settings.paymentType">Payment type</span></label>
                   <div class="select-icon-wrap">
                     <select class="form-control form-select" id="payment-type-select" name="payment-type" aria-describedby="payment-type-hint payment-type-live" aria-label="Payment type">
-                      <option value="30" selected>Bank transfer</option>
-                      <option value="10">Cash</option>
-                      <option value="48">Credit card</option>
+                      <option value="30" selected data-i18n="form.paymentType.30">Bank transfer</option>
+                      <option value="10" data-i18n="form.paymentType.10">Cash</option>
+                      <option value="48" data-i18n="form.paymentType.48">Credit card</option>
                     </select>
                     <span class="material-symbols-rounded select-chevron" aria-hidden="true">keyboard_arrow_down</span>
                   </div>
-                  <small class="field-helper form-help" id="payment-type-hint">Bank details shown only for bank transfer</small>
+                  <small class="field-helper form-help" id="payment-type-hint" data-i18n="form.hint.paymentType">Bank details shown only for bank transfer</small>
                   <span id="payment-type-live" class="visually-hidden" aria-live="polite" aria-atomic="true"></span>
                 </div>
               </div>
             </section>
 
             <section class="section" id="style-section" x-data="styleSection()" x-init="init()">
-              <h2>Style</h2>
+              <h2 data-i18n="form.settings.style">Style</h2>
               <div class="section-content style-settings-content">
                 <div class="form-group form-field">
-                  <span class="form-label" id="invoice-logo-label">Invoice logo</span>
+                  <span class="form-label" id="invoice-logo-label" data-i18n="form.settings.invoiceLogo">Invoice logo</span>
                   <input type="file" accept="image/*" id="invoice-logo-input" class="visually-hidden" x-ref="logoInput" aria-describedby="invoice-logo-help invoice-logo-error" @change="onLogoFileChange($event)">
                   <span class="field-error form-error" id="invoice-logo-error" role="alert" aria-live="polite" x-show="logoError" x-cloak x-text="logoError"></span>
 
                   <div class="card" x-show="!$store.settings.logo" x-cloak @dragover.prevent @drop.prevent="onLogoDrop($event)">
-                    <img src="assets/invoice-logo.webp" alt="Logo upload illustration" class="card-image" width="248" height="auto">
-                    <p class="style-logo-card-prompt">Click to choose a file or drag here</p>
-                    <small class="field-helper form-help" id="invoice-logo-help">Upload a PNG or JPEG logo (optimised for 174 × 56 px, max 1 MB)</small>
+                    <img src="../assets/invoice-logo.webp" alt="Logo upload illustration" class="card-image" width="248" height="auto">
+                    <p class="style-logo-card-prompt" data-i18n="form.settings.clickOrDrag">Click to choose a file or drag here</p>
+                    <small class="field-helper form-help" id="invoice-logo-help" data-i18n="form.hint.invoiceLogo">Upload a PNG or JPEG logo (optimised for 174 × 56 px, max 1 MB)</small>
                     <button type="button" class="btn btn--primary btn--icon-left" id="invoice-logo-trigger" aria-labelledby="invoice-logo-label" @click="$refs.logoInput.click()">
                       <span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span>
-                      <span class="btn__label">Choose file</span>
+                      <span class="btn__label" data-i18n="form.settings.chooseFile">Choose file</span>
                     </button>
                   </div>
 
@@ -930,22 +981,22 @@
                     <div class="style-logo-preview-box" aria-hidden="true">
                       <img :src="$store.settings.logo" alt="" width="174" height="56">
                     </div>
-                    <p class="style-logo-filename" x-text="logoFileName || 'Logo uploaded'"></p>
-                    <small class="field-helper form-help">Upload a PNG or JPEG logo (optimised for 174 × 56 px, max 1 MB)</small>
+                    <p class="style-logo-filename" x-text="logoFileName || (typeof t !== 'undefined' ? t('form.settings.logoUploaded') : 'Logo uploaded')"></p>
+                    <small class="field-helper form-help" data-i18n="form.hint.invoiceLogo">Upload a PNG or JPEG logo (optimised for 174 × 56 px, max 1 MB)</small>
                     <button type="button" class="btn btn--danger btn--icon-left" aria-label="Remove logo" @click="removeLogo()">
                       <span class="material-symbols-rounded btn__icon" aria-hidden="true">delete</span>
-                      <span class="btn__label">Remove</span>
+                      <span class="btn__label" data-i18n="a11y.removeLogo">Remove</span>
                     </button>
                   </div>
                 </div>
                 <div class="form-group form-field">
-                  <label for="accent-color-hex"><span class="form-label">Accent color</span></label>
+                  <label for="accent-color-hex"><span class="form-label" data-i18n="form.settings.accentColor">Accent color</span></label>
                   <div class="style-accent-row">
                     <input type="color" x-ref="accentColorNative" class="visually-hidden" :value="accentHexValidOrFallback" @input="onAccentColorPicker($event)">
                     <button type="button" class="style-accent-circle" aria-label="Open color picker" title="Choose color" :style="{ backgroundColor: accentHexValidOrFallback }" @click="$refs.accentColorNative.click()"></button>
-                    <input type="text" id="accent-color-hex" class="form-control style-accent-hex-input" :value="accentHexInput" @input="onAccentHexInput($event)" placeholder="#008236" maxlength="9" aria-describedby="accent-color-picker-hint" aria-label="Accent color (hex)">
+                    <input type="text" id="accent-color-hex" class="form-control style-accent-hex-input" :value="accentHexInput" @input="onAccentHexInput($event)" data-i18n-placeholder="form.placeholder.accentColor" placeholder="#008236" maxlength="9" aria-describedby="accent-color-picker-hint" aria-label="Accent color (hex)">
                   </div>
-                  <span id="accent-color-picker-hint" class="visually-hidden">Enter hex code or tap the circle to pick a color</span>
+                  <span id="accent-color-picker-hint" class="visually-hidden" data-i18n="form.hint.accentColor">Enter hex code or tap the circle to pick a color</span>
                 </div>
               </div>
             </section>
@@ -953,9 +1004,9 @@
         </main>
 
         <footer class="foot">
-          <img class="logo footer-logo" src="assets/logo-invio.svg" alt="Invio" width="114" height="42">
-          <a href="#privacy">Privacy policy</a>
-          <a href="#terms">Terms and conditions</a>
+          <img class="logo footer-logo" src="../assets/logo-invio.svg" alt="Invossa" width="114" height="42">
+          <a href="#privacy" data-i18n="footer.privacyPolicy">Privacy policy</a>
+          <a href="#terms" data-i18n="footer.termsAndConditions">Terms and conditions</a>
       </footer>
     </div>
   </div>
@@ -1001,15 +1052,32 @@
     window.InvioLog = window.InvioLog || { error: function (context, err) { /* no-op; use reporting in production */ } };
   </script>
   <!-- Script load order: state → eu-countries → temp-email-domains → iban-bank → calc → validation → xml → export → Plainsheet → app -->
-  <script src="assets/js/state.js"></script>
-  <script src="assets/js/eu-countries.js"></script>
-  <script src="assets/js/temp-email-domains.js"></script>
-  <script src="assets/js/iban-bank.js"></script>
-  <script src="assets/js/calc.js"></script>
-  <script src="assets/js/validation.js"></script>
-  <script src="assets/js/xml.js"></script>
-  <script src="assets/js/export.js"></script>
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/eu-countries.js"></script>
+  <script src="../assets/js/temp-email-domains.js"></script>
+  <script src="../assets/js/iban-bank.js"></script>
+  <script src="../assets/js/calc.js"></script>
+  <script src="../assets/js/validation.js"></script>
+  <script src="../assets/js/xml.js"></script>
+  <script src="../assets/js/export.js"></script>
+  <script src="../assets/js/i18n.js"></script>
+  <script src="../assets/js/locale-store.js"></script>
+  <script>
+    if (window.InvioLocale && typeof window.InvioLocale.applyRootRedirectIfNeeded === 'function') {
+      window.InvioLocale.applyRootRedirectIfNeeded();
+    }
+    if (window.InvioI18n && window.InvioLocale && typeof window.InvioI18n.setLocale === 'function') {
+      var setLocalePromise = window.InvioI18n.setLocale(window.InvioLocale.resolveAppLanguage());
+      window.t = function (key) { return window.InvioI18n.t(key); };
+      if (setLocalePromise && typeof setLocalePromise.then === 'function') {
+        setLocalePromise.then(function () {
+          if (typeof window.invioApplyTranslations === 'function') window.invioApplyTranslations();
+          document.dispatchEvent(new CustomEvent('invio:locale-ready'));
+        });
+      }
+    }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@plainsheet/core@1.0.1/dist/plainsheet-core.umd.js" integrity="sha384-/AaH5fdpvrRdRjDBTIPAc8s0hBEq/gTdx4agKGRaBWHFlkaZDvFMTd6G3EgjuRHF" crossorigin="anonymous"></script>
-  <script src="assets/js/app.js"></script>
+  <script src="../assets/js/app.js"></script>
 </body>
 </html>

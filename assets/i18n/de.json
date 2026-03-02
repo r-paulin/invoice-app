@@ -1,0 +1,259 @@
+{
+  "app": {
+    "title": "Invossa",
+    "save": "Speichern",
+    "close": "Schließen",
+    "nextStep": "Nächster Schritt",
+    "previousStep": "Vorheriger Schritt",
+    "generateExport": "XML & PDF erzeugen"
+  },
+  "hero": {
+    "title": "Kostenloser webbasierter Rechnungsgenerator",
+    "description": "Erstellen Sie professionelle Rechnungen, laden Sie druckfertige PDFs herunter und erstellen Sie konforme E-Rechnungen in Ihrem Browser."
+  },
+  "steps": {
+    "details": "Neue Rechnung",
+    "items": "Rechnungspositionen",
+    "seller": "Verkäuferdaten",
+    "buyer": "Käuferdaten",
+    "payment": "Zahlungsdaten",
+    "summary": "Rechnungsübersicht"
+  },
+  "a11y": {
+    "skipLink": "Zum Hauptinhalt springen",
+    "language": "Sprache",
+    "chooseLanguage": "Sprache wählen",
+    "invoiceSections": "Rechnungsbereiche",
+    "dismissError": "Fehler schließen",
+    "closeSellerModal": "Verkäufer-Dialog schließen",
+    "closeBuyerModal": "Käufer-Dialog schließen",
+    "notifications": "Benachrichtigungen",
+    "toastClose": "Schließen",
+    "invioHome": "Invossa Startseite",
+    "openColorPicker": "Farbwähler öffnen",
+    "removeLogo": "Logo entfernen",
+    "removeBankAccount": "Bankkonto entfernen",
+    "toggleDiscount": "Rabattspalte ein-/ausblenden",
+    "toggleNote": "Notiz ein-/ausblenden",
+    "actions": "Aktionen",
+    "downloadXml": "XML-Rechnung herunterladen",
+    "downloadPdf": "PDF-Rechnung herunterladen",
+    "createNewInvoice": "Neue Rechnung erstellen"
+  },
+  "tabs": {
+    "invoiceData": "Rechnungsdaten",
+    "settings": "Einstellungen"
+  },
+  "form": {
+    "basicDetails": "Stammdaten",
+    "invoiceNumber": "Rechnungsnummer",
+    "paymentReference": "Zahlungsreferenz",
+    "issueDate": "Rechnungsdatum",
+    "dueDate": "Fälligkeitsdatum",
+    "seller": "Verkäufer",
+    "buyer": "Käufer",
+    "organisation": "Unternehmen",
+    "individual": "Privatperson",
+    "country": "Land",
+    "nameAndSurname": "Name und Nachname",
+    "legalName": "Firmenname",
+    "registrationNumber": "Handelsregisternummer",
+    "taxNumber": "Steuernummer",
+    "address": "Adresse",
+    "city": "Ort",
+    "postalCode": "Postleitzahl",
+    "paymentDetails": "Zahlungsdaten",
+    "addBankAccount": "Bankkonto hinzufügen",
+    "bankAccountNumber": "Kontonummer",
+    "bankName": "Bankname",
+    "contacts": "Kontakt",
+    "emailAddress": "E-Mail-Adresse",
+    "phoneNumber": "Telefonnummer",
+    "optional": "(Optional)",
+    "required": "*",
+    "selectCountry": "Land auswählen",
+    "select": "Auswählen",
+    "placeholder": {
+      "invoiceNumber": "Rechnungsnummer eingeben",
+      "paymentReference": "Zahlungsreferenz eingeben",
+      "legalName": "Offizieller Firmenname",
+      "nameAndSurname": "Name und Nachname eingeben",
+      "registrationNumber": "Handelsregisternummer eingeben",
+      "taxNumber": "Steuernummer eingeben",
+      "address": "Adresse eingeben",
+      "city": "Ort eingeben",
+      "postalCode": "Postleitzahl eingeben",
+      "iban": "IBAN eingeben",
+      "bankName": "Bankname eingeben",
+      "email": "E-Mail-Adresse eingeben",
+      "phone": "222222",
+      "lineName": "Bezeichnung eingeben",
+      "invoiceNote": "Notiz zu dieser Rechnung",
+      "accentColor": "#008236"
+    },
+    "hint": {
+      "invoiceNumber": "Die Nummer sollte Ihrer Buchhaltungsfolge entsprechen",
+      "paymentReference": "Referenz für Zahlungszuordnung (z. B. Rechnungsnummer)",
+      "issueDate": "Datum der Rechnungsstellung",
+      "dueDate": "Zahlungsfälligkeit",
+      "country": "Land der Registrierung",
+      "sellerNameInd": "Name und Nachname",
+      "sellerNameOrg": "Offizieller eingetragener Firmenname",
+      "sellerAddressInd": "Adresse wie auf Rechnungen angezeigt",
+      "sellerAddressOrg": "Gesetzliche Firmenadresse für Rechnungen",
+      "city": "Ort oder Stadt",
+      "postalCode": "Postleitzahl",
+      "invoiceLanguage": "Sprache für XML/PDF-Beschriftungen und Text",
+      "invoiceCurrency": "Alle Beträge in dieser Währung",
+      "invoiceType": "Standardrechnung für Waren oder Dienstleistungen.",
+      "paymentType": "Bankdaten nur bei Überweisung angezeigt",
+      "invoiceLogo": "PNG- oder JPEG-Logo (empf. 174 × 56 px, max. 1 MB)",
+      "accentColor": "Hex-Code eingeben oder Kreis zum Farbwählen antippen"
+    },
+    "aria": {
+      "issueDate": "Rechnungsdatum (JJJJ-MM-TT)",
+      "dueDate": "Fälligkeitsdatum (JJJJ-MM-TT)",
+      "phoneCountryCode": "Ländervorwahl",
+      "invoiceLanguage": "Rechnungssprache",
+      "invoiceCurrency": "Rechnungswährung",
+      "invoiceType": "Rechnungstyp",
+      "paymentType": "Zahlungsart",
+      "accentColor": "Akzentfarbe (Hex)",
+      "invoiceNote": "Rechnungsnotiz"
+    },
+    "maxBankAccounts": "Maximal 6 Bankkonten möglich.",
+    "addDetails": "Daten hinzufügen",
+    "cancel": "Abbrechen",
+    "items": {
+      "title": "Positionen",
+      "addFields": "Felder hinzufügen:",
+      "discount": "Rabatt",
+      "note": "Notiz",
+      "serviceProduct": "Leistung / Produkt",
+      "quantity": "Menge",
+      "unitPrice": "Einzelpreis",
+      "subtotal": "Zwischensumme",
+      "discountCol": "Rabatt",
+      "taxRate": "Steuersatz",
+      "taxAmount": "Steuerbetrag",
+      "total": "Gesamt",
+      "addItem": "Position hinzufügen",
+      "noteLabel": "Notiz",
+      "subtotalSum": "Zwischensumme",
+      "discountSum": "Rabatt",
+      "taxSum": "Steuer",
+      "totalSum": "Gesamt"
+    },
+    "settings": {
+      "general": "Allgemein",
+      "style": "Stil",
+      "invoiceLanguage": "Rechnungssprache",
+      "invoiceCurrency": "Rechnungswährung",
+      "invoiceType": "Rechnungstyp",
+      "paymentType": "Zahlungsart",
+      "resetToAppLanguage": "Auf App-Sprache zurücksetzen",
+      "invoiceLogo": "Rechnungslogo",
+      "accentColor": "Akzentfarbe",
+      "clickOrDrag": "Klicken oder Datei hierher ziehen",
+      "chooseFile": "Datei wählen",
+      "logoUploaded": "Logo hochgeladen"
+    },
+    "invoiceType": {
+      "380": "Handelsrechnung",
+      "384": "Korrekturrechnung",
+      "381": "Gutschrift",
+      "326": "Teilrechnung",
+      "389": "Selbstfakturierung",
+      "875": "Teilbauabrechnung",
+      "876": "Teilabschluss Bauabrechnung",
+      "877": "Schlussabrechnung Bau"
+    },
+    "invoiceTypeSubtext": {
+      "380": "Standardrechnung für gelieferte Waren oder Leistungen.",
+      "384": "Ersetzt oder korrigiert eine zuvor ausgestellte Rechnung.",
+      "381": "Gutschrift, die den geschuldeten Betrag reduziert.",
+      "326": "Rechnung für einen Teil einer Bestellung oder eines Vertrags.",
+      "389": "Vom Käufer ausgestellte Rechnung (Selbstfakturierung).",
+      "875": "Rechnung für einen Baufortschritt.",
+      "876": "Rechnung für eine Teilschlussabrechnung eines Bauprojekts.",
+      "877": "Schlussrechnung für die Fertigstellung eines Bauprojekts."
+    },
+    "paymentType": {
+      "30": "Überweisung",
+      "10": "Bar",
+      "48": "Kreditkarte"
+    }
+  },
+  "toasts": {
+    "itemAdded": "Position zur Rechnung hinzugefügt",
+    "sellerSaved": "Verkäuferdaten gespeichert",
+    "buyerSaved": "Käuferdaten gespeichert",
+    "invoiceLanguageUpdated": "Rechnungssprache aktualisiert",
+    "invoiceLanguageReset": "Rechnungssprache zurückgesetzt",
+    "currencyUpdated": "Rechnungswährung aktualisiert",
+    "invoiceTypeUpdated": "Rechnungstyp aktualisiert",
+    "paymentTypeUpdated": "Zahlungsart aktualisiert",
+    "logoUpdated": "Logo aktualisiert.",
+    "logoRemoved": "Logo entfernt."
+  },
+  "validation": {
+    "required": {
+      "country": "Land ist erforderlich",
+      "legalName": "Firmenname ist erforderlich",
+      "nameAndSurname": "Name und Nachname sind erforderlich",
+      "registrationNumber": "Handelsregisternummer ist erforderlich",
+      "taxNumber": "Steuernummer ist erforderlich",
+      "address": "Adresse ist erforderlich",
+      "city": "Ort ist erforderlich",
+      "postalCode": "Postleitzahl ist erforderlich",
+      "phone": "Ungültige Telefonnummer",
+      "email": "Ungültige E-Mail-Adresse"
+    },
+    "invalid": {
+      "registrationNumber": "Ungültige Handelsregisternummer für das gewählte Land",
+      "vatNumber": "Ungültige USt-IdNr. für das gewählte Land",
+      "ibanRequired": "Mindestens eine IBAN ist für Überweisung erforderlich"
+    }
+  },
+  "settingsErrors": {
+    "logoImageOnly": "Bitte wählen Sie eine Bilddatei (PNG oder JPEG).",
+    "logoMaxSize": "Bitte wählen Sie ein Bild unter 1 MB."
+  },
+  "ready": {
+    "message": "Rechnung fertig?",
+    "createInvoice": "Rechnung erstellen"
+  },
+  "invoiceLanguageLive": {
+    "set": "Beschriftungen und Text werden auf {language} erzeugt.",
+    "reset": "Rechnungssprache folgt der App-Sprache."
+  },
+  "paymentTypeLive": {
+    "cash": "Bankdaten ausgeblendet. Status: Bar bezahlt.",
+    "card": "Bankdaten ausgeblendet. Status: Mit Karte bezahlt.",
+    "transfer": "Bankdaten für Überweisung erforderlich."
+  },
+  "summary": {
+    "sellerEmpty": "Geschäftsdaten eingeben",
+    "buyerEmpty": "Kundendaten eingeben",
+    "edit": "Bearbeiten",
+    "addDetails": "Daten hinzufügen",
+    "registrationNumber": "Handelsregisternummer:",
+    "taxNumber": "Steuernummer:",
+    "phone": "Telefon:",
+    "email": "E-Mail:",
+    "address": "Adresse",
+    "bankAccount": "Bankkonto",
+    "editSeller": "Verkäuferdaten bearbeiten",
+    "editBuyer": "Käuferdaten bearbeiten"
+  },
+  "footer": {
+    "privacyPolicy": "Datenschutz",
+    "termsAndConditions": "AGB"
+  },
+  "export": {
+    "updating": "Aktualisiere…",
+    "countryListError": "Länderliste konnte nicht geladen werden. Sie können das Formular weiter nutzen.",
+    "validationTitle": "Pflichtangaben fehlen",
+    "validationMessage": "Bitte füllen Sie alle Pflichtfelder aus (z. B. Rechnungsnummer, Verkäufer und Käufer, Bezeichnung in Zeile 1, mindestens eine IBAN) und versuchen Sie es erneut."
+  }
+}

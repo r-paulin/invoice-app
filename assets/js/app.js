@@ -1,4 +1,43 @@
 (function () {
+<<<<<<< Updated upstream
+=======
+  /** Apply translations to all elements with data-i18n and data-i18n-placeholder. Call after InvioI18n.setLocale has resolved. */
+  function queryAllIncludingShadow(selector) {
+    var results = [];
+    var seenRoots = [];
+    function collect(root) {
+      if (!root || seenRoots.indexOf(root) !== -1) return;
+      seenRoots.push(root);
+      if (root.querySelectorAll) {
+        root.querySelectorAll(selector).forEach(function (el) { results.push(el); });
+        root.querySelectorAll('*').forEach(function (node) {
+          if (node && node.shadowRoot) collect(node.shadowRoot);
+        });
+      }
+    }
+    collect(document);
+    return results;
+  }
+
+  function applyTranslations() {
+    var t = typeof window.t === 'function' ? window.t : null;
+    if (!t) return;
+    queryAllIncludingShadow('[data-i18n]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n');
+      if (k) el.textContent = t(k);
+    });
+    queryAllIncludingShadow('[data-i18n-placeholder]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n-placeholder');
+      if (k) el.placeholder = t(k);
+    });
+    queryAllIncludingShadow('[data-i18n-aria-label]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n-aria-label');
+      if (k) el.setAttribute('aria-label', t(k));
+    });
+  }
+  window.invioApplyTranslations = applyTranslations;
+
+>>>>>>> Stashed changes
   /** Minimal logger for errors; no-op by default; can be replaced with reporting in production. */
   function logError(context, err) {
     if (typeof window !== 'undefined' && window.InvioLog && typeof window.InvioLog.error === 'function') {
@@ -51,7 +90,7 @@
               acc.ibanError = '';
               return;
             }
-            var countryEl = document.getElementById('seller-country');
+            var countryEl = getElementByIdIncludingShadow('seller-country');
             var country = countryEl ? countryEl.value : '';
             if (country && window.InvioValidation && window.InvioValidation.validIbanFormatForCountry && !window.InvioValidation.validIbanFormatForCountry(norm, country)) {
               acc.ibanError = 'IBAN length does not match selected country';
@@ -93,7 +132,7 @@
               acc.ibanError = '';
               return;
             }
-            var countryEl = document.getElementById('buyer-country');
+            var countryEl = getElementByIdIncludingShadow('buyer-country');
             var country = countryEl ? countryEl.value : '';
             if (country && window.InvioValidation && window.InvioValidation.validIbanFormatForCountry && !window.InvioValidation.validIbanFormatForCountry(norm, country)) {
               acc.ibanError = 'IBAN length does not match selected country';
@@ -498,7 +537,7 @@
 
   function applyDialCodeToPhoneInput(dialCode) {
     if (!dialCode) return;
-    var phoneSelect = document.getElementById('seller-phone-country');
+    var phoneSelect = getElementByIdIncludingShadow('seller-phone-country');
     if (phoneSelect) phoneSelect.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
@@ -516,8 +555,8 @@
   }
 
   function getComposedPhoneValue() {
-    var phoneInput = document.getElementById('seller-phone');
-    var phoneSelect = document.getElementById('seller-phone-country');
+    var phoneInput = getElementByIdIncludingShadow('seller-phone');
+    var phoneSelect = getElementByIdIncludingShadow('seller-phone-country');
     var local = phoneInput ? normalizePhoneValue(phoneInput.value) : '';
     if (!local) return '';
     var country = phoneSelect && phoneSelect.value ? findCountryByIso2(phoneSelect.value) : null;
@@ -527,9 +566,9 @@
   }
 
   function updatePhoneCountryDisplay(iso2) {
-    var dialEl = document.getElementById('seller-phone-country-dial');
-    var flagEl = document.getElementById('seller-phone-country-flag');
-    var displayEl = document.getElementById('seller-phone-country-display');
+    var dialEl = getElementByIdIncludingShadow('seller-phone-country-dial');
+    var flagEl = getElementByIdIncludingShadow('seller-phone-country-flag');
+    var displayEl = getElementByIdIncludingShadow('seller-phone-country-display');
     if (!displayEl) return;
     var country = findCountryByIso2(iso2);
     if (flagEl) {
@@ -596,9 +635,9 @@
   }
 
   function updateAddressCountryDisplay(iso2) {
-    var flagEl = document.getElementById('seller-country-flag');
-    var nameEl = document.getElementById('seller-country-name');
-    var selectEl = document.getElementById('seller-country');
+    var flagEl = getElementByIdIncludingShadow('seller-country-flag');
+    var nameEl = getElementByIdIncludingShadow('seller-country-name');
+    var selectEl = getElementByIdIncludingShadow('seller-country');
     if (!flagEl || !nameEl || !selectEl) return;
     if (!iso2) {
       flagEl.className = 'country-select-flag fi';
@@ -611,8 +650,8 @@
   }
 
   function getBuyerComposedPhoneValue() {
-    var phoneInput = document.getElementById('buyer-phone');
-    var phoneSelect = document.getElementById('buyer-phone-country');
+    var phoneInput = getElementByIdIncludingShadow('buyer-phone');
+    var phoneSelect = getElementByIdIncludingShadow('buyer-phone-country');
     var local = phoneInput ? normalizePhoneValue(phoneInput.value) : '';
     if (!local) return '';
     var country = phoneSelect && phoneSelect.value ? findCountryByIso2(phoneSelect.value) : null;
@@ -622,9 +661,9 @@
   }
 
   function updateBuyerPhoneCountryDisplay(iso2) {
-    var dialEl = document.getElementById('buyer-phone-country-dial');
-    var flagEl = document.getElementById('buyer-phone-country-flag');
-    var displayEl = document.getElementById('buyer-phone-country-display');
+    var dialEl = getElementByIdIncludingShadow('buyer-phone-country-dial');
+    var flagEl = getElementByIdIncludingShadow('buyer-phone-country-flag');
+    var displayEl = getElementByIdIncludingShadow('buyer-phone-country-display');
     if (!displayEl) return;
     var country = findCountryByIso2(iso2);
     if (flagEl) {
@@ -634,9 +673,9 @@
   }
 
   function updateBuyerAddressCountryDisplay(iso2) {
-    var flagEl = document.getElementById('buyer-country-flag');
-    var nameEl = document.getElementById('buyer-country-name');
-    var selectEl = document.getElementById('buyer-country');
+    var flagEl = getElementByIdIncludingShadow('buyer-country-flag');
+    var nameEl = getElementByIdIncludingShadow('buyer-country-name');
+    var selectEl = getElementByIdIncludingShadow('buyer-country');
     if (!flagEl || !nameEl || !selectEl) return;
     if (!iso2) {
       flagEl.className = 'country-select-flag fi';
@@ -649,8 +688,8 @@
   }
 
   function fillNativeCountrySelects() {
-    var addressSelect = document.getElementById('seller-country');
-    var phoneSelect = document.getElementById('seller-phone-country');
+    var addressSelect = getElementByIdIncludingShadow('seller-country');
+    var phoneSelect = getElementByIdIncludingShadow('seller-phone-country');
     if (addressSelect && phoneSelect) {
       addressSelect.length = 1;
       phoneSelect.length = 1;
@@ -667,8 +706,8 @@
       updateAddressCountryDisplay(addressSelect.value);
       updatePhoneCountryDisplay(phoneSelect.value);
     }
-    var buyerAddressSelect = document.getElementById('buyer-country');
-    var buyerPhoneSelect = document.getElementById('buyer-phone-country');
+    var buyerAddressSelect = getElementByIdIncludingShadow('buyer-country');
+    var buyerPhoneSelect = getElementByIdIncludingShadow('buyer-phone-country');
     if (buyerAddressSelect && buyerPhoneSelect) {
       buyerAddressSelect.length = 1;
       buyerPhoneSelect.length = 1;
@@ -688,8 +727,8 @@
   }
 
   function applyGeoPrefillIfEmpty() {
-    var addressSelect = document.getElementById('seller-country');
-    var phoneSelect = document.getElementById('seller-phone-country');
+    var addressSelect = getElementByIdIncludingShadow('seller-country');
+    var phoneSelect = getElementByIdIncludingShadow('seller-phone-country');
     if (!addressSelect || !phoneSelect) return;
     if (addressSelect.value || phoneSelect.value) return;
 
@@ -703,8 +742,8 @@
   }
 
   function applyGeoPrefillIfEmptyBuyer() {
-    var addressSelect = document.getElementById('buyer-country');
-    var phoneSelect = document.getElementById('buyer-phone-country');
+    var addressSelect = getElementByIdIncludingShadow('buyer-country');
+    var phoneSelect = getElementByIdIncludingShadow('buyer-phone-country');
     if (!addressSelect || !phoneSelect) return;
     if (addressSelect.value || phoneSelect.value) return;
 
@@ -721,8 +760,8 @@
   var lastAddressCountryForPhone = '';
 
   function bindNativeCountrySelectEvents() {
-    var addressSelect = document.getElementById('seller-country');
-    var phoneSelect = document.getElementById('seller-phone-country');
+    var addressSelect = getElementByIdIncludingShadow('seller-country');
+    var phoneSelect = getElementByIdIncludingShadow('seller-phone-country');
     if (addressSelect && phoneSelect) {
       addressSelect.addEventListener('change', function () {
         var iso2 = addressSelect.value;
@@ -735,8 +774,8 @@
         updatePhoneCountryDisplay(phoneSelect.value);
       });
     }
-    var buyerAddressSelect = document.getElementById('buyer-country');
-    var buyerPhoneSelect = document.getElementById('buyer-phone-country');
+    var buyerAddressSelect = getElementByIdIncludingShadow('buyer-country');
+    var buyerPhoneSelect = getElementByIdIncludingShadow('buyer-phone-country');
     if (buyerAddressSelect && buyerPhoneSelect) {
       buyerAddressSelect.addEventListener('change', function () {
         var iso2 = buyerAddressSelect.value;
@@ -1074,19 +1113,19 @@
   var buyerCloseBtn = null;
 
   function cacheSellerElements() {
-    sellerForm = document.getElementById('seller-form');
-    sellerCountryInput = document.getElementById('seller-country');
-    sellerIbanBlock = document.getElementById('seller-iban-block');
-    sellerCancelBtn = document.getElementById('seller-cancel');
-    sellerCloseBtn = document.getElementById('seller-close');
+    sellerForm = getElementByIdIncludingShadow('seller-form');
+    sellerCountryInput = getElementByIdIncludingShadow('seller-country');
+    sellerIbanBlock = getElementByIdIncludingShadow('seller-iban-block');
+    sellerCancelBtn = getElementByIdIncludingShadow('seller-cancel');
+    sellerCloseBtn = getElementByIdIncludingShadow('seller-close');
   }
 
   function cacheBuyerElements() {
-    buyerForm = document.getElementById('buyer-form');
-    buyerCountryInput = document.getElementById('buyer-country');
-    buyerIbanBlock = document.getElementById('buyer-iban-block');
-    buyerCancelBtn = document.getElementById('buyer-cancel');
-    buyerCloseBtn = document.getElementById('buyer-close');
+    buyerForm = getElementByIdIncludingShadow('buyer-form');
+    buyerCountryInput = getElementByIdIncludingShadow('buyer-country');
+    buyerIbanBlock = getElementByIdIncludingShadow('buyer-iban-block');
+    buyerCancelBtn = getElementByIdIncludingShadow('buyer-cancel');
+    buyerCloseBtn = getElementByIdIncludingShadow('buyer-close');
   }
 
   function initSellerSheetAlpine() {
@@ -1153,7 +1192,7 @@
   }
 
   function setFormValue(id, value) {
-    var el = document.getElementById(id);
+    var el = getElementByIdIncludingShadow(id);
     if (el) el.value = value || '';
   }
 
@@ -1175,7 +1214,7 @@
     var localPhone = getLocalPartFromFullPhone(c.phone || '');
     setFormValue('seller-phone', localPhone);
     setFormValue('seller-email', c.email);
-    var sellerPhoneCountryInput = document.getElementById('seller-phone-country');
+    var sellerPhoneCountryInput = getElementByIdIncludingShadow('seller-phone-country');
     var countryCode = (a.countryCode || '').toUpperCase();
     if (sellerCountryInput) sellerCountryInput.value = countryCode || '';
 
@@ -1213,7 +1252,7 @@
     }
     hideFieldErrors();
     showSellerFormAlert(false);
-    var ibanErrEl = document.getElementById('seller-iban-error');
+    var ibanErrEl = getElementByIdIncludingShadow('seller-iban-error');
     if (ibanErrEl) { ibanErrEl.hidden = true; ibanErrEl.textContent = ''; }
     sellerBottomSheet.open();
     requestAnimationFrame(function () {
@@ -1249,7 +1288,7 @@
     var localPhone = getLocalPartFromFullPhone(c.phone || '');
     setFormValue('buyer-phone', localPhone);
     setFormValue('buyer-email', c.email);
-    var buyerPhoneCountryInput = document.getElementById('buyer-phone-country');
+    var buyerPhoneCountryInput = getElementByIdIncludingShadow('buyer-phone-country');
     var countryCode = (a.countryCode || '').toUpperCase();
     if (buyerCountryInput) buyerCountryInput.value = countryCode || '';
     if (buyerPhoneCountryInput) {
@@ -1280,7 +1319,7 @@
     }
     hideBuyerFieldErrors();
     showBuyerFormAlert(false);
-    var ibanErrEl = document.getElementById('buyer-iban-error');
+    var ibanErrEl = getElementByIdIncludingShadow('buyer-iban-error');
     if (ibanErrEl) { ibanErrEl.hidden = true; ibanErrEl.textContent = ''; }
     var buyerSheetRoot = document.querySelector('.buyer-bottom-sheet');
     if (buyerSheetRoot) buyerSheetRoot.removeAttribute('inert');
@@ -1413,7 +1452,7 @@
       showFieldError('seller-vat', 'Invalid VAT number for selected country');
       valid = false;
     }
-    var phoneCountrySelect = document.getElementById('seller-phone-country');
+    var phoneCountrySelect = getElementByIdIncludingShadow('seller-phone-country');
     var phoneDialCode = '';
     if (phoneCountrySelect && window.InvioCountries && window.InvioCountries.findByIso2) {
       var phoneCountry = window.InvioCountries.findByIso2(phoneCountrySelect.value);
@@ -1606,7 +1645,7 @@
       showBuyerFieldError('buyer-vat', 'Invalid VAT number for selected country');
       valid = false;
     }
-    var phoneCountrySelect = document.getElementById('buyer-phone-country');
+    var phoneCountrySelect = getElementByIdIncludingShadow('buyer-phone-country');
     var phoneDialCode = '';
     if (phoneCountrySelect && window.InvioCountries && window.InvioCountries.findByIso2) {
       var phoneCountry = window.InvioCountries.findByIso2(phoneCountrySelect.value);

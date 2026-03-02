@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Invio",
+    "title": "Invossa",
     "save": "Save",
     "close": "Close",
     "nextStep": "Next Step",
@@ -14,8 +14,6 @@
     "buyer": "Buyer details",
     "payment": "Payment details",
     "summary": "Invoice Summary"
-<<<<<<< Updated upstream
-=======
   },
   "a11y": {
     "skipLink": "Skip to main content",
@@ -195,6 +193,21 @@
     "logoRemoved": "Logo removed."
   },
   "validation": {
+    "countryRequired": "Country is required",
+    "nameRequired": "Name and surname is required",
+    "legalNameRequired": "Legal name is required",
+    "registrationRequired": "Registration number is required",
+    "vatRequired": "Tax number is required",
+    "addressRequired": "Address is required",
+    "cityRequired": "City is required",
+    "postalRequired": "Postal code is required",
+    "invalidRegistration": "Invalid registration number for selected country",
+    "invalidVat": "Invalid VAT number for selected country",
+    "invalidPhone": "Invalid phone number",
+    "invalidEmail": "Invalid email address",
+    "invalidIban": "Invalid IBAN",
+    "atLeastOneIban": "At least one IBAN is required for credit transfer",
+    "correctHighlightedFields": "Please correct the highlighted fields.",
     "required": {
       "country": "Country is required",
       "legalName": "Legal name is required",
@@ -250,9 +263,12 @@
   },
   "export": {
     "updating": "Updating…",
-    "countryListError": "Country list could not be loaded. You can still use the form.",
+    "countryListError": "Zoznam krajov sa nepodarilo načítať. Formulár môžete stále použiť.",
     "validationTitle": "Missing required information",
     "validationMessage": "Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again."
->>>>>>> Stashed changes
+  },
+  "hero": {
+    "title": "Free browser-based invoice generator",
+    "description": "Make professional invoices, download print-ready PDFs, and issue compliant e-invoices from your browser."
   }
 }
