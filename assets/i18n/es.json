@@ -230,10 +230,38 @@
     "card": "Datos bancarios ocultos. Estado: Pagado con tarjeta.",
     "transfer": "Se requieren datos bancarios para transferencia."
   },
+  "validation": {
+    "required": {
+      "country": "El país es obligatorio",
+      "legalName": "La razón social es obligatoria",
+      "nameAndSurname": "Nombre y apellidos son obligatorios",
+      "registrationNumber": "El número de registro es obligatorio",
+      "taxNumber": "El NIF/CIF es obligatorio",
+      "address": "La dirección es obligatoria",
+      "city": "La ciudad es obligatoria",
+      "postalCode": "El código postal es obligatorio",
+      "phone": "Número de teléfono no válido",
+      "email": "Dirección de correo no válida"
+    },
+    "invalid": {
+      "registrationNumber": "Número de registro no válido para el país seleccionado",
+      "vatNumber": "NIF/CIF no válido para el país seleccionado",
+      "ibanRequired": "Se requiere al menos un IBAN para transferencia bancaria"
+    }
+  },
   "summary": {
     "sellerEmpty": "Introduzca los datos de su empresa",
     "buyerEmpty": "Introduzca los datos del cliente",
-    "edit": "Editar"
+    "edit": "Editar",
+    "addDetails": "Añadir datos",
+    "registrationNumber": "Número de registro:",
+    "taxNumber": "NIF/CIF:",
+    "phone": "Teléfono:",
+    "email": "Correo:",
+    "address": "Dirección",
+    "bankAccount": "Cuenta bancaria",
+    "editSeller": "Editar datos del vendedor",
+    "editBuyer": "Editar datos del comprador"
   },
   "footer": {
     "privacyPolicy": "Política de privacidad",
@@ -241,6 +269,8 @@
   },
   "export": {
     "updating": "Actualizando…",
-    "countryListError": "No se pudo cargar la lista de países. Puede seguir usando el formulario."
+    "countryListError": "No se pudo cargar la lista de países. Puede seguir usando el formulario.",
+    "validationTitle": "Faltan datos obligatorios",
+    "validationMessage": "Rellene todos los campos obligatorios (número de factura, vendedor y comprador, nombre del artículo en la línea 1 y al menos un IBAN) e inténtelo de nuevo."
   }
 }

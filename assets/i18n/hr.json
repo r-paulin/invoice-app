@@ -237,6 +237,6 @@
   },
   "export": {
     "updating": "Updating…",
-    "countryListError": "Country list could not be loaded. You can still use the form."
+    "countryListError": "Popis zemalja nije mogao biti učitán. I dalje možete koristiti obrazac."
   }
 }

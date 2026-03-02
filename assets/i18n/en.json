@@ -230,10 +230,38 @@
     "card": "Bank details hidden. Payment status: Paid by Credit Card.",
     "transfer": "Bank details required for bank transfer."
   },
+  "validation": {
+    "required": {
+      "country": "Country is required",
+      "legalName": "Legal name is required",
+      "nameAndSurname": "Name and surname is required",
+      "registrationNumber": "Registration number is required",
+      "taxNumber": "Tax number is required",
+      "address": "Address is required",
+      "city": "City is required",
+      "postalCode": "Postal code is required",
+      "phone": "Invalid phone number",
+      "email": "Invalid email address"
+    },
+    "invalid": {
+      "registrationNumber": "Invalid registration number for selected country",
+      "vatNumber": "Invalid VAT number for selected country",
+      "ibanRequired": "At least one IBAN is required for credit transfer"
+    }
+  },
   "summary": {
     "sellerEmpty": "Enter your business details",
     "buyerEmpty": "Enter your customers details",
-    "edit": "Edit"
+    "edit": "Edit",
+    "addDetails": "Add details",
+    "registrationNumber": "Registration number:",
+    "taxNumber": "Tax number:",
+    "phone": "Phone:",
+    "email": "Email:",
+    "address": "Address",
+    "bankAccount": "Bank account",
+    "editSeller": "Edit seller details",
+    "editBuyer": "Edit buyer details"
   },
   "footer": {
     "privacyPolicy": "Privacy policy",
@@ -241,6 +269,8 @@
   },
   "export": {
     "updating": "Updating…",
-    "countryListError": "Country list could not be loaded. You can still use the form."
+    "countryListError": "Country list could not be loaded. You can still use the form.",
+    "validationTitle": "Missing required information",
+    "validationMessage": "Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again."
   }
 }

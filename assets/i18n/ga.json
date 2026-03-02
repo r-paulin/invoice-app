@@ -237,6 +237,6 @@
   },
   "export": {
     "updating": "Updating…",
-    "countryListError": "Country list could not be loaded. You can still use the form."
+    "countryListError": "Níorbh fhéidir an liosta tíortha a lódáil. Is féidir leat an fhoirm a úsáid fós."
   }
 }

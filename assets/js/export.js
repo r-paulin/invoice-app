@@ -13,14 +13,10 @@
   var MIN_PROCESSING_MS = 4000;
   var MIN_VISIBLE_MS = 1000;
   function detectBaseUrl() {
-    var configured = (window.__INVIO_BASE_URL__ || '').replace(/\/+$/, '');
     var pathname = (window.location && window.location.pathname) ? window.location.pathname : '/';
-    if (configured && (pathname === configured || pathname.indexOf(configured + '/') === 0)) {
-      return configured;
-    }
-    if (pathname === '/invoice-app' || pathname.indexOf('/invoice-app/') === 0) {
-      return '/invoice-app';
-    }
+    if (pathname === '/invoice-app' || pathname.indexOf('/invoice-app/') === 0) return '/invoice-app';
+    var configured = (window.__INVIO_BASE_URL__ || '').replace(/\/+$/, '');
+    if (configured === '/invoice-app') return '/invoice-app';
     return '';
   }
   var BASE_URL = detectBaseUrl();

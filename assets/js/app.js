@@ -435,7 +435,7 @@
       if (!issue) return;
       if (dueDateUpdatingEl) {
         dueDateUpdatingEl.hidden = false;
-        dueDateUpdatingEl.textContent = 'Updating…';
+        dueDateUpdatingEl.textContent = (typeof window.t === 'function' ? window.t('export.updating') : '') || 'Updating…';
       }
       const due = toISO(addDays(new Date(issue + 'T12:00:00'), 14));
       dueDateInput.value = due;
@@ -481,10 +481,10 @@
   var worldCountriesCache = [];
 
   function getAssetBaseUrl() {
-    var configured = (window.__INVIO_BASE_URL__ || '').replace(/\/+$/, '');
     var pathname = (window.location && window.location.pathname) ? window.location.pathname : '/';
-    if (configured && (pathname === configured || pathname.indexOf(configured + '/') === 0)) return configured;
     if (pathname === '/invoice-app' || pathname.indexOf('/invoice-app/') === 0) return '/invoice-app';
+    var configured = (window.__INVIO_BASE_URL__ || '').replace(/\/+$/, '');
+    if (configured === '/invoice-app') return '/invoice-app';
     return '';
   }
 
@@ -630,7 +630,7 @@
     if (!flagEl || !nameEl || !selectEl) return;
     if (!iso2) {
       flagEl.className = 'country-select-flag fi';
-      nameEl.textContent = 'Select country';
+      nameEl.textContent = (typeof window.t === 'function' && window.t('form.selectCountry')) || 'Select country';
       return;
     }
     var country = findCountryByIso2(iso2);
@@ -668,7 +668,7 @@
     if (!flagEl || !nameEl || !selectEl) return;
     if (!iso2) {
       flagEl.className = 'country-select-flag fi';
-      nameEl.textContent = 'Select country';
+      nameEl.textContent = (typeof window.t === 'function' && window.t('form.selectCountry')) || 'Select country';
       return;
     }
     var country = findCountryByIso2(iso2);
@@ -838,10 +838,16 @@
   window.onInvioExportValidationFailed = function (errors) {
     if (!errors || !errors.length) return;
     var alertEl = document.getElementById('export-validation-alert');
-    var genericTitle = 'Missing required information';
-    var genericMessage = 'Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again.';
+    var genericTitle = (typeof window.t === 'function' && window.t('export.validationTitle')) || 'Missing required information';
+    var genericMessage = (typeof window.t === 'function' && window.t('export.validationMessage')) || 'Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again.';
     if (alertEl) {
-      alertEl.innerHTML = '<b>' + genericTitle + '</b><span>' + genericMessage + '</span>';
+      alertEl.textContent = '';
+      var b = document.createElement('b');
+      b.textContent = genericTitle;
+      var s = document.createElement('span');
+      s.textContent = ' ' + genericMessage;
+      alertEl.appendChild(b);
+      alertEl.appendChild(s);
       alertEl.hidden = false;
       alertEl.removeAttribute('x-cloak');
     }
@@ -1440,43 +1446,43 @@
     var valid = true;
     hideFieldErrors();
     if (!countryRaw) {
-      showFieldError('seller-country', 'Country is required');
+      showFieldError('seller-country', (typeof window.t === 'function' && window.t('validation.required.country')) || 'Country is required');
       valid = false;
     }
     if (!name) {
-      showFieldError('seller-name', isOrganisation ? 'Legal name is required' : 'Name and surname is required');
+      showFieldError('seller-name', (typeof window.t === 'function' && window.t(isOrganisation ? 'validation.required.legalName' : 'validation.required.nameAndSurname')) || (isOrganisation ? 'Legal name is required' : 'Name and surname is required'));
       valid = false;
     }
     if (isOrganisation) {
       if (!reg) {
-        showFieldError('seller-registration', 'Registration number is required');
+        showFieldError('seller-registration', (typeof window.t === 'function' && window.t('validation.required.registrationNumber')) || 'Registration number is required');
         valid = false;
       }
     } else {
       if (!vat) {
-        showFieldError('seller-vat', 'Tax number is required');
+        showFieldError('seller-vat', (typeof window.t === 'function' && window.t('validation.required.taxNumber')) || 'Tax number is required');
         valid = false;
       }
     }
     if (!street) {
-      showFieldError('seller-street', 'Address is required');
+      showFieldError('seller-street', (typeof window.t === 'function' && window.t('validation.required.address')) || 'Address is required');
       valid = false;
     }
     if (!city) {
-      showFieldError('seller-city', 'City is required');
+      showFieldError('seller-city', (typeof window.t === 'function' && window.t('validation.required.city')) || 'City is required');
       valid = false;
     }
     if (!postal) {
-      showFieldError('seller-postal', 'Postal code is required');
+      showFieldError('seller-postal', (typeof window.t === 'function' && window.t('validation.required.postalCode')) || 'Postal code is required');
       valid = false;
     }
     var v = window.InvioValidation;
     if (isOrganisation && reg && v && v.validRegistrationId && !v.validRegistrationId(reg, countryCode)) {
-      showFieldError('seller-registration', 'Invalid registration number for selected country');
+      showFieldError('seller-registration', (typeof window.t === 'function' && window.t('validation.invalid.registrationNumber')) || 'Invalid registration number for selected country');
       valid = false;
     }
     if (isOrganisation && vat && v && v.validVatId && !v.validVatId(vat, countryCode)) {
-      showFieldError('seller-vat', 'Invalid VAT number for selected country');
+      showFieldError('seller-vat', (typeof window.t === 'function' && window.t('validation.invalid.vatNumber')) || 'Invalid VAT number for selected country');
       valid = false;
     }
     var phoneCountrySelect = document.getElementById('seller-phone-country');
@@ -1486,11 +1492,11 @@
       phoneDialCode = phoneCountry ? phoneCountry.dialCode : '';
     }
     if (v && v.validPhone && phone && !v.validPhone(phone, phoneDialCode)) {
-      showFieldError('seller-phone', 'Invalid phone number');
+      showFieldError('seller-phone', (typeof window.t === 'function' && window.t('validation.required.phone')) || 'Invalid phone number');
       valid = false;
     }
     if (email && v && v.validEmail && !v.validEmail(email)) {
-      showFieldError('seller-email', 'Invalid email address');
+      showFieldError('seller-email', (typeof window.t === 'function' && window.t('validation.required.email')) || 'Invalid email address');
       valid = false;
     }
     var means = getPaymentMeansFromGeneral();
@@ -1520,7 +1526,7 @@
       }
       if (sellerIbanBlock) sellerIbanBlock.classList.remove('has-error');
       if (!hasOne) {
-        if (ibanErr) { ibanErr.textContent = 'At least one IBAN is required for credit transfer'; ibanErr.hidden = false; }
+        if (ibanErr) { ibanErr.textContent = (typeof window.t === 'function' && window.t('validation.invalid.ibanRequired')) || 'At least one IBAN is required for credit transfer'; ibanErr.hidden = false; }
         if (sellerIbanBlock) sellerIbanBlock.classList.add('has-error');
         valid = false;
       } else if (!allValid) {
@@ -1633,43 +1639,43 @@
     var valid = true;
     hideBuyerFieldErrors();
     if (!countryRaw) {
-      showBuyerFieldError('buyer-country', 'Country is required');
+      showBuyerFieldError('buyer-country', (typeof window.t === 'function' && window.t('validation.required.country')) || 'Country is required');
       valid = false;
     }
     if (!name) {
-      showBuyerFieldError('buyer-name', isOrganisation ? 'Legal name is required' : 'Name and surname is required');
+      showBuyerFieldError('buyer-name', (typeof window.t === 'function' && window.t(isOrganisation ? 'validation.required.legalName' : 'validation.required.nameAndSurname')) || (isOrganisation ? 'Legal name is required' : 'Name and surname is required'));
       valid = false;
     }
     if (isOrganisation) {
       if (!reg) {
-        showBuyerFieldError('buyer-registration', 'Registration number is required');
+        showBuyerFieldError('buyer-registration', (typeof window.t === 'function' && window.t('validation.required.registrationNumber')) || 'Registration number is required');
         valid = false;
       }
     } else {
       if (!vat) {
-        showBuyerFieldError('buyer-vat', 'Tax number is required');
+        showBuyerFieldError('buyer-vat', (typeof window.t === 'function' && window.t('validation.required.taxNumber')) || 'Tax number is required');
         valid = false;
       }
     }
     if (!street) {
-      showBuyerFieldError('buyer-street', 'Address is required');
+      showBuyerFieldError('buyer-street', (typeof window.t === 'function' && window.t('validation.required.address')) || 'Address is required');
       valid = false;
     }
     if (!city) {
-      showBuyerFieldError('buyer-city', 'City is required');
+      showBuyerFieldError('buyer-city', (typeof window.t === 'function' && window.t('validation.required.city')) || 'City is required');
       valid = false;
     }
     if (!postal) {
-      showBuyerFieldError('buyer-postal', 'Postal code is required');
+      showBuyerFieldError('buyer-postal', (typeof window.t === 'function' && window.t('validation.required.postalCode')) || 'Postal code is required');
       valid = false;
     }
     var v = window.InvioValidation;
     if (isOrganisation && reg && v && v.validRegistrationId && !v.validRegistrationId(reg, countryCode)) {
-      showBuyerFieldError('buyer-registration', 'Invalid registration number for selected country');
+      showBuyerFieldError('buyer-registration', (typeof window.t === 'function' && window.t('validation.invalid.registrationNumber')) || 'Invalid registration number for selected country');
       valid = false;
     }
     if (isOrganisation && vat && v && v.validVatId && !v.validVatId(vat, countryCode)) {
-      showBuyerFieldError('buyer-vat', 'Invalid VAT number for selected country');
+      showBuyerFieldError('buyer-vat', (typeof window.t === 'function' && window.t('validation.invalid.vatNumber')) || 'Invalid VAT number for selected country');
       valid = false;
     }
     var phoneCountrySelect = document.getElementById('buyer-phone-country');
@@ -1679,11 +1685,11 @@
       phoneDialCode = phoneCountry ? phoneCountry.dialCode : '';
     }
     if (v && v.validPhone && phone && !v.validPhone(phone, phoneDialCode)) {
-      showBuyerFieldError('buyer-phone', 'Invalid phone number');
+      showBuyerFieldError('buyer-phone', (typeof window.t === 'function' && window.t('validation.required.phone')) || 'Invalid phone number');
       valid = false;
     }
     if (email && v && v.validEmail && !v.validEmail(email)) {
-      showBuyerFieldError('buyer-email', 'Invalid email address');
+      showBuyerFieldError('buyer-email', (typeof window.t === 'function' && window.t('validation.required.email')) || 'Invalid email address');
       valid = false;
     }
     var means = getPaymentMeansFromGeneral();
@@ -1803,12 +1809,21 @@
       img.width = 248;
       var h3 = document.createElement('h3');
       h3.id = 'seller-card-summary';
-      h3.textContent = 'Enter your business details';
+      h3.textContent = (typeof window.t === 'function' && window.t('summary.sellerEmpty')) || 'Enter your business details';
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'btn btn--primary btn--icon-left';
       btn.setAttribute('data-seller-modal-trigger', '');
-      btn.innerHTML = '<span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span>';
+      var addLabel = (typeof window.t === 'function' && window.t('summary.addDetails')) || 'Add details';
+      var icon = document.createElement('span');
+      icon.className = 'material-symbols-rounded btn__icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = 'add';
+      btn.appendChild(icon);
+      var lbl = document.createElement('span');
+      lbl.className = 'btn__label';
+      lbl.textContent = addLabel;
+      btn.appendChild(lbl);
       card.appendChild(img);
       card.appendChild(h3);
       card.appendChild(btn);
@@ -1825,10 +1840,11 @@
     wrap.appendChild(h4);
     var reg = (s.legalRegistrationId || '').trim();
     var vat = (s.vatId || '').trim();
+    var t = typeof window.t === 'function' ? window.t : function () { return ''; };
     if (reg || vat) {
       var identityParts = [];
-      if (reg) identityParts.push('Registration number: ' + reg);
-      if (vat) identityParts.push('Tax number: ' + vat);
+      if (reg) identityParts.push((t('summary.registrationNumber') || 'Registration number:') + ' ' + reg);
+      if (vat) identityParts.push((t('summary.taxNumber') || 'Tax number:') + ' ' + vat);
       var pId = document.createElement('p');
       pId.className = 'seller-summary__text';
       pId.textContent = identityParts.join(', ');
@@ -1848,7 +1864,7 @@
       var addrLine = parts.join(', ');
       var pAddr = document.createElement('p');
       pAddr.className = 'seller-summary__text';
-      pAddr.setAttribute('aria-label', 'Address');
+      pAddr.setAttribute('aria-label', t('summary.address') || 'Address');
       pAddr.textContent = addrLine;
       wrap.appendChild(pAddr);
     }
@@ -1860,7 +1876,7 @@
         var line = bankName ? iban + ' – ' + bankName : iban;
         var pBank = document.createElement('p');
         pBank.className = 'seller-summary__text';
-        if (idx === 0) pBank.setAttribute('aria-label', 'Bank account');
+        if (idx === 0) pBank.setAttribute('aria-label', t('summary.bankAccount') || 'Bank account');
         pBank.textContent = line;
         wrap.appendChild(pBank);
       });
@@ -1869,8 +1885,8 @@
     var email = (c.email || '').trim();
     if (phone || email) {
       var contactParts = [];
-      if (phone) contactParts.push('Phone: ' + phone);
-      if (email) contactParts.push('Email: ' + email);
+      if (phone) contactParts.push((t('summary.phone') || 'Phone:') + ' ' + phone);
+      if (email) contactParts.push((t('summary.email') || 'Email:') + ' ' + email);
       var pContact = document.createElement('p');
       pContact.className = 'seller-summary__text';
       pContact.setAttribute('aria-label', 'Contacts');
@@ -1881,8 +1897,11 @@
     editBtn.type = 'button';
     editBtn.className = 'btn btn--secondary seller-summary__edit';
     editBtn.setAttribute('data-seller-modal-trigger', '');
-    editBtn.innerHTML = '<span class="btn__label">Edit</span>';
-    editBtn.setAttribute('aria-label', 'Edit seller details');
+    var editLabel = (t('summary.edit') || 'Edit');
+    var editSpan = editBtn.appendChild(document.createElement('span'));
+    editSpan.className = 'btn__label';
+    editSpan.textContent = editLabel;
+    editBtn.setAttribute('aria-label', t('summary.editSeller') || 'Edit seller details');
     wrap.appendChild(editBtn);
     content.appendChild(wrap);
   }
@@ -1916,18 +1935,28 @@
       img.width = 248;
       var h3 = document.createElement('h3');
       h3.id = 'buyer-card-summary';
-      h3.textContent = 'Enter your customers details';
+      h3.textContent = (typeof window.t === 'function' && window.t('summary.buyerEmpty')) || 'Enter your customers details';
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'btn btn--primary btn--icon-left';
       btn.setAttribute('data-buyer-modal-trigger', '');
-      btn.innerHTML = '<span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span>';
+      var addLabelBuyer = (typeof window.t === 'function' && window.t('summary.addDetails')) || 'Add details';
+      var iconB = document.createElement('span');
+      iconB.className = 'material-symbols-rounded btn__icon';
+      iconB.setAttribute('aria-hidden', 'true');
+      iconB.textContent = 'add';
+      btn.appendChild(iconB);
+      var lblB = document.createElement('span');
+      lblB.className = 'btn__label';
+      lblB.textContent = addLabelBuyer;
+      btn.appendChild(lblB);
       card.appendChild(img);
       card.appendChild(h3);
       card.appendChild(btn);
       content.appendChild(card);
       return;
     }
+    var tBuyer = typeof window.t === 'function' ? window.t : function () { return ''; };
     var wrap = document.createElement('div');
     wrap.className = 'buyer-summary';
     wrap.setAttribute('aria-live', 'polite');
@@ -1940,8 +1969,8 @@
     var vat = (b.vatId || '').trim();
     if (reg || vat) {
       var identityParts = [];
-      if (reg) identityParts.push('Registration number: ' + reg);
-      if (vat) identityParts.push('Tax number: ' + vat);
+      if (reg) identityParts.push((tBuyer('summary.registrationNumber') || 'Registration number:') + ' ' + reg);
+      if (vat) identityParts.push((tBuyer('summary.taxNumber') || 'Tax number:') + ' ' + vat);
       var pId = document.createElement('p');
       pId.className = 'buyer-summary__text';
       pId.textContent = identityParts.join(', ');
@@ -1961,7 +1990,7 @@
       var addrLine = parts.join(', ');
       var pAddr = document.createElement('p');
       pAddr.className = 'buyer-summary__text';
-      pAddr.setAttribute('aria-label', 'Address');
+      pAddr.setAttribute('aria-label', tBuyer('summary.address') || 'Address');
       pAddr.textContent = addrLine;
       wrap.appendChild(pAddr);
     }
@@ -1973,7 +2002,7 @@
         var line = bankName ? iban + ' – ' + bankName : iban;
         var pBank = document.createElement('p');
         pBank.className = 'buyer-summary__text';
-        if (idx === 0) pBank.setAttribute('aria-label', 'Bank account');
+        if (idx === 0) pBank.setAttribute('aria-label', tBuyer('summary.bankAccount') || 'Bank account');
         pBank.textContent = line;
         wrap.appendChild(pBank);
       });
@@ -1982,8 +2011,8 @@
     var email = (c.email || '').trim();
     if (phone || email) {
       var contactParts = [];
-      if (phone) contactParts.push('Phone: ' + phone);
-      if (email) contactParts.push('Email: ' + email);
+      if (phone) contactParts.push((tBuyer('summary.phone') || 'Phone:') + ' ' + phone);
+      if (email) contactParts.push((tBuyer('summary.email') || 'Email:') + ' ' + email);
       var pContact = document.createElement('p');
       pContact.className = 'buyer-summary__text';
       pContact.setAttribute('aria-label', 'Contacts');
@@ -1994,8 +2023,11 @@
     editBtn.type = 'button';
     editBtn.className = 'btn btn--secondary buyer-summary__edit';
     editBtn.setAttribute('data-buyer-modal-trigger', '');
-    editBtn.innerHTML = '<span class="btn__label">Edit</span>';
-    editBtn.setAttribute('aria-label', 'Edit buyer details');
+    var editLabelBuyer = (tBuyer('summary.edit') || 'Edit');
+    var editSpanBuyer = editBtn.appendChild(document.createElement('span'));
+    editSpanBuyer.className = 'btn__label';
+    editSpanBuyer.textContent = editLabelBuyer;
+    editBtn.setAttribute('aria-label', tBuyer('summary.editBuyer') || 'Edit buyer details');
     wrap.appendChild(editBtn);
     content.appendChild(wrap);
   }

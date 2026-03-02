@@ -123,9 +123,9 @@
       var STATIC_LOCALES = ['en', 'es'];
       function detectLocalesBaseUrl() {
         var pathname = (window.location && window.location.pathname) || '/';
-        var configured = (window.__INVIO_BASE_URL__ || '').replace(/\/+$/, '');
-        if (configured && (pathname === configured || pathname.indexOf(configured + '/') === 0)) return configured;
         if (pathname === '/invoice-app' || pathname.indexOf('/invoice-app/') === 0) return '/invoice-app';
+        var configured = (window.__INVIO_BASE_URL__ || '').replace(/\/+$/, '');
+        if (configured === '/invoice-app') return '/invoice-app';
         return '';
       }
       Alpine.data('translations', function () {

@@ -237,6 +237,6 @@
   },
   "export": {
     "updating": "Updating…",
-    "countryListError": "Country list could not be loaded. You can still use the form."
+    "countryListError": "A lista de países não pôde ser carregada. Ainda pode utilizar o formulário."
   }
 }
