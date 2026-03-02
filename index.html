@@ -36,6 +36,60 @@
       Alpine.store('sellerBankAccounts', []);
       Alpine.store('buyerFormAlert', { show: false, message: '' });
       Alpine.store('buyerBankAccounts', []);
+      Alpine.store('toasts', {
+        list: [],
+        defaultDuration: 4000,
+        maxToasts: 3,
+        addToast: function (payload) {
+          var config = payload || {};
+          while (this.list.length >= this.maxToasts) {
+            this.removeToast(this.list[0].id);
+          }
+          var id = Date.now() + '-' + Math.random().toString(16).slice(2);
+          var duration = typeof config.duration === 'number' ? config.duration : (config.timeout != null ? config.timeout : this.defaultDuration);
+          var toast = {
+            id: id,
+            text: config.text || '',
+            type: config.type || 'success',
+            duration: duration,
+            timerId: null
+          };
+          this.list.push(toast);
+          if (duration > 0) this.startTimer(id);
+          return id;
+        },
+        removeToast: function (id) {
+          this.clearTimer(id);
+          this.list = this.list.filter(function (t) { return t.id !== id; });
+        },
+        startTimer: function (id) {
+          var self = this;
+          var toast = this.list.find(function (t) { return t.id === id; });
+          if (!toast || toast.timerId) return;
+          toast.timerId = window.setTimeout(function () {
+            toast.timerId = null;
+            self.removeToast(id);
+          }, toast.duration);
+        },
+        clearTimer: function (id) {
+          var toast = this.list.find(function (t) { return t.id === id; });
+          if (toast && toast.timerId) {
+            window.clearTimeout(toast.timerId);
+            toast.timerId = null;
+          }
+        },
+        pauseTimer: function (id) { this.clearTimer(id); },
+        resumeTimer: function (id) { this.startTimer(id); },
+        dismissLatest: function () {
+          if (this.list.length) this.removeToast(this.list[this.list.length - 1].id);
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          var t = Alpine.store('toasts');
+          if (t && t.list && t.list.length) t.dismissLatest();
+        }
+      });
 
       var SETTINGS_KEY = 'invio_settings';
       function getDefaultSettings() { return { logo: null, accentColor: '#008236' }; }
@@ -109,17 +163,11 @@
           logoError: '',
           logoFileName: '',
           accentHexInput: '#008236',
-          accentHexInvalid: false,
           get accentHexValidOrFallback() {
             return hexToSolidForDisplay(this.$store.settings.accentColor);
           },
           init: function () {
-            var self = this;
             this.accentHexInput = this.$store.settings.accentColor || '#008236';
-            this.$watch('$store.settings.accentColor', function (val) {
-              if (normalizeHex(val)) self.accentHexInput = val;
-              self.$store.settings.save();
-            });
           },
           onLogoFileChange: function (ev) {
             this.logoError = '';
@@ -137,10 +185,12 @@
             ev.target.value = '';
           },
           removeLogo: function () {
+            if (!this.$store.settings.logo) return;
             this.$store.settings.logo = null;
             this.logoFileName = '';
             this.$store.settings.save();
             this.logoError = '';
+            if (window.showToastSuccess) window.showToastSuccess('Logo removed.');
           },
           applyLogoFile: function (file) {
             if (!file || !file.type || !file.type.startsWith('image/')) {
@@ -157,6 +207,7 @@
               self.$store.settings.logo = reader.result;
               self.logoFileName = file.name || '';
               self.$store.settings.save();
+              if (window.showToastSuccess) window.showToastSuccess('Logo updated.');
             };
             reader.readAsDataURL(file);
           },
@@ -171,21 +222,17 @@
             var hex = raw.trim();
             if (hex === '') {
               this.$store.settings.accentColor = '#008236';
-              this.accentHexInput = '#008236';
               this.$store.settings.save();
-              this.accentHexInvalid = false;
               return;
             }
             if (hex.charAt(0) !== '#') hex = '#' + hex;
             var normalized = normalizeHex(hex);
             if (normalized) {
               this.$store.settings.accentColor = normalized;
-              this.accentHexInput = normalized;
-              this.$store.settings.save();
-              this.accentHexInvalid = false;
             } else {
-              this.accentHexInvalid = hex.length >= 2;
+              this.$store.settings.accentColor = '#008236';
             }
+            this.$store.settings.save();
           },
           onAccentColorPicker: function (ev) {
             var hex = ev.target.value;
@@ -193,7 +240,6 @@
               this.$store.settings.accentColor = hex;
               this.accentHexInput = hex;
               this.$store.settings.save();
-              this.accentHexInvalid = false;
             }
           }
         };
@@ -633,14 +679,12 @@
                 <div class="chips">
                   <span class="chips-title">Add fields:</span>
                   <button type="button" class="chip-toggle" :class="showDiscount ? 'chip-active' : 'chip-inactive'" @click="toggleDiscount()" :aria-pressed="String(showDiscount)" aria-label="Toggle discount column">
-                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showDiscount ? 'check' : 'add'"></span>
+                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showDiscount ? 'close' : 'add'"></span>
                     <span class="chip-label">Discount</span>
-                    <span class="material-symbols-rounded chip-close" aria-hidden="true" x-show="showDiscount" x-cloak>close</span>
                   </button>
                   <button type="button" class="chip-toggle" :class="showNote ? 'chip-active' : 'chip-inactive'" @click="toggleNote()" :aria-pressed="String(showNote)" aria-label="Toggle note">
-                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showNote ? 'check' : 'add'"></span>
+                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showNote ? 'close' : 'add'"></span>
                     <span class="chip-label">Note</span>
-                    <span class="material-symbols-rounded chip-close" aria-hidden="true" x-show="showNote" x-cloak>close</span>
                   </button>
                 </div>
 
@@ -871,12 +915,11 @@
                 <div class="form-group form-field">
                   <label for="accent-color-hex"><span class="form-label">Accent color</span></label>
                   <div class="style-accent-row">
-                    <input type="text" id="accent-color-hex" class="form-control style-accent-hex-input" :value="accentHexInput" @input="onAccentHexInput($event)" placeholder="#008236" maxlength="9" aria-describedby="accent-color-picker-hint" aria-label="Accent color (hex)" :aria-invalid="accentHexInvalid">
                     <input type="color" x-ref="accentColorNative" class="visually-hidden" :value="accentHexValidOrFallback" @input="onAccentColorPicker($event)">
                     <button type="button" class="style-accent-circle" aria-label="Open color picker" title="Choose color" :style="{ backgroundColor: accentHexValidOrFallback }" @click="$refs.accentColorNative.click()"></button>
+                    <input type="text" id="accent-color-hex" class="form-control style-accent-hex-input" :value="accentHexInput" @input="onAccentHexInput($event)" placeholder="#008236" maxlength="9" aria-describedby="accent-color-picker-hint" aria-label="Accent color (hex)">
                   </div>
                   <span id="accent-color-picker-hint" class="visually-hidden">Enter hex code or tap the circle to pick a color</span>
-                  <span class="field-error form-error" role="alert" aria-live="polite" x-show="accentHexInvalid" x-cloak>Enter a valid hex code (e.g. #000, #000000, #00000080)</span>
                 </div>
               </div>
             </section>
@@ -890,6 +933,45 @@
       </footer>
     </div>
   </div>
+
+  <section
+    class="toast-host"
+    x-data="{}"
+    x-show="$store.toasts && $store.toasts.list.length > 0"
+    x-cloak
+    aria-live="polite"
+    role="status"
+    aria-label="Notifications"
+  >
+    <div class="toast-host__slot">
+      <template x-for="toast in ($store.toasts && $store.toasts.list || [])" :key="toast.id">
+        <article
+          class="toast"
+          :class="'toast--' + (toast.type || 'success')"
+          role="status"
+          @mouseenter="$store.toasts.pauseTimer(toast.id)"
+          @mouseleave="$store.toasts.resumeTimer(toast.id)"
+          @focusin="$store.toasts.pauseTimer(toast.id)"
+          @focusout="$store.toasts.resumeTimer(toast.id)"
+          x-transition:enter="toast-transition"
+          x-transition:enter-start="toast-enter-start"
+          x-transition:enter-end="toast-enter-end"
+          x-transition:leave="toast-transition"
+          x-transition:leave-start="toast-leave-start"
+          x-transition:leave-end="toast-leave-end"
+          x-cloak
+        >
+          <span class="toast__icon" aria-hidden="true">
+            <span class="material-symbols-rounded" aria-hidden="true" x-text="toast.type === 'error' ? 'warning' : (toast.type === 'info' ? 'info' : 'check_circle')"></span>
+          </span>
+          <span class="toast__text" x-text="toast.text"></span>
+          <button type="button" class="toast__dismiss" aria-label="Close" @click="$store.toasts.removeToast(toast.id)">
+            <span class="material-symbols-rounded" aria-hidden="true">close</span>
+          </button>
+        </article>
+      </template>
+    </div>
+  </section>
 
   <!-- Logger stub (context-aware; replace in production with reporting if needed) -->
   <script>

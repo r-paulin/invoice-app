@@ -684,11 +684,15 @@ h3{
   display: flex;
   align-items: flex-end;
   gap: 0.75rem;
+  max-width: 100%;
+  width: 100%;
 }
 
 .style-accent-hex-input {
-  width: 17.9375rem;
-  flex: none;
+  width: 100%;
+  max-width: 50%;
+  min-width: 0;
+  flex: 0 1 50%;
 }
 
 .style-accent-circle {
@@ -697,7 +701,7 @@ h3{
   flex-shrink: 0;
   border-radius: 999px;
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-input);
+  box-shadow: inset 0 0 0 2px var(--white), var(--shadow-input);
   padding: 0;
   cursor: pointer;
   transition: box-shadow 0.12s ease;
@@ -1187,7 +1191,7 @@ input::placeholder {
 }
 
 .chip-inactive {
-  background: var(--grey-100);
+  background: var(--white);
   border-color: var(--grey-300);
 }
 
@@ -1205,17 +1209,17 @@ input::placeholder {
 }
 
 .chip-active {
-  background: #f0fdf4;
-  border-color: #00c950;
+  background: var(--grey-800);
+  border-color: var(--grey-800);
 }
 
 .chip-active .chip-icon {
-  color: var(--green-700);
+  color: var(--white);
   font-size: 1.25rem;
 }
 
 .chip-active .chip-label {
-  color: var(--green-900);
+  color: var(--white);
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.5;
@@ -1223,7 +1227,7 @@ input::placeholder {
 }
 
 .chip-active .chip-close {
-  color: var(--green-700);
+  color: var(--white);
   cursor: pointer;
   font-size: 1.25rem;
 }
@@ -2457,6 +2461,11 @@ input::placeholder {
     width: 100%;
     align-self: stretch;
   }
+
+  .style-accent-hex-input {
+    max-width: 100%;
+    flex: 1 1 auto;
+  }
 }
 
 .seller-modal-actions .btn,
@@ -2643,4 +2652,139 @@ input::placeholder {
 
 .export-validation-alert[hidden] {
   display: none;
+}
+
+/* Toast — global store, Popover API top layer, max 3, pause on hover/focus */
+:root {
+  --toast-success: #22c55e;
+  --toast-error: #ef4444;
+  --toast-info: #3b82f6;
+}
+
+.toast-host {
+  position: fixed;
+  inset-inline-end: 1rem;
+  inset-block-end: 1rem;
+  z-index: 1200;
+  pointer-events: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  min-inline-size: 0;
+}
+
+.toast-host__slot {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.toast-host .toast {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.toast {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 6px 16px;
+  min-height: 2.5rem;
+  background: #2c2c2c;
+  color: #e5e5e5;
+  border-radius: 360px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.toast--success .toast__icon { color: var(--toast-success); }
+.toast--error .toast__icon { color: var(--toast-error); }
+.toast--info .toast__icon { color: var(--toast-info); }
+
+.toast__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast__icon .material-symbols-rounded {
+  font-size: 1.25rem;
+  font-variation-settings: "opsz" 20, "wght" 400, "FILL" 0, "GRAD" 0;
+}
+
+.toast-transition {
+  transition: transform 0.32s ease, opacity 0.32s ease;
+}
+
+.toast-enter-start {
+  transform: translateY(20px);
+  opacity: 0;
+}
+
+.toast-enter-end {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast-leave-start {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.toast-leave-end {
+  transform: translateY(-8px) scale(0.96);
+  opacity: 0;
+}
+
+.toast__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toast__dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-input);
+  background: transparent;
+  color: #b0b0b0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toast__dismiss:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e5e5e5;
+}
+
+.toast__dismiss:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.toast__dismiss .material-symbols-rounded {
+  font-size: 1.25rem;
+  font-variation-settings: "opsz" 20, "wght" 400, "FILL" 0, "GRAD" 0;
+}
+
+@media (max-width: 640px) {
+  .toast-host {
+    inset-inline: 0.75rem;
+    inset-block-end: 0.75rem;
+  }
 }

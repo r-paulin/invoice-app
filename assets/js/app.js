@@ -6,6 +6,19 @@
     }
   }
 
+  function showSuccessToast(text, opts) {
+    if (!text) return null;
+    if (typeof window === 'undefined' || typeof Alpine === 'undefined' || !Alpine.store) return null;
+    var store = Alpine.store('toasts');
+    if (!store || typeof store.addToast !== 'function') return null;
+    return store.addToast({
+      text: text,
+      type: 'success',
+      duration: (opts && typeof opts.timeout === 'number') ? opts.timeout : 4000
+    });
+  }
+  window.showToastSuccess = showSuccessToast;
+
   document.addEventListener('alpine:init', function () {
     Alpine.data('paymentDetails', function () {
       return {
@@ -181,6 +194,7 @@
           var ids = this.lines.map(function (l) { return parseInt(l.id, 10); }).filter(function (n) { return !isNaN(n); });
           var nextId = ids.length ? Math.max.apply(null, ids) + 1 : 1;
           this.lines.push(window.InvioState.defaultLine(nextId));
+          showSuccessToast('Item added to invoice.');
         },
 
         removeLine: function (index) {
@@ -882,6 +896,7 @@
       draft.header.languageCode = invoiceLanguageSelect.value;
       syncInvoiceLanguageDisplay();
       if (invoiceLanguageLive) invoiceLanguageLive.textContent = 'Labels and static text will be generated in ' + (invoiceLanguageSelect.options[invoiceLanguageSelect.selectedIndex].textContent || 'English') + '.';
+      showSuccessToast('Invoice language updated.');
     });
   }
 
@@ -922,6 +937,7 @@
       document.dispatchEvent(new CustomEvent('invio:currency-changed', {
         detail: { code: invoiceCurrencySelect.value }
       }));
+      showSuccessToast('Invoice currency updated.');
     });
   }
 
@@ -948,6 +964,7 @@
       draft.header = draft.header || {};
       draft.header.typeCode = invoiceTypeSelect.value;
       updateInvoiceTypeSubtext();
+      showSuccessToast('Invoice type updated.');
     });
   }
 
@@ -967,6 +984,7 @@
         else if (means === '48') liveEl.textContent = 'Bank details hidden. Payment status: Paid by Credit Card.';
         else liveEl.textContent = 'Bank details required for bank transfer.';
       }
+      showSuccessToast('Payment type updated.');
     });
   }
   function updatePaymentMeansDisplayName() {
@@ -1509,6 +1527,7 @@
     closeSellerModal();
     updateSellerCardSummary();
     if (window.clearExportValidationState) window.clearExportValidationState();
+    showSuccessToast('Seller details saved.');
   }
 
   function hideBuyerFieldErrors() {
@@ -1686,6 +1705,7 @@
     closeBuyerModal();
     updateBuyerCardSummary();
     if (window.clearExportValidationState) window.clearExportValidationState();
+    showSuccessToast('Buyer details saved.');
   }
 
   function clearSellerSectionContent() {
