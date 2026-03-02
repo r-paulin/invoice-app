@@ -127,6 +127,9 @@
       applyExportPageTranslations();
     });
   }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
   function getStorage(key) {
