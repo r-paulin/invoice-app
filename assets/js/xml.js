@@ -29,8 +29,8 @@ function addChild(parent, child) {
 }
 
 /** Peppol BIS 3.0 defaults for XML (must match state.js and validation.js). */
-const PEPPOL_CUSTOMIZATION_ID = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';
-const PEPPOL_PROFILE_ID = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
+const XML_PEPPOL_CUSTOMIZATION_ID = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';
+const XML_PEPPOL_PROFILE_ID = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
 
 /**
  * Map calcInvoice(draft) result to internal totals shape for XML building.
@@ -250,8 +250,8 @@ function buildInvoiceXML(draft, computed, settings) {
   if (h.dueDate) addChild(root, elCbc(doc, 'DueDate', h.dueDate));
   addChild(root, elCbc(doc, 'IssueDate', h.issueDate));
   addChild(root, elCbc(doc, 'ID', h.invoiceNumber));
-  addChild(root, elCbc(doc, 'ProfileID', (h.profileId || PEPPOL_PROFILE_ID).trim()));
-  addChild(root, elCbc(doc, 'CustomizationID', (h.customizationId || h.specificationId || PEPPOL_CUSTOMIZATION_ID).trim()));
+  addChild(root, elCbc(doc, 'ProfileID', (h.profileId || XML_PEPPOL_PROFILE_ID).trim()));
+  addChild(root, elCbc(doc, 'CustomizationID', (h.customizationId || h.specificationId || XML_PEPPOL_CUSTOMIZATION_ID).trim()));
   addChild(root, elCbc(doc, 'UBLVersionID', '2.1'));
 
   return doc;

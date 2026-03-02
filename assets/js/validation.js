@@ -21,7 +21,7 @@ const ALLOWED_CURRENCY_CODES = [
 ];
 
 /** Peppol BIS 3.0 required values for export validation. */
-const PEPPOL_CUSTOMIZATION_ID = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';
+const VALIDATION_PEPPOL_CUSTOMIZATION_ID = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';
 const PEPPOL_PROFILE_ID_PATTERN = /^urn:fdc:peppol\.eu:2017:poacc:billing:\d{2}:1\.0$/;
 
 /** MVP: per-country registration ID regex (alphanumeric + hyphen, reasonable length) */
@@ -190,6 +190,8 @@ function validateDraft(draft) {
 
   // BT-1
   if (!nonEmpty(h.invoiceNumber)) errors.push('Invoice number (BT-1) is required');
+  // BT-83
+  if (!nonEmpty(payment.paymentId)) errors.push('Payment reference (BT-83) is required');
   // BT-2
   if (!validIsoDate(h.issueDate)) errors.push('Invoice date (BT-2) must be a valid ISO date (YYYY-MM-DD)');
   // BT-3
@@ -285,7 +287,7 @@ function validateForExport(draft) {
   // Peppol BIS 3.0: CustomizationID (BT-24) must have the required value
   const customizationId = (h.customizationId || h.specificationId || '').trim();
   if (!customizationId) errors.push('CustomizationID (BT-24) is required for Peppol BIS 3.0 export');
-  else if (customizationId !== PEPPOL_CUSTOMIZATION_ID) errors.push('CustomizationID (BT-24) must be the Peppol BIS Billing 3.0 value for compliant export');
+  else if (customizationId !== VALIDATION_PEPPOL_CUSTOMIZATION_ID) errors.push('CustomizationID (BT-24) must be the Peppol BIS Billing 3.0 value for compliant export');
 
   if (errors.length) return { valid: false, errors };
 

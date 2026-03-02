@@ -609,6 +609,7 @@ h3{
 .tab.active {
   border-bottom-color: var(--green-600);
   color: var(--grey-800);
+  font-weight: 600;
 }
 
 .panel {
@@ -1822,6 +1823,7 @@ input::placeholder {
 .buyer-tab.active {
   border-bottom-color: var(--green-600);
   color: var(--grey-800);
+  font-weight: 600;
 }
 
 .seller-tab:hover:not(.active),

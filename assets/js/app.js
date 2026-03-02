@@ -791,15 +791,17 @@
     var invNumField = document.getElementById('invoice-number-field');
     var invNumInput = document.getElementById('invoice-number');
     var invNumErr = document.getElementById('invoice-number-error');
-    if (invNumField) invNumField.classList.add('has-error');
-    if (invNumInput) invNumInput.setAttribute('aria-invalid', 'true');
-    if (invNumErr) { invNumErr.hidden = false; invNumErr.textContent = ''; }
+    var hasInvoiceNumberError = errors.some(function (e) { return e.indexOf('Invoice number') !== -1; });
+    if (invNumField) invNumField.classList.toggle('has-error', !!hasInvoiceNumberError);
+    if (invNumInput) invNumInput.setAttribute('aria-invalid', hasInvoiceNumberError ? 'true' : 'false');
+    if (invNumErr) { invNumErr.hidden = !hasInvoiceNumberError; invNumErr.textContent = ''; }
     var payRefField = document.getElementById('payment-reference-field');
     var payRefInput = document.getElementById('payment-reference');
     var payRefErr = document.getElementById('payment-reference-error');
-    if (payRefField) payRefField.classList.add('has-error');
-    if (payRefInput) payRefInput.setAttribute('aria-invalid', 'true');
-    if (payRefErr) { payRefErr.hidden = false; payRefErr.textContent = ''; }
+    var hasPaymentReferenceError = errors.some(function (e) { return e.indexOf('Payment reference') !== -1; });
+    if (payRefField) payRefField.classList.toggle('has-error', !!hasPaymentReferenceError);
+    if (payRefInput) payRefInput.setAttribute('aria-invalid', hasPaymentReferenceError ? 'true' : 'false');
+    if (payRefErr) { payRefErr.hidden = !hasPaymentReferenceError; payRefErr.textContent = ''; }
     var scrollTarget = document.getElementById('export-validation-alert');
     if (scrollTarget) {
       scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
