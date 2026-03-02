@@ -769,6 +769,14 @@
     if (payRefInput) payRefInput.setAttribute('aria-invalid', 'false');
     var payRefErr = document.getElementById('payment-reference-error');
     if (payRefErr) { payRefErr.hidden = true; payRefErr.textContent = ''; }
+    var lineNameHeader = document.querySelector('.items-table .col-name');
+    if (lineNameHeader) lineNameHeader.classList.remove('table-error-border');
+    var lineRows = document.querySelectorAll('.items-table tbody tr.line-row');
+    lineRows.forEach(function (row) {
+      row.classList.remove('table-error-border');
+      var lineNameInput = row.querySelector('.line-name-input');
+      if (lineNameInput) lineNameInput.setAttribute('aria-invalid', 'false');
+    });
   }
   if (typeof window !== 'undefined') window.clearExportValidationState = clearExportValidationState;
 
@@ -802,6 +810,23 @@
     if (payRefField) payRefField.classList.toggle('has-error', !!hasPaymentReferenceError);
     if (payRefInput) payRefInput.setAttribute('aria-invalid', hasPaymentReferenceError ? 'true' : 'false');
     if (payRefErr) { payRefErr.hidden = !hasPaymentReferenceError; payRefErr.textContent = ''; }
+    var lineNameErrorIndexes = {};
+    errors.forEach(function (e) {
+      var m = /^Line (\d+): Item name/.exec(e);
+      if (!m) return;
+      var idx = parseInt(m[1], 10);
+      if (!isNaN(idx) && idx > 0) lineNameErrorIndexes[idx - 1] = true;
+    });
+    var hasLineItemNameError = Object.keys(lineNameErrorIndexes).length > 0;
+    var lineNameHeader = document.querySelector('.items-table .col-name');
+    if (lineNameHeader) lineNameHeader.classList.toggle('table-error-border', !!hasLineItemNameError);
+    var lineRows = document.querySelectorAll('.items-table tbody tr.line-row');
+    lineRows.forEach(function (row, idx) {
+      var hasLineNameError = !!lineNameErrorIndexes[idx];
+      row.classList.toggle('table-error-border', hasLineNameError);
+      var lineNameInput = row.querySelector('.line-name-input');
+      if (lineNameInput) lineNameInput.setAttribute('aria-invalid', hasLineNameError ? 'true' : 'false');
+    });
     var scrollTarget = document.getElementById('export-validation-alert');
     if (scrollTarget) {
       scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });

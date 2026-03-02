@@ -1123,7 +1123,8 @@ input::placeholder {
 
 .card.card--error {
   border-color: var(--color-error-border, var(--red-700));
-  border-width: 2px;
+  border-width: 1px;
+  background-color: var(--red-50);
 }
 
 .card.card--error .btn {
@@ -1281,6 +1282,15 @@ input::placeholder {
   line-height: 1.5;
   padding: 0.25em 0.5em 0.25em 0.25em;
   vertical-align: middle;
+}
+
+.items-table .col-name.table-error-border,
+.items-table tbody td.table-error-border {
+  border-bottom-color: var(--color-error-border);
+}
+
+.items-table tbody tr.line-row.table-error-border td {
+  border-bottom-color: var(--color-error-border);
 }
 
 
@@ -2609,8 +2619,8 @@ input::placeholder {
   border: 1px solid var(--color-error-border, var(--red-700));
   border-radius: var(--radius-input);
   padding: 0.75em 1em;
-  margin: 1em;
-  width: 100%;
+  margin: 1em 1em;
+  width: auto;
 }
 
 .export-validation-alert b {
