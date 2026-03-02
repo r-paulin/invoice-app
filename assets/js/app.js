@@ -2092,8 +2092,15 @@
     logError('initCountries', err);
     var statusEl = document.getElementById('countries-load-status');
     if (statusEl) {
-      statusEl.textContent = (typeof window.t === 'function' && window.t('export.countryListError')) || 'Country list could not be loaded. You can still use the form.';
+      var msg = (typeof window.t === 'function' && window.t('export.countryListError')) || 'Country list could not be loaded. You can still use the form.';
+      statusEl.textContent = msg;
       statusEl.removeAttribute('hidden');
+      document.addEventListener('invio:locale-ready', function updateCountryErrorText() {
+        if (statusEl && !statusEl.hasAttribute('hidden') && typeof window.t === 'function') {
+          statusEl.textContent = window.t('export.countryListError');
+        }
+        document.removeEventListener('invio:locale-ready', updateCountryErrorText);
+      }, { once: true });
     }
     fillNativeCountrySelects();
     bindNativeCountrySelectEvents();
