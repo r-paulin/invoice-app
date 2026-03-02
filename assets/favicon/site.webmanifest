@@ -1,0 +1,22 @@
+{
+  "name": "Free browser-based invoice generator",
+  "short_name": "Invossa",
+  "description": "Generate PDF and e-invoices directly in your browser.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#008236",
+  "icons": [
+    {
+      "src": "/assets/favicon/apple-touch-icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/favicon/apple-touch-icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    }
+  ]
+}
