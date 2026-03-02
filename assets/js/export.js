@@ -12,8 +12,11 @@
   var STORAGE_KEY_INVOICE_NUMBER = 'invio_export_invoice_number';
   var MIN_PROCESSING_MS = 4000;
   var MIN_VISIBLE_MS = 1000;
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   function detectBaseUrl() {
     var pathname = (window.location && window.location.pathname) ? window.location.pathname : '/';
     if (pathname === '/invoice-app' || pathname.indexOf('/invoice-app/') === 0) return '/invoice-app';
@@ -42,6 +45,7 @@
     if (locale === 'en') return (BASE_URL || '') + '/';
     return (BASE_URL || '') + '/' + locale + '/';
   }
+<<<<<<< HEAD
   function getByPath(target, key) {
     if (!target || !key) return null;
     var parts = key.split('.');
@@ -131,6 +135,8 @@
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
 
   function getStorage(key) {
     try {
@@ -212,7 +218,7 @@
       }
       return { ok: false, errors: ['Could not save draft for export.'] };
     }
-    window.location.href = 'invoice-processing.html';
+    window.location.href = localeHref('invoice-processing.html');
     return { ok: true };
   }
 
@@ -224,7 +230,7 @@
     if (!draftJson) {
       setStorage(STORAGE_KEY_STATE, 'ERROR');
       setStorage(STORAGE_KEY_ERROR, 'No invoice data. Start from the beginning.');
-      window.location.href = 'invoice-error.html';
+      window.location.href = localeHref('invoice-error.html');
       return;
     }
     var draft;
@@ -233,7 +239,7 @@
     } catch (e) {
       setStorage(STORAGE_KEY_STATE, 'ERROR');
       setStorage(STORAGE_KEY_ERROR, 'Invalid saved data. Try again.');
-      window.location.href = 'invoice-error.html';
+      window.location.href = localeHref('invoice-error.html');
       return;
     }
     if (window.InvioState && window.InvioState.normalizeDraft) {
@@ -247,7 +253,7 @@
       setStorage(STORAGE_KEY_INVOICE_NUMBER, invoiceNumber || '');
       setStorage(STORAGE_KEY_STATE, 'READY');
       setStorage(STORAGE_KEY_ERROR, null);
-      window.location.href = 'invoice-ready.html';
+      window.location.href = localeHref('invoice-ready.html');
     }
 
     function finishError(msg) {
@@ -255,7 +261,7 @@
       setStorage(STORAGE_KEY_ERROR, msg || 'Your invoice wasn\'t created. Try again.');
       setStorage(STORAGE_KEY_XML, null);
       setStorage(STORAGE_KEY_PDF_B64, null);
-      window.location.href = 'invoice-error.html';
+      window.location.href = localeHref('invoice-error.html');
     }
 
     var computed;
@@ -386,6 +392,16 @@
     var el = document.getElementById('export-error-message');
     if (el && msg) el.textContent = msg;
   }
+  function localizeHomeLinks() {
+    var linkIds = ['export-new-invoice', 'export-try-again'];
+    var target = localeHomeHref();
+    for (var i = 0; i < linkIds.length; i += 1) {
+      var link = document.getElementById(linkIds[i]);
+      if (link) link.setAttribute('href', target);
+    }
+    var logoLinks = document.querySelectorAll('.logo-link');
+    for (var j = 0; j < logoLinks.length; j += 1) logoLinks[j].setAttribute('href', target);
+  }
 
   /**
    * On processing page: run export job after DOM ready.
@@ -403,12 +419,14 @@
   if (path.indexOf('invoice-processing') !== -1) {
     initProcessingPage();
   } else if (path.indexOf('invoice-ready') !== -1) {
+    localizeHomeLinks();
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initReadyPage);
     } else {
       initReadyPage();
     }
   } else if (path.indexOf('invoice-error') !== -1) {
+    localizeHomeLinks();
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initErrorPage);
     } else {

@@ -197,6 +197,7 @@
     "logoRemoved": "Logotipo eliminado."
   },
   "validation": {
+<<<<<<< HEAD
     "required": {
       "country": "El país es obligatorio",
       "legalName": "La razón social es obligatoria",
@@ -214,6 +215,23 @@
       "vatNumber": "NIF/CIF no válido para el país seleccionado",
       "ibanRequired": "Se requiere al menos un IBAN para transferencia bancaria"
     }
+=======
+    "countryRequired": "El país es obligatorio",
+    "nameRequired": "Nombre y apellidos son obligatorios",
+    "legalNameRequired": "La razón social es obligatoria",
+    "registrationRequired": "El CIF/NIF es obligatorio",
+    "vatRequired": "El NIF es obligatorio",
+    "addressRequired": "La dirección es obligatoria",
+    "cityRequired": "La localidad es obligatoria",
+    "postalRequired": "El código postal es obligatorio",
+    "invalidRegistration": "CIF/NIF no válido para el país seleccionado",
+    "invalidVat": "NIF no válido para el país seleccionado",
+    "invalidPhone": "Número de teléfono no válido",
+    "invalidEmail": "Dirección de correo no válida",
+    "invalidIban": "IBAN no válido",
+    "atLeastOneIban": "Se requiere al menos un IBAN para transferencia.",
+    "correctHighlightedFields": "Corrija los campos señalados."
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   },
   "settingsErrors": {
     "logoImageOnly": "Elija un archivo de imagen (PNG o JPEG).",
@@ -232,6 +250,28 @@
     "card": "Datos bancarios ocultos. Estado: Pagado con tarjeta.",
     "transfer": "Se requieren datos bancarios para transferencia."
   },
+<<<<<<< HEAD
+=======
+  "validation": {
+    "required": {
+      "country": "El país es obligatorio",
+      "legalName": "La razón social es obligatoria",
+      "nameAndSurname": "Nombre y apellidos son obligatorios",
+      "registrationNumber": "El número de registro es obligatorio",
+      "taxNumber": "El NIF/CIF es obligatorio",
+      "address": "La dirección es obligatoria",
+      "city": "La ciudad es obligatoria",
+      "postalCode": "El código postal es obligatorio",
+      "phone": "Número de teléfono no válido",
+      "email": "Dirección de correo no válida"
+    },
+    "invalid": {
+      "registrationNumber": "Número de registro no válido para el país seleccionado",
+      "vatNumber": "NIF/CIF no válido para el país seleccionado",
+      "ibanRequired": "Se requiere al menos un IBAN para transferencia bancaria"
+    }
+  },
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   "summary": {
     "sellerEmpty": "Introduzca los datos de su empresa",
     "buyerEmpty": "Introduzca los datos del cliente",

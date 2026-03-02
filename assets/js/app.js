@@ -1,4 +1,5 @@
 (function () {
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
   /** Apply translations to all elements with data-i18n and data-i18n-placeholder. Call after InvioI18n.setLocale has resolved. */
@@ -31,13 +32,31 @@
       if (k) el.placeholder = t(k);
     });
     queryAllIncludingShadow('[data-i18n-aria-label]').forEach(function (el) {
+=======
+  /** Apply translations to all elements with data-i18n and data-i18n-placeholder. Call after InvioI18n.setLocale has resolved. */
+  function applyTranslations() {
+    var t = typeof window.t === 'function' ? window.t : null;
+    if (!t) return;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n');
+      if (k) el.textContent = t(k);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n-placeholder');
+      if (k) el.placeholder = t(k);
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(function (el) {
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
       var k = el.getAttribute('data-i18n-aria-label');
       if (k) el.setAttribute('aria-label', t(k));
     });
   }
   window.invioApplyTranslations = applyTranslations;
 
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   /** Minimal logger for errors; no-op by default; can be replaced with reporting in production. */
   function logError(context, err) {
     if (typeof window !== 'undefined' && window.InvioLog && typeof window.InvioLog.error === 'function') {
@@ -455,7 +474,7 @@
       if (!issue) return;
       if (dueDateUpdatingEl) {
         dueDateUpdatingEl.hidden = false;
-        dueDateUpdatingEl.textContent = 'Updating…';
+        dueDateUpdatingEl.textContent = (typeof window.t === 'function' ? window.t('export.updating') : '') || 'Updating…';
       }
       const due = toISO(addDays(new Date(issue + 'T12:00:00'), 14));
       dueDateInput.value = due;
@@ -500,13 +519,22 @@
   var worldCountriesPromise = null;
   var worldCountriesCache = [];
 
+  function getAssetBaseUrl() {
+    var pathname = (window.location && window.location.pathname) ? window.location.pathname : '/';
+    if (pathname === '/invoice-app' || pathname.indexOf('/invoice-app/') === 0) return '/invoice-app';
+    var configured = (window.__INVIO_BASE_URL__ || '').replace(/\/+$/, '');
+    if (configured === '/invoice-app') return '/invoice-app';
+    return '';
+  }
+
   /**
    * Load country list from assets/data/countries.json.
    * On failure the promise rejects; worldCountriesCache is set to [] so callers can still run with an empty list.
    */
   function loadWorldCountries() {
     if (worldCountriesPromise) return worldCountriesPromise;
-    worldCountriesPromise = fetch('assets/data/countries.json')
+    var base = getAssetBaseUrl();
+    worldCountriesPromise = fetch(base + '/assets/data/countries.json')
       .then(function (res) {
         if (!res.ok) throw new Error('Failed to load countries.json');
         return res.json();
@@ -641,7 +669,7 @@
     if (!flagEl || !nameEl || !selectEl) return;
     if (!iso2) {
       flagEl.className = 'country-select-flag fi';
-      nameEl.textContent = 'Select country';
+      nameEl.textContent = (typeof window.t === 'function' && window.t('form.selectCountry')) || 'Select country';
       return;
     }
     var country = findCountryByIso2(iso2);
@@ -679,7 +707,7 @@
     if (!flagEl || !nameEl || !selectEl) return;
     if (!iso2) {
       flagEl.className = 'country-select-flag fi';
-      nameEl.textContent = 'Select country';
+      nameEl.textContent = (typeof window.t === 'function' && window.t('form.selectCountry')) || 'Select country';
       return;
     }
     var country = findCountryByIso2(iso2);
@@ -731,12 +759,18 @@
     var phoneSelect = getElementByIdIncludingShadow('seller-phone-country');
     if (!addressSelect || !phoneSelect) return;
     if (addressSelect.value || phoneSelect.value) return;
+    if (draft && draft.__sellerCountryTouched) return;
 
-    var guessedIso2 = inferIso2FromLocale();
+    var guessedIso2 = '';
+    if (window.InvioLocale && typeof window.InvioLocale.resolveDefaultCountry === 'function') {
+      guessedIso2 = window.InvioLocale.resolveDefaultCountry(window.InvioLocale.resolveAppLanguage());
+    }
+    if (!guessedIso2) guessedIso2 = inferIso2FromLocale();
     if (!guessedIso2) return;
     if (findCountryByIso2(guessedIso2)) {
       addressSelect.value = guessedIso2;
       phoneSelect.value = guessedIso2;
+      updateAddressCountryDisplay(guessedIso2);
       updatePhoneCountryDisplay(guessedIso2);
     }
   }
@@ -746,8 +780,13 @@
     var phoneSelect = getElementByIdIncludingShadow('buyer-phone-country');
     if (!addressSelect || !phoneSelect) return;
     if (addressSelect.value || phoneSelect.value) return;
+    if (draft && draft.__buyerCountryTouched) return;
 
-    var guessedIso2 = inferIso2FromLocale();
+    var guessedIso2 = '';
+    if (window.InvioLocale && typeof window.InvioLocale.resolveDefaultCountry === 'function') {
+      guessedIso2 = window.InvioLocale.resolveDefaultCountry(window.InvioLocale.resolveAppLanguage());
+    }
+    if (!guessedIso2) guessedIso2 = inferIso2FromLocale();
     if (!guessedIso2) return;
     if (findCountryByIso2(guessedIso2)) {
       addressSelect.value = guessedIso2;
@@ -765,6 +804,7 @@
     if (addressSelect && phoneSelect) {
       addressSelect.addEventListener('change', function () {
         var iso2 = addressSelect.value;
+        draft.__sellerCountryTouched = true;
         updateAddressCountryDisplay(iso2);
         phoneSelect.value = iso2;
         updatePhoneCountryDisplay(iso2);
@@ -779,6 +819,7 @@
     if (buyerAddressSelect && buyerPhoneSelect) {
       buyerAddressSelect.addEventListener('change', function () {
         var iso2 = buyerAddressSelect.value;
+        draft.__buyerCountryTouched = true;
         updateBuyerAddressCountryDisplay(iso2);
         buyerPhoneSelect.value = iso2;
         updateBuyerPhoneCountryDisplay(iso2);
@@ -836,10 +877,16 @@
   window.onInvioExportValidationFailed = function (errors) {
     if (!errors || !errors.length) return;
     var alertEl = document.getElementById('export-validation-alert');
-    var genericTitle = 'Missing required information';
-    var genericMessage = 'Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again.';
+    var genericTitle = (typeof window.t === 'function' && window.t('export.validationTitle')) || 'Missing required information';
+    var genericMessage = (typeof window.t === 'function' && window.t('export.validationMessage')) || 'Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again.';
     if (alertEl) {
-      alertEl.innerHTML = '<b>' + genericTitle + '</b><span>' + genericMessage + '</span>';
+      alertEl.textContent = '';
+      var b = document.createElement('b');
+      b.textContent = genericTitle;
+      var s = document.createElement('span');
+      s.textContent = ' ' + genericMessage;
+      alertEl.appendChild(b);
+      alertEl.appendChild(s);
       alertEl.hidden = false;
       alertEl.removeAttribute('x-cloak');
     }
@@ -888,15 +935,16 @@
 
   // --- Settings panel: Invoice Language (flag + name, ISO 639-1), pre-fill from website language ---
   var invoiceLanguageSelect = document.getElementById('invoice-language-select');
+  var invoiceLanguageResetBtn = document.getElementById('invoice-language-reset');
   var invoiceLanguageName = document.getElementById('invoice-language-name');
   var invoiceLanguageFlag = document.getElementById('invoice-language-flag');
   var invoiceLanguageLive = document.getElementById('invoice-language-live');
   var invoiceLanguageToCountry = {
     bg: 'bg', hr: 'hr', cs: 'cz', da: 'dk', nl: 'nl', en: 'gb', et: 'ee', fi: 'fi', fr: 'fr', de: 'de',
     el: 'gr', hu: 'hu', ga: 'ie', it: 'it', lv: 'lv', lt: 'lt', mt: 'mt', pl: 'pl', pt: 'pt', ro: 'ro',
-    sk: 'sk', sl: 'si', es: 'es', sv: 'se'
+    sk: 'sk', sl: 'si', es: 'es', sv: 'se', uk: 'ua'
   };
-  var EU_24_LANG_CODES = ['bg', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'de', 'el', 'hu', 'ga', 'it', 'lv', 'lt', 'mt', 'pl', 'pt', 'ro', 'sk', 'sl', 'es', 'sv'];
+  var EU_24_LANG_CODES = ['bg', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'de', 'el', 'hu', 'ga', 'it', 'lv', 'lt', 'mt', 'pl', 'pt', 'ro', 'sk', 'sl', 'es', 'sv', 'uk'];
   function syncInvoiceLanguageDisplay() {
     if (!invoiceLanguageSelect || !invoiceLanguageName || !invoiceLanguageFlag) return;
     var opt = invoiceLanguageSelect.options[invoiceLanguageSelect.selectedIndex];
@@ -915,12 +963,21 @@
   }
   function setInvoiceLanguageFromWebsite() {
     if (!invoiceLanguageSelect) return;
-    var langSelect = document.getElementById('lang-select');
-    var websiteLang = langSelect ? langSelect.value : '';
-    if (websiteLang && EU_24_LANG_CODES.indexOf(websiteLang) !== -1) {
-      invoiceLanguageSelect.value = websiteLang;
+    var appLang = '';
+    if (window.InvioLocale && typeof window.InvioLocale.resolveAppLanguage === 'function') {
+      appLang = window.InvioLocale.resolveAppLanguage();
+    } else {
+      var langSelect = document.getElementById('lang-select');
+      appLang = langSelect ? langSelect.value : '';
+    }
+    var override = window.InvioLocale && typeof window.InvioLocale.getInvoiceLanguageOverride === 'function'
+      ? window.InvioLocale.getInvoiceLanguageOverride()
+      : '';
+    var selected = override || appLang;
+    if (selected && EU_24_LANG_CODES.indexOf(selected) !== -1) {
+      invoiceLanguageSelect.value = selected;
       draft.header = draft.header || {};
-      draft.header.languageCode = websiteLang;
+      draft.header.languageCode = selected;
     } else {
       invoiceLanguageSelect.value = 'en';
       draft.header = draft.header || {};
@@ -933,9 +990,26 @@
     invoiceLanguageSelect.addEventListener('change', function () {
       draft.header = draft.header || {};
       draft.header.languageCode = invoiceLanguageSelect.value;
+      if (window.InvioLocale && typeof window.InvioLocale.setInvoiceLanguageOverride === 'function') {
+        window.InvioLocale.setInvoiceLanguageOverride(invoiceLanguageSelect.value);
+      }
       syncInvoiceLanguageDisplay();
-      if (invoiceLanguageLive) invoiceLanguageLive.textContent = 'Labels and static text will be generated in ' + (invoiceLanguageSelect.options[invoiceLanguageSelect.selectedIndex].textContent || 'English') + '.';
-      showSuccessToast('Invoice language updated');
+      var langName = invoiceLanguageSelect.options[invoiceLanguageSelect.selectedIndex].textContent || 'English';
+      if (invoiceLanguageLive && typeof window.t === 'function') {
+        invoiceLanguageLive.textContent = window.t('invoiceLanguageLive.set').replace('{language}', langName);
+      } else if (invoiceLanguageLive) invoiceLanguageLive.textContent = 'Labels and static text will be generated in ' + langName + '.';
+      showSuccessToast(typeof window.t === 'function' ? window.t('toasts.invoiceLanguageUpdated') : 'Invoice language updated');
+    });
+  }
+  if (invoiceLanguageResetBtn) {
+    invoiceLanguageResetBtn.addEventListener('click', function () {
+      if (window.InvioLocale && typeof window.InvioLocale.clearInvoiceLanguageOverride === 'function') {
+        window.InvioLocale.clearInvoiceLanguageOverride();
+      }
+      setInvoiceLanguageFromWebsite();
+      if (invoiceLanguageLive && typeof window.t === 'function') invoiceLanguageLive.textContent = window.t('invoiceLanguageLive.reset');
+      else if (invoiceLanguageLive) invoiceLanguageLive.textContent = 'Invoice language now follows app language.';
+      showSuccessToast(typeof window.t === 'function' ? window.t('toasts.invoiceLanguageReset') : 'Invoice language reset');
     });
   }
 
@@ -976,34 +1050,28 @@
       document.dispatchEvent(new CustomEvent('invio:currency-changed', {
         detail: { code: invoiceCurrencySelect.value }
       }));
-      showSuccessToast('Invoice currency updated');
+      showSuccessToast(typeof window.t === 'function' ? window.t('toasts.currencyUpdated') : 'Invoice currency updated');
     });
   }
 
   // --- Settings panel: Invoice Type (codes 380, 384, etc. in JS only; labels without codes) ---
   var invoiceTypeSelect = document.getElementById('invoice-type-select');
   var invoiceTypeSubtext = document.getElementById('invoice-type-subtext');
-  var invoiceTypeSubtexts = {
-    '380': 'Standard invoice for goods or services supplied.',
-    '384': 'Replaces or corrects a previously issued invoice.',
-    '381': 'Credit note that reduces the amount due from the buyer.',
-    '326': 'Invoice covering only part of an order or contract.',
-    '389': 'Invoice issued by the buyer (self-billing arrangement).',
-    '875': 'Invoice for partial progress on a construction project.',
-    '876': 'Invoice for a partial final stage of a construction project.',
-    '877': 'Final invoice for completion of a construction project.'
-  };
+  var invoiceTypeSubtextKeys = { '380': 'form.invoiceTypeSubtext.380', '384': 'form.invoiceTypeSubtext.384', '381': 'form.invoiceTypeSubtext.381', '326': 'form.invoiceTypeSubtext.326', '389': 'form.invoiceTypeSubtext.389', '875': 'form.invoiceTypeSubtext.875', '876': 'form.invoiceTypeSubtext.876', '877': 'form.invoiceTypeSubtext.877' };
   function updateInvoiceTypeSubtext() {
-    if (invoiceTypeSubtext && invoiceTypeSelect) invoiceTypeSubtext.textContent = invoiceTypeSubtexts[invoiceTypeSelect.value] || '';
+    if (!invoiceTypeSubtext || !invoiceTypeSelect) return;
+    var key = invoiceTypeSubtextKeys[invoiceTypeSelect.value];
+    invoiceTypeSubtext.textContent = (typeof window.t === 'function' && key ? window.t(key) : '') || '';
   }
   if (invoiceTypeSelect) {
     if (draft.header && draft.header.typeCode) invoiceTypeSelect.value = draft.header.typeCode;
     updateInvoiceTypeSubtext();
+    document.addEventListener('invio:locale-ready', updateInvoiceTypeSubtext);
     invoiceTypeSelect.addEventListener('change', function () {
       draft.header = draft.header || {};
       draft.header.typeCode = invoiceTypeSelect.value;
       updateInvoiceTypeSubtext();
-      showSuccessToast('Invoice type updated');
+      showSuccessToast(typeof window.t === 'function' ? window.t('toasts.invoiceTypeUpdated') : 'Invoice type updated');
     });
   }
 
@@ -1018,12 +1086,16 @@
       updatePaymentMeansDisplayName();
       applyPaymentDetailsVisibility(means);
       var liveEl = document.getElementById('payment-type-live');
-      if (liveEl) {
+      if (liveEl && typeof window.t === 'function') {
+        if (means === '10') liveEl.textContent = window.t('paymentTypeLive.cash');
+        else if (means === '48') liveEl.textContent = window.t('paymentTypeLive.card');
+        else liveEl.textContent = window.t('paymentTypeLive.transfer');
+      } else if (liveEl) {
         if (means === '10') liveEl.textContent = 'Bank details hidden. Payment status: Paid by Cash.';
         else if (means === '48') liveEl.textContent = 'Bank details hidden. Payment status: Paid by Credit Card.';
         else liveEl.textContent = 'Bank details required for bank transfer.';
       }
-      showSuccessToast('Payment type updated');
+      showSuccessToast(typeof window.t === 'function' ? window.t('toasts.paymentTypeUpdated') : 'Payment type updated');
     });
   }
   function updatePaymentMeansDisplayName() {
@@ -1413,43 +1485,43 @@
     var valid = true;
     hideFieldErrors();
     if (!countryRaw) {
-      showFieldError('seller-country', 'Country is required');
+      showFieldError('seller-country', (typeof window.t === 'function' && window.t('validation.required.country')) || 'Country is required');
       valid = false;
     }
     if (!name) {
-      showFieldError('seller-name', isOrganisation ? 'Legal name is required' : 'Name and surname is required');
+      showFieldError('seller-name', (typeof window.t === 'function' && window.t(isOrganisation ? 'validation.required.legalName' : 'validation.required.nameAndSurname')) || (isOrganisation ? 'Legal name is required' : 'Name and surname is required'));
       valid = false;
     }
     if (isOrganisation) {
       if (!reg) {
-        showFieldError('seller-registration', 'Registration number is required');
+        showFieldError('seller-registration', (typeof window.t === 'function' && window.t('validation.required.registrationNumber')) || 'Registration number is required');
         valid = false;
       }
     } else {
       if (!vat) {
-        showFieldError('seller-vat', 'Tax number is required');
+        showFieldError('seller-vat', (typeof window.t === 'function' && window.t('validation.required.taxNumber')) || 'Tax number is required');
         valid = false;
       }
     }
     if (!street) {
-      showFieldError('seller-street', 'Address is required');
+      showFieldError('seller-street', (typeof window.t === 'function' && window.t('validation.required.address')) || 'Address is required');
       valid = false;
     }
     if (!city) {
-      showFieldError('seller-city', 'City is required');
+      showFieldError('seller-city', (typeof window.t === 'function' && window.t('validation.required.city')) || 'City is required');
       valid = false;
     }
     if (!postal) {
-      showFieldError('seller-postal', 'Postal code is required');
+      showFieldError('seller-postal', (typeof window.t === 'function' && window.t('validation.required.postalCode')) || 'Postal code is required');
       valid = false;
     }
     var v = window.InvioValidation;
     if (isOrganisation && reg && v && v.validRegistrationId && !v.validRegistrationId(reg, countryCode)) {
-      showFieldError('seller-registration', 'Invalid registration number for selected country');
+      showFieldError('seller-registration', (typeof window.t === 'function' && window.t('validation.invalid.registrationNumber')) || 'Invalid registration number for selected country');
       valid = false;
     }
     if (isOrganisation && vat && v && v.validVatId && !v.validVatId(vat, countryCode)) {
-      showFieldError('seller-vat', 'Invalid VAT number for selected country');
+      showFieldError('seller-vat', (typeof window.t === 'function' && window.t('validation.invalid.vatNumber')) || 'Invalid VAT number for selected country');
       valid = false;
     }
     var phoneCountrySelect = getElementByIdIncludingShadow('seller-phone-country');
@@ -1459,11 +1531,11 @@
       phoneDialCode = phoneCountry ? phoneCountry.dialCode : '';
     }
     if (v && v.validPhone && phone && !v.validPhone(phone, phoneDialCode)) {
-      showFieldError('seller-phone', 'Invalid phone number');
+      showFieldError('seller-phone', (typeof window.t === 'function' && window.t('validation.required.phone')) || 'Invalid phone number');
       valid = false;
     }
     if (email && v && v.validEmail && !v.validEmail(email)) {
-      showFieldError('seller-email', 'Invalid email address');
+      showFieldError('seller-email', (typeof window.t === 'function' && window.t('validation.required.email')) || 'Invalid email address');
       valid = false;
     }
     var means = getPaymentMeansFromGeneral();
@@ -1493,7 +1565,7 @@
       }
       if (sellerIbanBlock) sellerIbanBlock.classList.remove('has-error');
       if (!hasOne) {
-        if (ibanErr) { ibanErr.textContent = 'At least one IBAN is required for credit transfer'; ibanErr.hidden = false; }
+        if (ibanErr) { ibanErr.textContent = (typeof window.t === 'function' && window.t('validation.invalid.ibanRequired')) || 'At least one IBAN is required for credit transfer'; ibanErr.hidden = false; }
         if (sellerIbanBlock) sellerIbanBlock.classList.add('has-error');
         valid = false;
       } else if (!allValid) {
@@ -1606,43 +1678,43 @@
     var valid = true;
     hideBuyerFieldErrors();
     if (!countryRaw) {
-      showBuyerFieldError('buyer-country', 'Country is required');
+      showBuyerFieldError('buyer-country', (typeof window.t === 'function' && window.t('validation.required.country')) || 'Country is required');
       valid = false;
     }
     if (!name) {
-      showBuyerFieldError('buyer-name', isOrganisation ? 'Legal name is required' : 'Name and surname is required');
+      showBuyerFieldError('buyer-name', (typeof window.t === 'function' && window.t(isOrganisation ? 'validation.required.legalName' : 'validation.required.nameAndSurname')) || (isOrganisation ? 'Legal name is required' : 'Name and surname is required'));
       valid = false;
     }
     if (isOrganisation) {
       if (!reg) {
-        showBuyerFieldError('buyer-registration', 'Registration number is required');
+        showBuyerFieldError('buyer-registration', (typeof window.t === 'function' && window.t('validation.required.registrationNumber')) || 'Registration number is required');
         valid = false;
       }
     } else {
       if (!vat) {
-        showBuyerFieldError('buyer-vat', 'Tax number is required');
+        showBuyerFieldError('buyer-vat', (typeof window.t === 'function' && window.t('validation.required.taxNumber')) || 'Tax number is required');
         valid = false;
       }
     }
     if (!street) {
-      showBuyerFieldError('buyer-street', 'Address is required');
+      showBuyerFieldError('buyer-street', (typeof window.t === 'function' && window.t('validation.required.address')) || 'Address is required');
       valid = false;
     }
     if (!city) {
-      showBuyerFieldError('buyer-city', 'City is required');
+      showBuyerFieldError('buyer-city', (typeof window.t === 'function' && window.t('validation.required.city')) || 'City is required');
       valid = false;
     }
     if (!postal) {
-      showBuyerFieldError('buyer-postal', 'Postal code is required');
+      showBuyerFieldError('buyer-postal', (typeof window.t === 'function' && window.t('validation.required.postalCode')) || 'Postal code is required');
       valid = false;
     }
     var v = window.InvioValidation;
     if (isOrganisation && reg && v && v.validRegistrationId && !v.validRegistrationId(reg, countryCode)) {
-      showBuyerFieldError('buyer-registration', 'Invalid registration number for selected country');
+      showBuyerFieldError('buyer-registration', (typeof window.t === 'function' && window.t('validation.invalid.registrationNumber')) || 'Invalid registration number for selected country');
       valid = false;
     }
     if (isOrganisation && vat && v && v.validVatId && !v.validVatId(vat, countryCode)) {
-      showBuyerFieldError('buyer-vat', 'Invalid VAT number for selected country');
+      showBuyerFieldError('buyer-vat', (typeof window.t === 'function' && window.t('validation.invalid.vatNumber')) || 'Invalid VAT number for selected country');
       valid = false;
     }
     var phoneCountrySelect = getElementByIdIncludingShadow('buyer-phone-country');
@@ -1652,11 +1724,11 @@
       phoneDialCode = phoneCountry ? phoneCountry.dialCode : '';
     }
     if (v && v.validPhone && phone && !v.validPhone(phone, phoneDialCode)) {
-      showBuyerFieldError('buyer-phone', 'Invalid phone number');
+      showBuyerFieldError('buyer-phone', (typeof window.t === 'function' && window.t('validation.required.phone')) || 'Invalid phone number');
       valid = false;
     }
     if (email && v && v.validEmail && !v.validEmail(email)) {
-      showBuyerFieldError('buyer-email', 'Invalid email address');
+      showBuyerFieldError('buyer-email', (typeof window.t === 'function' && window.t('validation.required.email')) || 'Invalid email address');
       valid = false;
     }
     var means = getPaymentMeansFromGeneral();
@@ -1776,12 +1848,21 @@
       img.width = 248;
       var h3 = document.createElement('h3');
       h3.id = 'seller-card-summary';
-      h3.textContent = 'Enter your business details';
+      h3.textContent = (typeof window.t === 'function' && window.t('summary.sellerEmpty')) || 'Enter your business details';
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'btn btn--primary btn--icon-left';
       btn.setAttribute('data-seller-modal-trigger', '');
-      btn.innerHTML = '<span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span>';
+      var addLabel = (typeof window.t === 'function' && window.t('summary.addDetails')) || 'Add details';
+      var icon = document.createElement('span');
+      icon.className = 'material-symbols-rounded btn__icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = 'add';
+      btn.appendChild(icon);
+      var lbl = document.createElement('span');
+      lbl.className = 'btn__label';
+      lbl.textContent = addLabel;
+      btn.appendChild(lbl);
       card.appendChild(img);
       card.appendChild(h3);
       card.appendChild(btn);
@@ -1798,10 +1879,11 @@
     wrap.appendChild(h4);
     var reg = (s.legalRegistrationId || '').trim();
     var vat = (s.vatId || '').trim();
+    var t = typeof window.t === 'function' ? window.t : function () { return ''; };
     if (reg || vat) {
       var identityParts = [];
-      if (reg) identityParts.push('Registration number: ' + reg);
-      if (vat) identityParts.push('Tax number: ' + vat);
+      if (reg) identityParts.push((t('summary.registrationNumber') || 'Registration number:') + ' ' + reg);
+      if (vat) identityParts.push((t('summary.taxNumber') || 'Tax number:') + ' ' + vat);
       var pId = document.createElement('p');
       pId.className = 'seller-summary__text';
       pId.textContent = identityParts.join(', ');
@@ -1821,7 +1903,7 @@
       var addrLine = parts.join(', ');
       var pAddr = document.createElement('p');
       pAddr.className = 'seller-summary__text';
-      pAddr.setAttribute('aria-label', 'Address');
+      pAddr.setAttribute('aria-label', t('summary.address') || 'Address');
       pAddr.textContent = addrLine;
       wrap.appendChild(pAddr);
     }
@@ -1833,7 +1915,7 @@
         var line = bankName ? iban + ' – ' + bankName : iban;
         var pBank = document.createElement('p');
         pBank.className = 'seller-summary__text';
-        if (idx === 0) pBank.setAttribute('aria-label', 'Bank account');
+        if (idx === 0) pBank.setAttribute('aria-label', t('summary.bankAccount') || 'Bank account');
         pBank.textContent = line;
         wrap.appendChild(pBank);
       });
@@ -1842,8 +1924,8 @@
     var email = (c.email || '').trim();
     if (phone || email) {
       var contactParts = [];
-      if (phone) contactParts.push('Phone: ' + phone);
-      if (email) contactParts.push('Email: ' + email);
+      if (phone) contactParts.push((t('summary.phone') || 'Phone:') + ' ' + phone);
+      if (email) contactParts.push((t('summary.email') || 'Email:') + ' ' + email);
       var pContact = document.createElement('p');
       pContact.className = 'seller-summary__text';
       pContact.setAttribute('aria-label', 'Contacts');
@@ -1854,8 +1936,11 @@
     editBtn.type = 'button';
     editBtn.className = 'btn btn--secondary seller-summary__edit';
     editBtn.setAttribute('data-seller-modal-trigger', '');
-    editBtn.innerHTML = '<span class="btn__label">Edit</span>';
-    editBtn.setAttribute('aria-label', 'Edit seller details');
+    var editLabel = (t('summary.edit') || 'Edit');
+    var editSpan = editBtn.appendChild(document.createElement('span'));
+    editSpan.className = 'btn__label';
+    editSpan.textContent = editLabel;
+    editBtn.setAttribute('aria-label', t('summary.editSeller') || 'Edit seller details');
     wrap.appendChild(editBtn);
     content.appendChild(wrap);
   }
@@ -1889,18 +1974,28 @@
       img.width = 248;
       var h3 = document.createElement('h3');
       h3.id = 'buyer-card-summary';
-      h3.textContent = 'Enter your customers details';
+      h3.textContent = (typeof window.t === 'function' && window.t('summary.buyerEmpty')) || 'Enter your customers details';
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'btn btn--primary btn--icon-left';
       btn.setAttribute('data-buyer-modal-trigger', '');
-      btn.innerHTML = '<span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span>';
+      var addLabelBuyer = (typeof window.t === 'function' && window.t('summary.addDetails')) || 'Add details';
+      var iconB = document.createElement('span');
+      iconB.className = 'material-symbols-rounded btn__icon';
+      iconB.setAttribute('aria-hidden', 'true');
+      iconB.textContent = 'add';
+      btn.appendChild(iconB);
+      var lblB = document.createElement('span');
+      lblB.className = 'btn__label';
+      lblB.textContent = addLabelBuyer;
+      btn.appendChild(lblB);
       card.appendChild(img);
       card.appendChild(h3);
       card.appendChild(btn);
       content.appendChild(card);
       return;
     }
+    var tBuyer = typeof window.t === 'function' ? window.t : function () { return ''; };
     var wrap = document.createElement('div');
     wrap.className = 'buyer-summary';
     wrap.setAttribute('aria-live', 'polite');
@@ -1913,8 +2008,8 @@
     var vat = (b.vatId || '').trim();
     if (reg || vat) {
       var identityParts = [];
-      if (reg) identityParts.push('Registration number: ' + reg);
-      if (vat) identityParts.push('Tax number: ' + vat);
+      if (reg) identityParts.push((tBuyer('summary.registrationNumber') || 'Registration number:') + ' ' + reg);
+      if (vat) identityParts.push((tBuyer('summary.taxNumber') || 'Tax number:') + ' ' + vat);
       var pId = document.createElement('p');
       pId.className = 'buyer-summary__text';
       pId.textContent = identityParts.join(', ');
@@ -1934,7 +2029,7 @@
       var addrLine = parts.join(', ');
       var pAddr = document.createElement('p');
       pAddr.className = 'buyer-summary__text';
-      pAddr.setAttribute('aria-label', 'Address');
+      pAddr.setAttribute('aria-label', tBuyer('summary.address') || 'Address');
       pAddr.textContent = addrLine;
       wrap.appendChild(pAddr);
     }
@@ -1946,7 +2041,7 @@
         var line = bankName ? iban + ' – ' + bankName : iban;
         var pBank = document.createElement('p');
         pBank.className = 'buyer-summary__text';
-        if (idx === 0) pBank.setAttribute('aria-label', 'Bank account');
+        if (idx === 0) pBank.setAttribute('aria-label', tBuyer('summary.bankAccount') || 'Bank account');
         pBank.textContent = line;
         wrap.appendChild(pBank);
       });
@@ -1955,8 +2050,8 @@
     var email = (c.email || '').trim();
     if (phone || email) {
       var contactParts = [];
-      if (phone) contactParts.push('Phone: ' + phone);
-      if (email) contactParts.push('Email: ' + email);
+      if (phone) contactParts.push((tBuyer('summary.phone') || 'Phone:') + ' ' + phone);
+      if (email) contactParts.push((tBuyer('summary.email') || 'Email:') + ' ' + email);
       var pContact = document.createElement('p');
       pContact.className = 'buyer-summary__text';
       pContact.setAttribute('aria-label', 'Contacts');
@@ -1967,8 +2062,11 @@
     editBtn.type = 'button';
     editBtn.className = 'btn btn--secondary buyer-summary__edit';
     editBtn.setAttribute('data-buyer-modal-trigger', '');
-    editBtn.innerHTML = '<span class="btn__label">Edit</span>';
-    editBtn.setAttribute('aria-label', 'Edit buyer details');
+    var editLabelBuyer = (tBuyer('summary.edit') || 'Edit');
+    var editSpanBuyer = editBtn.appendChild(document.createElement('span'));
+    editSpanBuyer.className = 'btn__label';
+    editSpanBuyer.textContent = editLabelBuyer;
+    editBtn.setAttribute('aria-label', tBuyer('summary.editBuyer') || 'Edit buyer details');
     wrap.appendChild(editBtn);
     content.appendChild(wrap);
   }
@@ -2033,8 +2131,15 @@
     logError('initCountries', err);
     var statusEl = document.getElementById('countries-load-status');
     if (statusEl) {
-      statusEl.textContent = 'Country list could not be loaded. You can still use the form.';
+      var msg = (typeof window.t === 'function' && window.t('export.countryListError')) || 'Country list could not be loaded. You can still use the form.';
+      statusEl.textContent = msg;
       statusEl.removeAttribute('hidden');
+      document.addEventListener('invio:locale-ready', function updateCountryErrorText() {
+        if (statusEl && !statusEl.hasAttribute('hidden') && typeof window.t === 'function') {
+          statusEl.textContent = window.t('export.countryListError');
+        }
+        document.removeEventListener('invio:locale-ready', updateCountryErrorText);
+      }, { once: true });
     }
     fillNativeCountrySelects();
     bindNativeCountrySelectEvents();

@@ -207,6 +207,7 @@
     "invalidEmail": "Invalid email address",
     "invalidIban": "Invalid IBAN",
     "atLeastOneIban": "At least one IBAN is required for credit transfer",
+<<<<<<< HEAD
     "correctHighlightedFields": "Please correct the highlighted fields.",
     "required": {
       "country": "Country is required",
@@ -225,6 +226,9 @@
       "vatNumber": "Invalid VAT number for selected country",
       "ibanRequired": "At least one IBAN is required for credit transfer"
     }
+=======
+    "correctHighlightedFields": "Please correct the highlighted fields."
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   },
   "settingsErrors": {
     "logoImageOnly": "Please choose an image file (PNG or JPEG).",
@@ -246,6 +250,7 @@
   "summary": {
     "sellerEmpty": "Enter your business details",
     "buyerEmpty": "Enter your customers details",
+<<<<<<< HEAD
     "edit": "Edit",
     "addDetails": "Add details",
     "registrationNumber": "Registration number:",
@@ -256,6 +261,9 @@
     "bankAccount": "Bank account",
     "editSeller": "Edit seller details",
     "editBuyer": "Edit buyer details"
+=======
+    "edit": "Edit"
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   },
   "footer": {
     "privacyPolicy": "Privacy policy",
@@ -263,6 +271,7 @@
   },
   "export": {
     "updating": "Updating…",
+<<<<<<< HEAD
     "countryListError": "Riikide nimekirja ei õnnestunud laadida. Vormi saab siiski kasutada.",
     "validationTitle": "Missing required information",
     "validationMessage": "Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again."
@@ -270,5 +279,8 @@
   "hero": {
     "title": "Free browser-based invoice generator",
     "description": "Make professional invoices, download print-ready PDFs, and issue compliant e-invoices from your browser."
+=======
+    "countryListError": "Riikide nimekirja ei õnnestunud laadida. Vormi saab siiski kasutada."
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   }
 }

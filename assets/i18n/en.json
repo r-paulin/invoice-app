@@ -1,11 +1,15 @@
 {
   "app": {
-    "title": "Invio",
+    "title": "Invossa",
     "save": "Save",
     "close": "Close",
     "nextStep": "Next Step",
     "previousStep": "Previous Step",
     "generateExport": "Generate XML & PDF"
+  },
+  "hero": {
+    "title": "Free browser-based invoice generator",
+    "description": "Make professional invoices, download print-ready PDFs, and issue compliant e-invoices from your browser."
   },
   "steps": {
     "details": "New Invoice",
@@ -14,8 +18,11 @@
     "buyer": "Buyer details",
     "payment": "Payment details",
     "summary": "Invoice Summary"
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   },
   "a11y": {
     "skipLink": "Skip to main content",
@@ -195,6 +202,7 @@
     "logoRemoved": "Logo removed."
   },
   "validation": {
+<<<<<<< HEAD
     "required": {
       "country": "Country is required",
       "legalName": "Legal name is required",
@@ -212,6 +220,23 @@
       "vatNumber": "Invalid VAT number for selected country",
       "ibanRequired": "At least one IBAN is required for credit transfer"
     }
+=======
+    "countryRequired": "Country is required",
+    "nameRequired": "Name and surname is required",
+    "legalNameRequired": "Legal name is required",
+    "registrationRequired": "Registration number is required",
+    "vatRequired": "Tax number is required",
+    "addressRequired": "Address is required",
+    "cityRequired": "City is required",
+    "postalRequired": "Postal code is required",
+    "invalidRegistration": "Invalid registration number for selected country",
+    "invalidVat": "Invalid VAT number for selected country",
+    "invalidPhone": "Invalid phone number",
+    "invalidEmail": "Invalid email address",
+    "invalidIban": "Invalid IBAN",
+    "atLeastOneIban": "At least one IBAN is required for credit transfer",
+    "correctHighlightedFields": "Please correct the highlighted fields."
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   },
   "settingsErrors": {
     "logoImageOnly": "Please choose an image file (PNG or JPEG).",
@@ -230,6 +255,28 @@
     "card": "Bank details hidden. Payment status: Paid by Credit Card.",
     "transfer": "Bank details required for bank transfer."
   },
+<<<<<<< HEAD
+=======
+  "validation": {
+    "required": {
+      "country": "Country is required",
+      "legalName": "Legal name is required",
+      "nameAndSurname": "Name and surname is required",
+      "registrationNumber": "Registration number is required",
+      "taxNumber": "Tax number is required",
+      "address": "Address is required",
+      "city": "City is required",
+      "postalCode": "Postal code is required",
+      "phone": "Invalid phone number",
+      "email": "Invalid email address"
+    },
+    "invalid": {
+      "registrationNumber": "Invalid registration number for selected country",
+      "vatNumber": "Invalid VAT number for selected country",
+      "ibanRequired": "At least one IBAN is required for credit transfer"
+    }
+  },
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   "summary": {
     "sellerEmpty": "Enter your business details",
     "buyerEmpty": "Enter your customers details",
@@ -253,6 +300,9 @@
     "countryListError": "Country list could not be loaded. You can still use the form.",
     "validationTitle": "Missing required information",
     "validationMessage": "Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again."
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   }
 }

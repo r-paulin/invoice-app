@@ -311,6 +311,7 @@
           { value: 'sl', label: 'Slovenščina' }, { value: 'es', label: 'Español' }, { value: 'sv', label: 'Svenska' },
           { value: 'uk', label: 'Українська' }
         ];
+<<<<<<< HEAD
         function navigateToLocaleFallback(locale) {
           var normalized = (locale || 'en').toLowerCase();
           var supported = ['bg', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'de', 'el', 'hu', 'ga', 'it', 'lv', 'lt', 'mt', 'pl', 'pt', 'ro', 'sk', 'sl', 'es', 'sv', 'uk'];
@@ -326,6 +327,8 @@
           if (suffix) target += suffix;
           window.location.assign(target + (window.location.search || '') + (window.location.hash || ''));
         }
+=======
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
         return {
           options: options,
           languageToCountry: languageToCountry,
@@ -346,6 +349,7 @@
               }
             });
           },
+<<<<<<< HEAD
           navigateToSelectedLocale: function () {
             if (window.InvioLocale && typeof window.InvioLocale.navigateToLocale === 'function') {
               window.InvioLocale.navigateToLocale(this.current);
@@ -353,6 +357,8 @@
             }
             navigateToLocaleFallback(this.current);
           },
+=======
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
           init: function () {
             var self = this;
             if (window.InvioLocale && typeof window.InvioLocale.resolveAppLanguage === 'function') {
@@ -388,7 +394,11 @@
               <select
                 id="lang-select"
                 x-model="current"
+<<<<<<< HEAD
                 @change="navigateToSelectedLocale()"
+=======
+                @change="window.InvioLocale && window.InvioLocale.navigateToLocale ? window.InvioLocale.navigateToLocale(current) : updateWidth()"
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
                 class="lang-switcher-select"
                 aria-label="Choose language"
                 aria-describedby="lang-switcher-label"
@@ -418,7 +428,11 @@
     <div class="container page-content">
       <main class="main" id="main-content">
           <div id="export-validation-alert" class="export-validation-alert" role="alert" aria-live="polite" hidden></div>
+<<<<<<< HEAD
           <p id="countries-load-status" class="countries-load-status" aria-live="polite" role="status" hidden></p>
+=======
+          <p id="countries-load-status" class="countries-load-status" aria-live="polite" role="status" hidden data-i18n="export.countryListError"></p>
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
           <section class="panel panel-invoice-data active" id="panel-invoice-data" role="tabpanel" aria-labelledby="tab-invoice-data" aria-hidden="false" data-panel="invoice-data">
             <section class="section">
               <h2 data-i18n="form.basicDetails">Basic details</h2>

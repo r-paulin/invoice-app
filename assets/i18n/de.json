@@ -197,6 +197,7 @@
     "logoRemoved": "Logo entfernt."
   },
   "validation": {
+<<<<<<< HEAD
     "required": {
       "country": "Land ist erforderlich",
       "legalName": "Firmenname ist erforderlich",
@@ -214,6 +215,23 @@
       "vatNumber": "Ungültige USt-IdNr. für das gewählte Land",
       "ibanRequired": "Mindestens eine IBAN ist für Überweisung erforderlich"
     }
+=======
+    "countryRequired": "Land ist erforderlich",
+    "nameRequired": "Name und Nachname sind erforderlich",
+    "legalNameRequired": "Firmenname ist erforderlich",
+    "registrationRequired": "Handelsregisternummer ist erforderlich",
+    "vatRequired": "Steuernummer ist erforderlich",
+    "addressRequired": "Adresse ist erforderlich",
+    "cityRequired": "Ort ist erforderlich",
+    "postalRequired": "Postleitzahl ist erforderlich",
+    "invalidRegistration": "Ungültige Registernummer für das gewählte Land",
+    "invalidVat": "Ungültige USt-IdNr. für das gewählte Land",
+    "invalidPhone": "Ungültige Telefonnummer",
+    "invalidEmail": "Ungültige E-Mail-Adresse",
+    "invalidIban": "Ungültige IBAN",
+    "atLeastOneIban": "Mindestens eine IBAN für Überweisung erforderlich",
+    "correctHighlightedFields": "Bitte korrigieren Sie die markierten Felder."
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   },
   "settingsErrors": {
     "logoImageOnly": "Bitte wählen Sie eine Bilddatei (PNG oder JPEG).",
@@ -232,6 +250,28 @@
     "card": "Bankdaten ausgeblendet. Status: Mit Karte bezahlt.",
     "transfer": "Bankdaten für Überweisung erforderlich."
   },
+<<<<<<< HEAD
+=======
+  "validation": {
+    "required": {
+      "country": "Land ist erforderlich",
+      "legalName": "Firmenname ist erforderlich",
+      "nameAndSurname": "Name und Nachname sind erforderlich",
+      "registrationNumber": "Handelsregisternummer ist erforderlich",
+      "taxNumber": "Steuernummer ist erforderlich",
+      "address": "Adresse ist erforderlich",
+      "city": "Ort ist erforderlich",
+      "postalCode": "Postleitzahl ist erforderlich",
+      "phone": "Ungültige Telefonnummer",
+      "email": "Ungültige E-Mail-Adresse"
+    },
+    "invalid": {
+      "registrationNumber": "Ungültige Handelsregisternummer für das gewählte Land",
+      "vatNumber": "Ungültige USt-IdNr. für das gewählte Land",
+      "ibanRequired": "Mindestens eine IBAN ist für Überweisung erforderlich"
+    }
+  },
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
   "summary": {
     "sellerEmpty": "Geschäftsdaten eingeben",
     "buyerEmpty": "Kundendaten eingeben",
