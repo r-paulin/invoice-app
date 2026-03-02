@@ -12,6 +12,131 @@
   var STORAGE_KEY_INVOICE_NUMBER = 'invio_export_invoice_number';
   var MIN_PROCESSING_MS = 4000;
   var MIN_VISIBLE_MS = 1000;
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
+  function detectBaseUrl() {
+    var pathname = (window.location && window.location.pathname) ? window.location.pathname : '/';
+    if (pathname === '/invoice-app' || pathname.indexOf('/invoice-app/') === 0) return '/invoice-app';
+    var configured = (window.__INVIO_BASE_URL__ || '').replace(/\/+$/, '');
+    if (configured === '/invoice-app') return '/invoice-app';
+    return '';
+  }
+  var BASE_URL = detectBaseUrl();
+
+  function getCurrentLocaleFromPath() {
+    var path = window.location.pathname || '/';
+    if (BASE_URL && path.indexOf(BASE_URL) === 0) path = path.slice(BASE_URL.length) || '/';
+    var parts = path.split('/').filter(Boolean);
+    if (!parts.length) return 'en';
+    var first = parts[0].toLowerCase();
+    var supported = ['bg', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'de', 'el', 'hu', 'ga', 'it', 'lv', 'lt', 'mt', 'pl', 'pt', 'ro', 'sk', 'sl', 'es', 'sv', 'uk'];
+    return supported.indexOf(first) !== -1 ? first : 'en';
+  }
+  function localeHref(filename) {
+    var locale = getCurrentLocaleFromPath();
+    if (locale === 'en') return (BASE_URL || '') + '/' + filename;
+    return (BASE_URL || '') + '/' + locale + '/' + filename;
+  }
+  function localeHomeHref() {
+    var locale = getCurrentLocaleFromPath();
+    if (locale === 'en') return (BASE_URL || '') + '/';
+    return (BASE_URL || '') + '/' + locale + '/';
+  }
+<<<<<<< HEAD
+  function getByPath(target, key) {
+    if (!target || !key) return null;
+    var parts = key.split('.');
+    var current = target;
+    for (var i = 0; i < parts.length; i += 1) {
+      if (!current || typeof current !== 'object') return null;
+      current = current[parts[i]];
+    }
+    return typeof current === 'string' ? current : null;
+  }
+  var i18nDictionary = {};
+  var i18nFallbackDictionary = {};
+  function loadLocaleDictionary(locale) {
+    var code = (locale || 'en').toLowerCase();
+    var url = (BASE_URL || '') + '/assets/i18n/' + code + '.json';
+    return fetch(url, { credentials: 'same-origin' })
+      .then(function (response) {
+        if (!response.ok) throw new Error('Failed locale load');
+        return response.json();
+      })
+      .catch(function () { return {}; });
+  }
+  function t(key, fallback) {
+    if (typeof window.t === 'function') {
+      var translated = window.t(key);
+      if (translated && translated !== key) return translated;
+    }
+    var direct = getByPath(i18nDictionary, key);
+    if (direct) return direct;
+    var fallbackValue = getByPath(i18nFallbackDictionary, key);
+    if (fallbackValue) return fallbackValue;
+    return fallback || key;
+  }
+  function setText(selector, key, fallback) {
+    var el = document.querySelector(selector);
+    if (!el) return;
+    el.textContent = t(key, fallback);
+  }
+  function setAttr(selector, attr, key, fallback) {
+    var el = document.querySelector(selector);
+    if (!el) return;
+    el.setAttribute(attr, t(key, fallback));
+  }
+  function applyExportPageTranslations() {
+    var locale = getCurrentLocaleFromPath();
+    if (document.documentElement) document.documentElement.setAttribute('lang', locale);
+    setText('.skip-link', 'a11y.skipLink', 'Skip to main content');
+    setAttr('.logo-link', 'aria-label', 'a11y.invioHome', 'Invossa home');
+    setText('.export-foot a[href="#privacy"]', 'footer.privacyPolicy', 'Privacy policy');
+    setText('.export-foot a[href="#terms"]', 'footer.termsAndConditions', 'Terms and conditions');
+    if (window.location.pathname.indexOf('invoice-processing') !== -1) {
+      setText('.export-title', 'app.generateExport', 'Generate XML & PDF');
+      setText('.export-subtitle', 'export.updating', 'Updating…');
+      document.title = t('app.generateExport', 'Generate XML & PDF') + ' – Invossa';
+      return;
+    }
+    if (window.location.pathname.indexOf('invoice-ready') !== -1) {
+      setText('.export-title', 'ready.message', 'Invoice all set and ready to go?');
+      setText('.export-subtitle', 'ready.createInvoice', 'Create Invoice');
+      setText('#export-download-xml', 'a11y.downloadXml', 'Download XML invoice');
+      setText('#export-download-pdf', 'a11y.downloadPdf', 'Download PDF invoice');
+      setAttr('#export-download-xml', 'aria-label', 'a11y.downloadXml', 'Download XML invoice');
+      setAttr('#export-download-pdf', 'aria-label', 'a11y.downloadPdf', 'Download PDF invoice');
+      setText('#export-new-invoice .btn__label', 'a11y.createNewInvoice', 'Create new invoice');
+      setText('#export-ec-validator-link', 'export.validationTitle', 'Validate invoice');
+      document.title = t('ready.message', 'Invoice all set and ready to go?') + ' – Invossa';
+      return;
+    }
+    if (window.location.pathname.indexOf('invoice-error') !== -1) {
+      setText('.export-title', 'export.validationTitle', 'Missing required information');
+      setText('#export-error-message', 'export.validationMessage', 'Fill in all mandatory fields and try again.');
+      setText('#export-try-again', 'ready.createInvoice', 'Create Invoice');
+      document.title = t('export.validationTitle', 'Missing required information') + ' – Invossa';
+    }
+  }
+  function initExportPageI18n() {
+    var locale = getCurrentLocaleFromPath();
+    return Promise.all([loadLocaleDictionary(locale), loadLocaleDictionary('en')]).then(function (result) {
+      i18nDictionary = result[0] || {};
+      i18nFallbackDictionary = result[1] || {};
+      applyExportPageTranslations();
+    }).catch(function () {
+      applyExportPageTranslations();
+    });
+  }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
 
   function getStorage(key) {
     try {
@@ -93,7 +218,7 @@
       }
       return { ok: false, errors: ['Could not save draft for export.'] };
     }
-    window.location.href = 'invoice-processing.html';
+    window.location.href = localeHref('invoice-processing.html');
     return { ok: true };
   }
 
@@ -105,7 +230,7 @@
     if (!draftJson) {
       setStorage(STORAGE_KEY_STATE, 'ERROR');
       setStorage(STORAGE_KEY_ERROR, 'No invoice data. Start from the beginning.');
-      window.location.href = 'invoice-error.html';
+      window.location.href = localeHref('invoice-error.html');
       return;
     }
     var draft;
@@ -114,7 +239,7 @@
     } catch (e) {
       setStorage(STORAGE_KEY_STATE, 'ERROR');
       setStorage(STORAGE_KEY_ERROR, 'Invalid saved data. Try again.');
-      window.location.href = 'invoice-error.html';
+      window.location.href = localeHref('invoice-error.html');
       return;
     }
     if (window.InvioState && window.InvioState.normalizeDraft) {
@@ -128,7 +253,7 @@
       setStorage(STORAGE_KEY_INVOICE_NUMBER, invoiceNumber || '');
       setStorage(STORAGE_KEY_STATE, 'READY');
       setStorage(STORAGE_KEY_ERROR, null);
-      window.location.href = 'invoice-ready.html';
+      window.location.href = localeHref('invoice-ready.html');
     }
 
     function finishError(msg) {
@@ -136,7 +261,7 @@
       setStorage(STORAGE_KEY_ERROR, msg || 'Your invoice wasn\'t created. Try again.');
       setStorage(STORAGE_KEY_XML, null);
       setStorage(STORAGE_KEY_PDF_B64, null);
-      window.location.href = 'invoice-error.html';
+      window.location.href = localeHref('invoice-error.html');
     }
 
     var computed;
@@ -267,6 +392,16 @@
     var el = document.getElementById('export-error-message');
     if (el && msg) el.textContent = msg;
   }
+  function localizeHomeLinks() {
+    var linkIds = ['export-new-invoice', 'export-try-again'];
+    var target = localeHomeHref();
+    for (var i = 0; i < linkIds.length; i += 1) {
+      var link = document.getElementById(linkIds[i]);
+      if (link) link.setAttribute('href', target);
+    }
+    var logoLinks = document.querySelectorAll('.logo-link');
+    for (var j = 0; j < logoLinks.length; j += 1) logoLinks[j].setAttribute('href', target);
+  }
 
   /**
    * On processing page: run export job after DOM ready.
@@ -280,15 +415,18 @@
   }
 
   var path = typeof window !== 'undefined' && window.location && window.location.pathname ? window.location.pathname : '';
+  initExportPageI18n();
   if (path.indexOf('invoice-processing') !== -1) {
     initProcessingPage();
   } else if (path.indexOf('invoice-ready') !== -1) {
+    localizeHomeLinks();
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initReadyPage);
     } else {
       initReadyPage();
     }
   } else if (path.indexOf('invoice-error') !== -1) {
+    localizeHomeLinks();
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initErrorPage);
     } else {

@@ -42,7 +42,26 @@ PEPPOL BIS Billing 3.0 compliant invoice generator built with Jekyll and vanilla
    bundle exec jekyll serve
    ```
 
-4. Open http://localhost:4000/invoice-app/
+4. Open http://localhost:4000/ (or http://localhost:4000/invoice-app/ if using baseurl)
+
+### Translation Workflow
+
+Translations are static JSON files in **`public/locales/`** (e.g. `en.json`, `es.json`). The app loads the appropriate file via Alpine.js based on `navigator.language` or the URL path (e.g. `/es/` for Spanish).
+
+**Using Google Sheets as the source of truth:**
+
+1. **Master in Sheets:** Keep a sheet with columns **key**, **English**, **Spanish** (add more columns for more languages).
+2. **Export from sheet:** Download the sheet as CSV.
+3. **CSV → JSON:** Use a free online converter or a script to turn the CSV into nested JSON that matches the structure of `public/locales/en.json`.
+4. **Overwrite:** Place the generated `en.json` and `es.json` (and others) into `public/locales/`.
+
+**To create or refresh the sheet from the repo:**
+
+```bash
+ruby scripts/export_locales_for_sheet.rb > translations.csv
+```
+
+Import `translations.csv` into Google Sheets. You get columns **key**, **English**, **Spanish**. Translate the target column(s), then export the sheet as CSV and convert back to JSON to update `public/locales/`.
 
 ### File Structure
 
@@ -50,6 +69,8 @@ PEPPOL BIS Billing 3.0 compliant invoice generator built with Jekyll and vanilla
 invoice-app/
 ├── _config.yml           # Jekyll configuration
 ├── index.html            # Main page
+├── public/
+│   └── locales/          # Static translation JSON (en.json, es.json)
 ├── assets/
 │   ├── css/
 │   │   └── app.css      # Application styles
@@ -59,6 +80,8 @@ invoice-app/
 │       ├── validation.js # Validation
 │       ├── xml.js       # XML export
 │       └── app.js       # Main app
+├── scripts/
+│   └── export_locales_for_sheet.rb  # CSV for Google Sheets import
 └── README.md
 ```
 
@@ -66,16 +89,15 @@ invoice-app/
 
 The site is configured to work with GitHub Pages:
 
-- `baseurl: "/invoice-app"` is set in `_config.yml`
-- All assets use `{{ site.baseurl }}` for proper path resolution
+- Production site: **https://invossa.app/**
+- For local Jekyll, `baseurl` in `_config.yml` may be `""` (custom domain) or `"/invoice-app"` (repo subpath)
 - No build errors or console warnings
 
 ### Deploy
 
 1. Push to GitHub
-2. Enable GitHub Pages in repository settings
-3. Select branch: `main`
-4. Site will be available at: `https://[username].github.io/invoice-app/`
+2. Enable GitHub Pages and set custom domain to `invossa.app` if applicable
+3. Site will be available at: **https://invossa.app/**
 
 ## Compliance
 

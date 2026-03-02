@@ -1,0 +1,286 @@
+{
+  "app": {
+    "title": "Invossa",
+    "save": "Save",
+    "close": "Close",
+    "nextStep": "Next Step",
+    "previousStep": "Previous Step",
+    "generateExport": "Generate XML & PDF"
+  },
+  "steps": {
+    "details": "New Invoice",
+    "items": "Invoice Items",
+    "seller": "Seller details",
+    "buyer": "Buyer details",
+    "payment": "Payment details",
+    "summary": "Invoice Summary"
+  },
+  "a11y": {
+    "skipLink": "Skip to main content",
+    "language": "Language",
+    "chooseLanguage": "Choose language",
+    "invoiceSections": "Invoice sections",
+    "dismissError": "Dismiss error",
+    "closeSellerModal": "Close seller modal",
+    "closeBuyerModal": "Close buyer modal",
+    "notifications": "Notifications",
+    "toastClose": "Close",
+    "invioHome": "Invossa home",
+    "openColorPicker": "Open color picker",
+    "removeLogo": "Remove logo",
+    "removeBankAccount": "Remove bank account",
+    "toggleDiscount": "Toggle discount column",
+    "toggleNote": "Toggle note",
+    "actions": "Actions",
+    "downloadXml": "Download XML invoice",
+    "downloadPdf": "Download PDF invoice",
+    "createNewInvoice": "Create new invoice"
+  },
+  "tabs": {
+    "invoiceData": "Invoice data",
+    "settings": "Settings"
+  },
+  "form": {
+    "basicDetails": "Basic details",
+    "invoiceNumber": "Invoice number",
+    "paymentReference": "Payment reference",
+    "issueDate": "Issue date",
+    "dueDate": "Due date",
+    "seller": "Seller",
+    "buyer": "Buyer",
+    "organisation": "Organisation",
+    "individual": "Individual",
+    "country": "Country",
+    "nameAndSurname": "Name and surname",
+    "legalName": "Legal name",
+    "registrationNumber": "Registration number",
+    "taxNumber": "Tax number",
+    "address": "Address",
+    "city": "City",
+    "postalCode": "Postal code",
+    "paymentDetails": "Payment details",
+    "addBankAccount": "Add bank account",
+    "bankAccountNumber": "Bank account number",
+    "bankName": "Bank name",
+    "contacts": "Contacts",
+    "emailAddress": "Email address",
+    "phoneNumber": "Phone number",
+    "optional": "(Optional)",
+    "required": "*",
+    "selectCountry": "Select country",
+    "select": "Select",
+    "placeholder": {
+      "invoiceNumber": "Enter invoice number",
+      "paymentReference": "Enter payment reference",
+      "legalName": "Enter legal name of company / organisation",
+      "nameAndSurname": "Enter name and surname",
+      "registrationNumber": "Enter registration number",
+      "taxNumber": "Enter tax number",
+      "address": "Enter address",
+      "city": "Enter city",
+      "postalCode": "Enter postal code",
+      "iban": "Enter IBAN number",
+      "bankName": "Enter bank name",
+      "email": "Enter email address",
+      "phone": "222222",
+      "lineName": "Enter name",
+      "invoiceNote": "Add a note to this invoice",
+      "accentColor": "#008236"
+    },
+    "hint": {
+      "invoiceNumber": "Make sure the number you enter follows your established accounting sequence",
+      "paymentReference": "Reference used for payment matching (e.g. invoice number)",
+      "issueDate": "Date the invoice is issued",
+      "dueDate": "Payment due date",
+      "country": "Country of registration",
+      "sellerNameInd": "Name and surname",
+      "sellerNameOrg": "Official registered name of the company or organisation",
+      "sellerAddressInd": "Enter address as it should appear on invoices",
+      "sellerAddressOrg": "Enter the company's legal address as it should appear on invoices",
+      "city": "City or town",
+      "postalCode": "Postal or ZIP code",
+      "invoiceLanguage": "Language for generated XML/PDF labels and static text",
+      "invoiceCurrency": "All calculations use this currency",
+      "invoiceType": "Standard invoice for goods or services.",
+      "paymentType": "Bank details shown only for bank transfer",
+      "invoiceLogo": "Upload a PNG or JPEG logo (optimised for 174 × 56 px, max 1 MB)",
+      "accentColor": "Enter hex code or tap the circle to pick a color"
+    },
+    "aria": {
+      "issueDate": "Invoice issue date (YYYY-MM-DD)",
+      "dueDate": "Due date (YYYY-MM-DD)",
+      "phoneCountryCode": "Phone country code",
+      "invoiceLanguage": "Invoice language",
+      "invoiceCurrency": "Invoice currency",
+      "invoiceType": "Invoice type",
+      "paymentType": "Payment type",
+      "accentColor": "Accent color (hex)",
+      "invoiceNote": "Invoice note"
+    },
+    "maxBankAccounts": "Max number of 6 bank accounts are allowed.",
+    "addDetails": "Add details",
+    "cancel": "Cancel",
+    "items": {
+      "title": "Items",
+      "addFields": "Add fields:",
+      "discount": "Discount",
+      "note": "Note",
+      "serviceProduct": "Service / Product",
+      "quantity": "Quantity",
+      "unitPrice": "Unit price",
+      "subtotal": "Subtotal",
+      "discountCol": "Discount",
+      "taxRate": "Tax rate",
+      "taxAmount": "Tax amount",
+      "total": "Total",
+      "addItem": "Add item",
+      "noteLabel": "Note",
+      "subtotalSum": "Subtotal",
+      "discountSum": "Discount",
+      "taxSum": "Tax",
+      "totalSum": "Total"
+    },
+    "settings": {
+      "general": "General",
+      "style": "Style",
+      "invoiceLanguage": "Invoice language",
+      "invoiceCurrency": "Invoice currency",
+      "invoiceType": "Invoice type",
+      "paymentType": "Payment type",
+      "resetToAppLanguage": "Reset to app language",
+      "invoiceLogo": "Invoice logo",
+      "accentColor": "Accent color",
+      "clickOrDrag": "Click to choose a file or drag here",
+      "chooseFile": "Choose file",
+      "logoUploaded": "Logo uploaded"
+    },
+    "invoiceType": {
+      "380": "Commercial invoice",
+      "384": "Corrected invoice",
+      "381": "Credit note",
+      "326": "Partial invoice",
+      "389": "Self-billed invoice",
+      "875": "Partial construction invoice",
+      "876": "Partial final construction invoice",
+      "877": "Final construction invoice"
+    },
+    "invoiceTypeSubtext": {
+      "380": "Standard invoice for goods or services supplied.",
+      "384": "Replaces or corrects a previously issued invoice.",
+      "381": "Credit note that reduces the amount due from the buyer.",
+      "326": "Invoice covering only part of an order or contract.",
+      "389": "Invoice issued by the buyer (self-billing arrangement).",
+      "875": "Invoice for partial progress on a construction project.",
+      "876": "Invoice for a partial final stage of a construction project.",
+      "877": "Final invoice for completion of a construction project."
+    },
+    "paymentType": {
+      "30": "Bank transfer",
+      "10": "Cash",
+      "48": "Credit card"
+    }
+  },
+  "toasts": {
+    "itemAdded": "Item added to invoice",
+    "sellerSaved": "Seller details saved",
+    "buyerSaved": "Buyer details saved",
+    "invoiceLanguageUpdated": "Invoice language updated",
+    "invoiceLanguageReset": "Invoice language reset",
+    "currencyUpdated": "Invoice currency updated",
+    "invoiceTypeUpdated": "Invoice type updated",
+    "paymentTypeUpdated": "Payment type updated",
+    "logoUpdated": "Logo updated.",
+    "logoRemoved": "Logo removed."
+  },
+  "validation": {
+    "countryRequired": "Country is required",
+    "nameRequired": "Name and surname is required",
+    "legalNameRequired": "Legal name is required",
+    "registrationRequired": "Registration number is required",
+    "vatRequired": "Tax number is required",
+    "addressRequired": "Address is required",
+    "cityRequired": "City is required",
+    "postalRequired": "Postal code is required",
+    "invalidRegistration": "Invalid registration number for selected country",
+    "invalidVat": "Invalid VAT number for selected country",
+    "invalidPhone": "Invalid phone number",
+    "invalidEmail": "Invalid email address",
+    "invalidIban": "Invalid IBAN",
+    "atLeastOneIban": "At least one IBAN is required for credit transfer",
+<<<<<<< HEAD
+    "correctHighlightedFields": "Please correct the highlighted fields.",
+    "required": {
+      "country": "Country is required",
+      "legalName": "Legal name is required",
+      "nameAndSurname": "Name and surname is required",
+      "registrationNumber": "Registration number is required",
+      "taxNumber": "Tax number is required",
+      "address": "Address is required",
+      "city": "City is required",
+      "postalCode": "Postal code is required",
+      "phone": "Invalid phone number",
+      "email": "Invalid email address"
+    },
+    "invalid": {
+      "registrationNumber": "Invalid registration number for selected country",
+      "vatNumber": "Invalid VAT number for selected country",
+      "ibanRequired": "At least one IBAN is required for credit transfer"
+    }
+=======
+    "correctHighlightedFields": "Please correct the highlighted fields."
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
+  },
+  "settingsErrors": {
+    "logoImageOnly": "Please choose an image file (PNG or JPEG).",
+    "logoMaxSize": "Please choose an image under 1 MB."
+  },
+  "ready": {
+    "message": "Invoice all set and ready to go?",
+    "createInvoice": "Create Invoice"
+  },
+  "invoiceLanguageLive": {
+    "set": "Labels and static text will be generated in {language}.",
+    "reset": "Invoice language now follows app language."
+  },
+  "paymentTypeLive": {
+    "cash": "Bank details hidden. Payment status: Paid by Cash.",
+    "card": "Bank details hidden. Payment status: Paid by Credit Card.",
+    "transfer": "Bank details required for bank transfer."
+  },
+  "summary": {
+    "sellerEmpty": "Enter your business details",
+    "buyerEmpty": "Enter your customers details",
+<<<<<<< HEAD
+    "edit": "Edit",
+    "addDetails": "Add details",
+    "registrationNumber": "Registration number:",
+    "taxNumber": "Tax number:",
+    "phone": "Phone:",
+    "email": "Email:",
+    "address": "Address",
+    "bankAccount": "Bank account",
+    "editSeller": "Edit seller details",
+    "editBuyer": "Edit buyer details"
+=======
+    "edit": "Edit"
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
+  },
+  "footer": {
+    "privacyPolicy": "Privacy policy",
+    "termsAndConditions": "Terms and conditions"
+  },
+  "export": {
+    "updating": "Updating…",
+<<<<<<< HEAD
+    "countryListError": "Списъкът с държави не може да се зареди. Все пак можете да използвате формуляра.",
+    "validationTitle": "Missing required information",
+    "validationMessage": "Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again."
+  },
+  "hero": {
+    "title": "Free browser-based invoice generator",
+    "description": "Make professional invoices, download print-ready PDFs, and issue compliant e-invoices from your browser."
+=======
+    "countryListError": "Списъкът с държави не може да се зареди. Все пак можете да използвате формуляра."
+>>>>>>> c2e04f73a79f28b0db23d378e23e985080a16bc9
+  }
+}
