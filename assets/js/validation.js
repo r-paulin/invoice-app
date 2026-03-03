@@ -20,8 +20,6 @@ const ALLOWED_CURRENCY_CODES = [
   'ALL', 'AMD', 'AZN', 'BAM', 'BYN', 'GEL', 'MDL', 'MKD', 'RSD', 'UAH', 'GIP', 'JEP', 'GGP', 'IMP'
 ];
 
-/** Peppol BIS 3.0 required values for export validation. */
-const PEPPOL_CUSTOMIZATION_ID = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';
 const PEPPOL_PROFILE_ID_PATTERN = /^urn:fdc:peppol\.eu:2017:poacc:billing:\d{2}:1\.0$/;
 
 /** MVP: per-country registration ID regex (alphanumeric + hyphen, reasonable length) */

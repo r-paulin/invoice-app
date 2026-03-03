@@ -180,13 +180,19 @@
     if (sellerCard) sellerCard.classList.toggle('card--error', !!hasSellerError);
     var buyerCard = document.getElementById('buyer-card');
     if (buyerCard) buyerCard.classList.toggle('card--error', !!hasBuyerError);
-    ['invoice-number', 'payment-reference'].forEach(function (id) {
+    var fieldErrorMap = {
+      'invoice-number': 'Invoice number',
+      'payment-reference': 'Payment reference'
+    };
+    Object.keys(fieldErrorMap).forEach(function (id) {
+      var keyword = fieldErrorMap[id];
+      var hasError = errors.some(function (e) { return e.indexOf(keyword) !== -1; });
       var field = document.getElementById(id + '-field');
       var input = document.getElementById(id);
       var err = document.getElementById(id + '-error');
-      if (field) field.classList.add('has-error');
-      if (input) input.setAttribute('aria-invalid', 'true');
-      if (err) { err.hidden = false; err.textContent = ''; }
+      if (field) field.classList.toggle('has-error', hasError);
+      if (input) input.setAttribute('aria-invalid', String(hasError));
+      if (err) { err.hidden = !hasError; err.textContent = ''; }
     });
     if (alertEl) alertEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };

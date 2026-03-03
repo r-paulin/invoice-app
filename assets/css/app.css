@@ -141,13 +141,11 @@ body {
   margin: 0;
   overflow-x: hidden;
   padding: 0;
-  scrollbar-gutter: stable;
 }
 
 body {
   color: var(--grey-800);
   font-family: "Source Sans 3", sans-serif;
-  scrollbar-gutter: stable;
 }
 
 h1,
@@ -2496,8 +2494,8 @@ input::placeholder {
   border: 1px solid var(--color-error-border, var(--red-700));
   border-radius: var(--radius-input);
   padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  width: 100%;
+  margin: 1em;
+  width: auto;
 }
 
 .export-validation-alert b {

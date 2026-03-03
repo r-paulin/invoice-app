@@ -28,9 +28,6 @@ function addChild(parent, child) {
   return parent;
 }
 
-/** Peppol BIS 3.0 defaults for XML (must match state.js and validation.js). */
-const PEPPOL_CUSTOMIZATION_ID = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';
-const PEPPOL_PROFILE_ID = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
 
 /**
  * Map calcInvoice(draft) result to internal totals shape for XML building.
