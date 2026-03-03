@@ -411,9 +411,12 @@
       var draft = window.__invioDraft;
       if (!draft) return;
 
-      var entity = draft[role] || {};
-      var addr = entity.address || {};
-      var contact = entity.contact || {};
+      if (!draft[role]) draft[role] = {};
+      var entity = draft[role];
+      if (!entity.address) entity.address = {};
+      if (!entity.contact) entity.contact = {};
+      var addr = entity.address;
+      var contact = entity.contact;
 
       entity.name = (document.getElementById(role + '-name') && document.getElementById(role + '-name').value) || '';
       entity.legalRegistrationId = (document.getElementById(role + '-registration') && document.getElementById(role + '-registration').value) || null;
@@ -430,12 +433,8 @@
       contact.email = (document.getElementById(role + '-email') && document.getElementById(role + '-email').value) || null;
       if (!contact.email || !contact.email.trim()) contact.email = null;
 
-      entity.address = addr;
-      entity.contact = contact;
-      draft[role] = entity;
-
       var means = getPaymentMeansFromGeneral();
-      draft.payment = draft.payment || {};
+      if (!draft.payment) draft.payment = {};
       draft.payment.meansTypeCode = means;
       updatePaymentMeansDisplayName();
 
