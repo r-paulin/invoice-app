@@ -816,7 +816,7 @@ input::placeholder {
   left: 0;
   z-index: 9999;
   padding: var(--space-sm) var(--space-md);
-  background: var(--color-bg);
+  background: var(--bg);
   color: var(--color-text);
   font-weight: 600;
   text-decoration: none;
@@ -997,45 +997,6 @@ input::placeholder {
   opacity: 0.8;
 }
 
-.form-radio-group {
-  border: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  margin: 0;
-  padding: 0;
-}
-
-.form-radio {
-  align-items: center;
-  color: var(--color-text);
-  cursor: pointer;
-  display: inline-flex;
-  gap: var(--space-md);
-  line-height: var(--line-height-value);
-}
-
-.form-radio input[type="radio"] {
-  accent-color: var(--green-700);
-  min-height: 1rem;
-  min-width: 1rem;
-}
-
-.form-checkbox {
-  align-items: center;
-  color: var(--color-text);
-  cursor: pointer;
-  display: inline-flex;
-  gap: var(--space-md);
-  line-height: var(--line-height-value);
-}
-
-.form-checkbox input[type="checkbox"] {
-  accent-color: var(--green-700);
-  min-height: 1rem;
-  min-width: 1rem;
-}
-
 .date-field {
   align-items: center;
   display: flex;
@@ -1066,27 +1027,6 @@ input::placeholder {
   display: none;
 }
 
-.fake-input {
-  align-items: center;
-  background: var(--white);
-  border: 1px solid var(--grey-200);
-  border-radius: 0.25rem;
-  box-shadow: 0 0.0625rem 0.125rem rgba(18, 18, 23, 0.05);
-  color: var(--grey-700);
-  display: flex;
-  font-size: 0.9rem;
-  font-weight: 400;
-  justify-content: space-between;
-  line-height: 1.4;
-  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
-}
-
-.calendar {
-  color: var(--green-700);
-  font-size: 0.9rem;
-  line-height: 1;
-}
-
 .card {
   align-items: center;
   background: var(--white);
@@ -1101,16 +1041,6 @@ input::placeholder {
   padding: 0.75rem 0.75rem 2rem 0.75rem;
 }
 
-.card-icon {
-  align-items: center;
-  background: #fafaf9;
-  border-radius: 2rem;
-  display: flex;
-  font-size: 1.25rem;
-  height: 2.5rem;
-  justify-content: center;
-  width: 2.5rem;
-}
 
 .card p {
   font-size: 1rem;
@@ -1829,16 +1759,7 @@ input::placeholder {
   color: var(--green-700);
 }
 
-.sr-only {
-  border: 0;
-  clip: rect(0 0 0 0);
-  height: 0.0625rem;
-  margin: -0.0625rem;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 0.0625rem;
-}
+/* .sr-only removed: use .visually-hidden instead */
 
 [x-cloak] {
   display: none !important;
@@ -2260,19 +2181,6 @@ input::placeholder {
   margin-bottom: 0.375rem;
 }
 
-.seller-form .link-add-iban,
-.buyer-form .link-add-iban {
-  color: var(--green-700);
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: underline;
-}
-
-.seller-form .link-add-iban:hover,
-.buyer-form .link-add-iban:hover {
-  color: var(--green-800);
-}
-
 .seller-payment-add-wrap,
 .buyer-payment-add-wrap {
   position: relative;
@@ -2445,25 +2353,6 @@ input::placeholder {
   min-width: var(--btn-min-width);
 }
 
-.chip.btn {
-  min-height: 2rem;
-}
-
-.link-add-iban.btn {
-  border: 0;
-  border-radius: 0.25rem;
-  box-shadow: none;
-  min-height: auto;
-  min-width: 0;
-  padding: 0.125rem 0.25rem;
-}
-
-.payment-display {
-  color: var(--grey-700);
-  font-size: 0.9rem;
-  margin: 0;
-}
-
 /* Export flow pages: Processing, Ready, Error (Figma-aligned) */
 .export-page {
   min-height: 100vh;
@@ -2553,7 +2442,7 @@ input::placeholder {
   margin-top: 1.5rem;
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: var(--gray-700, #374151);
+  color: var(--grey-700, #44403b);
 }
 
 .export-validation-hint a {
