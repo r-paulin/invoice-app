@@ -69,8 +69,9 @@
               draft.header.languageCode = newVal;
             }
             document.dispatchEvent(new CustomEvent('invio:website-language-changed', { detail: { language: newVal } }));
-            if (newVal === 'lv') {
-              var cc = 'LV';
+            var countryIso2 = self.languageToCountry[newVal];
+            if (countryIso2) {
+              var cc = countryIso2.toUpperCase();
               if (draft) {
                 if (!draft.seller) draft.seller = {};
                 if (!draft.seller.address) draft.seller.address = {};
@@ -83,11 +84,11 @@
               ['seller', 'buyer'].forEach(function (role) {
                 var sel = document.getElementById(role + '-country');
                 if (sel && sel.options) {
-                  var hasLV = false;
+                  var hasOption = false;
                   for (var i = 0; i < sel.options.length; i++) {
-                    if (sel.options[i].value === cc) { hasLV = true; break; }
+                    if (sel.options[i].value === cc) { hasOption = true; break; }
                   }
-                  if (hasLV) {
+                  if (hasOption) {
                     sel.value = cc;
                     if (countries && countries.updateAddressCountryDisplay) {
                       countries.updateAddressCountryDisplay(role, cc);
