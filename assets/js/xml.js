@@ -28,9 +28,6 @@ function addChild(parent, child) {
   return parent;
 }
 
-/** Peppol BIS 3.0 defaults for XML (must match state.js and validation.js). */
-const PEPPOL_CUSTOMIZATION_ID = 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0';
-const PEPPOL_PROFILE_ID = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
 
 /**
  * Map calcInvoice(draft) result to internal totals shape for XML building.
@@ -82,54 +79,112 @@ function buildInvoiceXML(draft, computed, settings) {
     return (addr && addr.countryCode ? addr.countryCode : '').trim().toUpperCase();
   }
 
-  // —— 1. InvoiceLine(s) [1..*] ——
-  const lineNetsMap = {};
-  (totals.lineNets || []).forEach(ln => { lineNetsMap[ln.id] = ln.lineNet; });
-  (draft.lines || []).forEach(line => {
-    const lineEl = elCac(doc, 'InvoiceLine');
-    addChild(lineEl, elCbc(doc, 'ID', line.id));
-    const qty = elCbc(doc, 'InvoicedQuantity', String(line.quantity));
-    qty.setAttribute('unitCode', line.unitCode || 'C62');
-    addChild(lineEl, qty);
-    addChild(lineEl, elCbc(doc, 'LineExtensionAmount', (lineNetsMap[line.id] ?? 0).toFixed(2), { currencyID: cc }));
-    const item = elCac(doc, 'Item');
-    addChild(item, elCbc(doc, 'Name', line.itemName));
-    if (line.itemDescription) addChild(item, elCbc(doc, 'Description', line.itemDescription));
-    const taxCat = elCac(doc, 'ClassifiedTaxCategory');
-    addChild(taxCat, elCbc(doc, 'ID', line.vatCategoryCode || 'S'));
-    if (line.vatRate != null) addChild(taxCat, elCbc(doc, 'Percent', String(line.vatRate)));
-    const lineTaxScheme = elCac(doc, 'TaxScheme');
-    addChild(lineTaxScheme, elCbc(doc, 'ID', 'VAT'));
-    addChild(taxCat, lineTaxScheme);
-    addChild(item, taxCat);
-    addChild(lineEl, item);
-    const price = elCac(doc, 'Price');
-    addChild(price, elCbc(doc, 'PriceAmount', Number(line.netPrice).toFixed(2), { currencyID: cc }));
-    addChild(lineEl, price);
-    addChild(root, lineEl);
-  });
+  // —— 1. UBLVersionID, CustomizationID, ProfileID, ID, IssueDate, DueDate, InvoiceTypeCode ——
+  addChild(root, elCbc(doc, 'UBLVersionID', '2.1'));
+  addChild(root, elCbc(doc, 'CustomizationID', (h.customizationId || h.specificationId || PEPPOL_CUSTOMIZATION_ID).trim()));
+  addChild(root, elCbc(doc, 'ProfileID', (h.profileId || PEPPOL_PROFILE_ID).trim()));
+  addChild(root, elCbc(doc, 'ID', h.invoiceNumber));
+  addChild(root, elCbc(doc, 'IssueDate', h.issueDate));
+  if (h.dueDate) addChild(root, elCbc(doc, 'DueDate', h.dueDate));
+  addChild(root, elCbc(doc, 'InvoiceTypeCode', h.typeCode || '380'));
 
-  // —— 2. LegalMonetaryTotal [1..1] — schema order: PayableAmount, PayableRoundingAmount, PrepaidAmount, ChargeTotalAmount, AllowanceTotalAmount, TaxInclusiveAmount, TaxExclusiveAmount, LineExtensionAmount ——
-  const monetary = elCac(doc, 'LegalMonetaryTotal');
-  addChild(monetary, elCbc(doc, 'PayableAmount', totals.payable.toFixed(2), { currencyID: cc }));
-  if (totals.roundingAmount != null && Number(totals.roundingAmount) !== 0) {
-    addChild(monetary, elCbc(doc, 'PayableRoundingAmount', Number(totals.roundingAmount).toFixed(2), { currencyID: cc }));
-  }
-  if (totals.prepaidAmount != null && Number(totals.prepaidAmount) !== 0) {
-    addChild(monetary, elCbc(doc, 'PrepaidAmount', Number(totals.prepaidAmount).toFixed(2), { currencyID: cc }));
-  }
-  if (totals.chargeSum > 0) {
-    addChild(monetary, elCbc(doc, 'ChargeTotalAmount', totals.chargeSum.toFixed(2), { currencyID: cc }));
-  }
-  if (totals.allowanceSum > 0) {
-    addChild(monetary, elCbc(doc, 'AllowanceTotalAmount', totals.allowanceSum.toFixed(2), { currencyID: cc }));
-  }
-  addChild(monetary, elCbc(doc, 'TaxInclusiveAmount', totals.taxInclusive.toFixed(2), { currencyID: cc }));
-  addChild(monetary, elCbc(doc, 'TaxExclusiveAmount', totals.taxExclusive.toFixed(2), { currencyID: cc }));
-  addChild(monetary, elCbc(doc, 'LineExtensionAmount', totals.lineNetSum.toFixed(2), { currencyID: cc }));
-  addChild(root, monetary);
+  // —— 2. Note(s) [0..*] ——
+  if (h.languageCode) addChild(root, elCbc(doc, 'Note', 'Document language: ' + (h.languageCode || '').toUpperCase()));
+  if (h.note) addChild(root, elCbc(doc, 'Note', h.note));
 
-  // —— 3. TaxTotal [0..*] (BG-23) ——
+  // —— 3. DocumentCurrencyCode [0..1] ——
+  addChild(root, elCbc(doc, 'DocumentCurrencyCode', cc));
+
+  // —— 4. BuyerReference [0..1] ——
+  if (h.buyerReference) addChild(root, elCbc(doc, 'BuyerReference', h.buyerReference));
+
+  // —— 5. AccountingSupplierParty (seller) [1..1] — Party: PartyName, PostalAddress, PartyTaxScheme, PartyLegalEntity ——
+  const seller = draft.seller || {};
+  const addrS = seller.address || {};
+  const supplierParty = elCac(doc, 'AccountingSupplierParty');
+  const supplierPartyParty = elCac(doc, 'Party');
+  if (seller.name) {
+    const partyName = elCac(doc, 'PartyName');
+    addChild(partyName, elCbc(doc, 'Name', seller.tradeName || seller.name));
+    addChild(supplierPartyParty, partyName);
+  }
+  const supplierAddr = elCac(doc, 'PostalAddress');
+  if (addrS.line1) addChild(supplierAddr, elCbc(doc, 'StreetName', addrS.line1));
+  if (addrS.city) addChild(supplierAddr, elCbc(doc, 'CityName', addrS.city));
+  if (addrS.postalCode) addChild(supplierAddr, elCbc(doc, 'PostalZone', addrS.postalCode));
+  const supplierCountry = elCac(doc, 'Country');
+  addChild(supplierCountry, elCbc(doc, 'IdentificationCode', countryCode(addrS)));
+  addChild(supplierAddr, supplierCountry);
+  addChild(supplierPartyParty, supplierAddr);
+  if (seller.vatId) {
+    const supplierTax = elCac(doc, 'PartyTaxScheme');
+    addChild(supplierTax, elCbc(doc, 'CompanyID', seller.vatId));
+    const taxSchemeS = elCac(doc, 'TaxScheme');
+    addChild(taxSchemeS, elCbc(doc, 'ID', 'VAT'));
+    addChild(supplierTax, taxSchemeS);
+    addChild(supplierPartyParty, supplierTax);
+  }
+  const supplierLegal = elCac(doc, 'PartyLegalEntity');
+  addChild(supplierLegal, elCbc(doc, 'RegistrationName', seller.name));
+  if (seller.legalRegistrationId) addChild(supplierLegal, elCbc(doc, 'CompanyID', seller.legalRegistrationId));
+  addChild(supplierPartyParty, supplierLegal);
+  addChild(supplierParty, supplierPartyParty);
+  addChild(root, supplierParty);
+
+  // —— 6. AccountingCustomerParty (buyer) [1..1] — Party: PartyName, PostalAddress, PartyTaxScheme, PartyLegalEntity ——
+  const buyer = draft.buyer || {};
+  const addrB = buyer.address || {};
+  const customerParty = elCac(doc, 'AccountingCustomerParty');
+  const customerPartyParty = elCac(doc, 'Party');
+  if (buyer.name) {
+    const partyName = elCac(doc, 'PartyName');
+    addChild(partyName, elCbc(doc, 'Name', buyer.tradeName || buyer.name));
+    addChild(customerPartyParty, partyName);
+  }
+  const customerAddr = elCac(doc, 'PostalAddress');
+  if (addrB.line1) addChild(customerAddr, elCbc(doc, 'StreetName', addrB.line1));
+  if (addrB.city) addChild(customerAddr, elCbc(doc, 'CityName', addrB.city));
+  if (addrB.postalCode) addChild(customerAddr, elCbc(doc, 'PostalZone', addrB.postalCode));
+  const customerCountry = elCac(doc, 'Country');
+  addChild(customerCountry, elCbc(doc, 'IdentificationCode', countryCode(addrB)));
+  addChild(customerAddr, customerCountry);
+  addChild(customerPartyParty, customerAddr);
+  if (buyer.vatId) {
+    const customerTax = elCac(doc, 'PartyTaxScheme');
+    addChild(customerTax, elCbc(doc, 'CompanyID', buyer.vatId));
+    const taxSchemeC = elCac(doc, 'TaxScheme');
+    addChild(taxSchemeC, elCbc(doc, 'ID', 'VAT'));
+    addChild(customerTax, taxSchemeC);
+    addChild(customerPartyParty, customerTax);
+  }
+  const customerLegal = elCac(doc, 'PartyLegalEntity');
+  addChild(customerLegal, elCbc(doc, 'RegistrationName', buyer.name));
+  if (buyer.legalRegistrationId) addChild(customerLegal, elCbc(doc, 'CompanyID', buyer.legalRegistrationId));
+  addChild(customerPartyParty, customerLegal);
+  addChild(customerParty, customerPartyParty);
+  addChild(root, customerParty);
+
+  // —— 7. PaymentMeans [0..*] — schema: PaymentMeansCode, PaymentDueDate, InstructionNote, PaymentID, PayeeFinancialAccount ——
+  const payment = draft.payment || {};
+  const means = payment.meansTypeCode || '30';
+  const paymentMeans = elCac(doc, 'PaymentMeans');
+  addChild(paymentMeans, elCbc(doc, 'PaymentMeansCode', means));
+  if (h.dueDate) addChild(paymentMeans, elCbc(doc, 'PaymentDueDate', h.dueDate));
+  if (payment.paymentMeansDisplayName) addChild(paymentMeans, elCbc(doc, 'InstructionNote', payment.paymentMeansDisplayName));
+  if (payment.paymentId) addChild(paymentMeans, elCbc(doc, 'PaymentID', payment.paymentId));
+  if (payment.accountId && means === '30') {
+    const payeeFin = elCac(doc, 'PayeeFinancialAccount');
+    addChild(payeeFin, elCbc(doc, 'ID', payment.accountId));
+    if (payment.bankName) {
+      const finBranch = elCac(doc, 'FinancialInstitutionBranch');
+      addChild(finBranch, elCbc(doc, 'Name', payment.bankName));
+      addChild(payeeFin, finBranch);
+    }
+    addChild(paymentMeans, payeeFin);
+  }
+  addChild(root, paymentMeans);
+
+  // —— 8. TaxTotal [0..*] (BG-23) ——
   const taxTotal = elCac(doc, 'TaxTotal');
   addChild(taxTotal, elCbc(doc, 'TaxAmount', totals.totalVat.toFixed(2), { currencyID: cc }));
   (totals.vatBreakdown || []).forEach(vb => {
@@ -147,112 +202,52 @@ function buildInvoiceXML(draft, computed, settings) {
   });
   addChild(root, taxTotal);
 
-  // —— 4. PaymentMeans [0..*] — schema: PayeeFinancialAccount, PaymentID, InstructionNote, PaymentDueDate, PaymentMeansCode ——
-  const payment = draft.payment || {};
-  const means = payment.meansTypeCode || '30';
-  const paymentMeans = elCac(doc, 'PaymentMeans');
-  if (payment.accountId && means === '30') {
-    const payeeFin = elCac(doc, 'PayeeFinancialAccount');
-    addChild(payeeFin, elCbc(doc, 'ID', payment.accountId));
-    if (payment.bankName) {
-      const finBranch = elCac(doc, 'FinancialInstitutionBranch');
-      const finInst = elCac(doc, 'FinancialInstitution');
-      addChild(finInst, elCbc(doc, 'Name', payment.bankName));
-      addChild(finBranch, finInst);
-      addChild(payeeFin, finBranch);
-    }
-    addChild(paymentMeans, payeeFin);
+  // —— 9. LegalMonetaryTotal [1..1] — schema: LineExtensionAmount, TaxExclusiveAmount, TaxInclusiveAmount, AllowanceTotalAmount, ChargeTotalAmount, PrepaidAmount, PayableRoundingAmount, PayableAmount ——
+  const monetary = elCac(doc, 'LegalMonetaryTotal');
+  addChild(monetary, elCbc(doc, 'LineExtensionAmount', totals.lineNetSum.toFixed(2), { currencyID: cc }));
+  addChild(monetary, elCbc(doc, 'TaxExclusiveAmount', totals.taxExclusive.toFixed(2), { currencyID: cc }));
+  addChild(monetary, elCbc(doc, 'TaxInclusiveAmount', totals.taxInclusive.toFixed(2), { currencyID: cc }));
+  if (totals.allowanceSum > 0) {
+    addChild(monetary, elCbc(doc, 'AllowanceTotalAmount', totals.allowanceSum.toFixed(2), { currencyID: cc }));
   }
-  if (payment.paymentId) addChild(paymentMeans, elCbc(doc, 'PaymentID', payment.paymentId));
-  if (payment.paymentMeansDisplayName) addChild(paymentMeans, elCbc(doc, 'InstructionNote', payment.paymentMeansDisplayName));
-  if (h.dueDate) addChild(paymentMeans, elCbc(doc, 'PaymentDueDate', h.dueDate));
-  addChild(paymentMeans, elCbc(doc, 'PaymentMeansCode', means));
-  addChild(root, paymentMeans);
-
-  // —— 5. AccountingCustomerParty (buyer) [1..1] — Party: PartyLegalEntity, PartyTaxScheme, PostalAddress, PartyName ——
-  const buyer = draft.buyer || {};
-  const addrB = buyer.address || {};
-  const customerParty = elCac(doc, 'AccountingCustomerParty');
-  const customerPartyParty = elCac(doc, 'Party');
-  const customerLegal = elCac(doc, 'PartyLegalEntity');
-  addChild(customerLegal, elCbc(doc, 'RegistrationName', buyer.name));
-  if (buyer.legalRegistrationId) addChild(customerLegal, elCbc(doc, 'CompanyID', buyer.legalRegistrationId));
-  addChild(customerPartyParty, customerLegal);
-  if (buyer.vatId) {
-    const customerTax = elCac(doc, 'PartyTaxScheme');
-    addChild(customerTax, elCbc(doc, 'CompanyID', buyer.vatId));
-    const taxSchemeC = elCac(doc, 'TaxScheme');
-    addChild(taxSchemeC, elCbc(doc, 'ID', 'VAT'));
-    addChild(customerTax, taxSchemeC);
-    addChild(customerPartyParty, customerTax);
+  if (totals.chargeSum > 0) {
+    addChild(monetary, elCbc(doc, 'ChargeTotalAmount', totals.chargeSum.toFixed(2), { currencyID: cc }));
   }
-  const customerAddr = elCac(doc, 'PostalAddress');
-  if (addrB.line1) addChild(customerAddr, elCbc(doc, 'StreetName', addrB.line1));
-  if (addrB.city) addChild(customerAddr, elCbc(doc, 'CityName', addrB.city));
-  if (addrB.postalCode) addChild(customerAddr, elCbc(doc, 'PostalZone', addrB.postalCode));
-  const customerCountry = elCac(doc, 'Country');
-  addChild(customerCountry, elCbc(doc, 'IdentificationCode', countryCode(addrB)));
-  addChild(customerAddr, customerCountry);
-  addChild(customerPartyParty, customerAddr);
-  if (buyer.name) {
-    const partyName = elCac(doc, 'PartyName');
-    addChild(partyName, elCbc(doc, 'Name', buyer.tradeName || buyer.name));
-    addChild(customerPartyParty, partyName);
+  if (totals.prepaidAmount != null && Number(totals.prepaidAmount) !== 0) {
+    addChild(monetary, elCbc(doc, 'PrepaidAmount', Number(totals.prepaidAmount).toFixed(2), { currencyID: cc }));
   }
-  addChild(customerParty, customerPartyParty);
-  addChild(root, customerParty);
-
-  // —— 6. AccountingSupplierParty (seller) [1..1] ——
-  const seller = draft.seller || {};
-  const addrS = seller.address || {};
-  const supplierParty = elCac(doc, 'AccountingSupplierParty');
-  const supplierPartyParty = elCac(doc, 'Party');
-  const supplierLegal = elCac(doc, 'PartyLegalEntity');
-  addChild(supplierLegal, elCbc(doc, 'RegistrationName', seller.name));
-  if (seller.legalRegistrationId) addChild(supplierLegal, elCbc(doc, 'CompanyID', seller.legalRegistrationId));
-  addChild(supplierPartyParty, supplierLegal);
-  if (seller.vatId) {
-    const supplierTax = elCac(doc, 'PartyTaxScheme');
-    addChild(supplierTax, elCbc(doc, 'CompanyID', seller.vatId));
-    const taxSchemeS = elCac(doc, 'TaxScheme');
-    addChild(taxSchemeS, elCbc(doc, 'ID', 'VAT'));
-    addChild(supplierTax, taxSchemeS);
-    addChild(supplierPartyParty, supplierTax);
+  if (totals.roundingAmount != null && Number(totals.roundingAmount) !== 0) {
+    addChild(monetary, elCbc(doc, 'PayableRoundingAmount', Number(totals.roundingAmount).toFixed(2), { currencyID: cc }));
   }
-  const supplierAddr = elCac(doc, 'PostalAddress');
-  if (addrS.line1) addChild(supplierAddr, elCbc(doc, 'StreetName', addrS.line1));
-  if (addrS.city) addChild(supplierAddr, elCbc(doc, 'CityName', addrS.city));
-  if (addrS.postalCode) addChild(supplierAddr, elCbc(doc, 'PostalZone', addrS.postalCode));
-  const supplierCountry = elCac(doc, 'Country');
-  addChild(supplierCountry, elCbc(doc, 'IdentificationCode', countryCode(addrS)));
-  addChild(supplierAddr, supplierCountry);
-  addChild(supplierPartyParty, supplierAddr);
-  if (seller.name) {
-    const partyName = elCac(doc, 'PartyName');
-    addChild(partyName, elCbc(doc, 'Name', seller.tradeName || seller.name));
-    addChild(supplierPartyParty, partyName);
-  }
-  addChild(supplierParty, supplierPartyParty);
-  addChild(root, supplierParty);
+  addChild(monetary, elCbc(doc, 'PayableAmount', totals.payable.toFixed(2), { currencyID: cc }));
+  addChild(root, monetary);
 
-  // —— 7. BuyerReference [0..1] ——
-  if (h.buyerReference) addChild(root, elCbc(doc, 'BuyerReference', h.buyerReference));
-
-  // —— 8. DocumentCurrencyCode [0..1] ——
-  addChild(root, elCbc(doc, 'DocumentCurrencyCode', cc));
-
-  // —— 9. Note(s) [0..*] ——
-  if (h.languageCode) addChild(root, elCbc(doc, 'Note', 'Document language: ' + (h.languageCode || '').toUpperCase()));
-  if (h.note) addChild(root, elCbc(doc, 'Note', h.note));
-
-  // —— 10. InvoiceTypeCode, DueDate, IssueDate, ID, ProfileID, CustomizationID, UBLVersionID ——
-  addChild(root, elCbc(doc, 'InvoiceTypeCode', h.typeCode || '380'));
-  if (h.dueDate) addChild(root, elCbc(doc, 'DueDate', h.dueDate));
-  addChild(root, elCbc(doc, 'IssueDate', h.issueDate));
-  addChild(root, elCbc(doc, 'ID', h.invoiceNumber));
-  addChild(root, elCbc(doc, 'ProfileID', (h.profileId || PEPPOL_PROFILE_ID).trim()));
-  addChild(root, elCbc(doc, 'CustomizationID', (h.customizationId || h.specificationId || PEPPOL_CUSTOMIZATION_ID).trim()));
-  addChild(root, elCbc(doc, 'UBLVersionID', '2.1'));
+  // —— 10. InvoiceLine(s) [1..*] — schema: ID, InvoicedQuantity, LineExtensionAmount, Item, Price ——
+  const lineNetsMap = {};
+  (totals.lineNets || []).forEach(ln => { lineNetsMap[ln.id] = ln.lineNet; });
+  (draft.lines || []).forEach(line => {
+    const lineEl = elCac(doc, 'InvoiceLine');
+    addChild(lineEl, elCbc(doc, 'ID', line.id));
+    const qty = elCbc(doc, 'InvoicedQuantity', String(line.quantity));
+    qty.setAttribute('unitCode', line.unitCode || 'C62');
+    addChild(lineEl, qty);
+    addChild(lineEl, elCbc(doc, 'LineExtensionAmount', (lineNetsMap[line.id] ?? 0).toFixed(2), { currencyID: cc }));
+    const item = elCac(doc, 'Item');
+    if (line.itemDescription) addChild(item, elCbc(doc, 'Description', line.itemDescription));
+    addChild(item, elCbc(doc, 'Name', line.itemName));
+    const taxCat = elCac(doc, 'ClassifiedTaxCategory');
+    addChild(taxCat, elCbc(doc, 'ID', line.vatCategoryCode || 'S'));
+    if (line.vatRate != null) addChild(taxCat, elCbc(doc, 'Percent', String(line.vatRate)));
+    const lineTaxScheme = elCac(doc, 'TaxScheme');
+    addChild(lineTaxScheme, elCbc(doc, 'ID', 'VAT'));
+    addChild(taxCat, lineTaxScheme);
+    addChild(item, taxCat);
+    addChild(lineEl, item);
+    const price = elCac(doc, 'Price');
+    addChild(price, elCbc(doc, 'PriceAmount', Number(line.netPrice).toFixed(2), { currencyID: cc }));
+    addChild(lineEl, price);
+    addChild(root, lineEl);
+  });
 
   return doc;
 }

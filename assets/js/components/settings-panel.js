@@ -81,6 +81,11 @@
           this.paymentType = (draft.payment && draft.payment.meansTypeCode) ? String(draft.payment.meansTypeCode) : '30';
 
           var self = this;
+          document.addEventListener('invio:website-language-changed', function (e) {
+            if (e.detail && e.detail.language && EU_24.indexOf(e.detail.language) !== -1) {
+              self.language = e.detail.language;
+            }
+          });
           this.$watch('language', function (val) {
             self.$store.draft.header.languageCode = val;
           });

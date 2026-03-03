@@ -20,6 +20,7 @@
             iban: '',
             bankName: '',
             ibanError: '',
+            ibanHint: '',
             _id: 'iban-' + Date.now() + '-' + Math.random().toString(36).slice(2)
           });
         },
@@ -39,18 +40,19 @@
             if (!acc) return;
             var raw = (acc.iban || '').trim();
             var norm = raw.replace(/\s/g, '').toUpperCase();
+            acc.ibanError = '';
             if (!norm) {
-              acc.ibanError = '';
+              acc.ibanHint = '';
               return;
             }
             var countryEl = document.getElementById(countryId);
             var country = countryEl ? countryEl.value : '';
             var v = window.InvioValidation;
-            if (country && v && v.validIbanFormatForCountry && !v.validIbanFormatForCountry(norm, country)) {
-              acc.ibanError = 'IBAN length does not match selected country';
-              return;
+            if (norm.length >= 20 && country && v && v.ibanLengthMismatch && v.ibanLengthMismatch(norm, country)) {
+              acc.ibanHint = 'Review the bank account number carefully to make sure it matches the required format';
+            } else {
+              acc.ibanHint = '';
             }
-            acc.ibanError = (v && v.validIban && !v.validIban(norm)) ? 'Invalid IBAN' : '';
           }, 350);
         }
       };

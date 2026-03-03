@@ -62,7 +62,42 @@
 
         init: function () {
           var self = this;
-          this.$watch('current', function () { self.updateWidth(); });
+          this.$watch('current', function (newVal) {
+            self.updateWidth();
+            var draft = (typeof Alpine !== 'undefined' && Alpine.store && Alpine.store('draft')) || window.__invioDraft;
+            if (draft && draft.header) {
+              draft.header.languageCode = newVal;
+            }
+            document.dispatchEvent(new CustomEvent('invio:website-language-changed', { detail: { language: newVal } }));
+            var countryIso2 = self.languageToCountry[newVal];
+            if (countryIso2) {
+              var cc = countryIso2.toUpperCase();
+              if (draft) {
+                if (!draft.seller) draft.seller = {};
+                if (!draft.seller.address) draft.seller.address = {};
+                if (!draft.buyer) draft.buyer = {};
+                if (!draft.buyer.address) draft.buyer.address = {};
+                draft.seller.address.countryCode = cc;
+                draft.buyer.address.countryCode = cc;
+              }
+              var countries = window.Invio && window.Invio.countries;
+              ['seller', 'buyer'].forEach(function (role) {
+                var sel = document.getElementById(role + '-country');
+                if (sel && sel.options) {
+                  var hasOption = false;
+                  for (var i = 0; i < sel.options.length; i++) {
+                    if (sel.options[i].value === cc) { hasOption = true; break; }
+                  }
+                  if (hasOption) {
+                    sel.value = cc;
+                    if (countries && countries.updateAddressCountryDisplay) {
+                      countries.updateAddressCountryDisplay(role, cc);
+                    }
+                  }
+                }
+              });
+            }
+          });
           this.updateWidth();
         }
       };

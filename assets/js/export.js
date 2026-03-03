@@ -46,7 +46,6 @@
     if (!d) return { ok: false, errors: ['No invoice data'] };
     if (window.InvioState && window.InvioState.normalizeDraft) {
       d = window.InvioState.normalizeDraft(d);
-      if (window.__invioDraft) window.__invioDraft = d;
     }
     if (!window.InvioValidation || !window.InvioValidation.validateForExport) {
       return { ok: false, errors: ['Validation not available'] };

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free online invoice generator - Invio</title>
+  <title>Free online invoice generator - Invossa</title>
   <meta name="description" content="Generate downloadable PDF invoices and compliant e-invoices directly in your browser with our free online invoice generator.">
   <meta name="keywords" content="invoice generator, online invoice maker, free invoice template, PDF invoice, e-invoice, billing software">
   <meta name="author" content="Invio">
@@ -24,7 +24,7 @@
   <div class="page-surface">
      <header class="top">
         <div class="header-grid container">
-          <img class="logo header-grid__logo" src="assets/logo-invio.svg" alt="Invio" width="114" height="42">
+          <img class="logo header-grid__logo" src="assets/Invossa.svg" alt="Invossa logo" width="120" height="auto" fetchpriority="high">
           <div class="header-grid__lang lang-control" x-data="languageSwitcher()" x-init="init()" x-cloak>
             <div class="lang-switcher" x-ref="wrapper" role="group" aria-labelledby="lang-switcher-label">
               <span id="lang-switcher-label" class="visually-hidden">Language</span>
@@ -163,13 +163,15 @@
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" x-show="sellerTab === 'organisation'" x-cloak :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
                         <label for="seller-registration"><span class="form-label">Registration number <span class="required-mark">*</span></span></label>
-                        <input class="form-control" type="text" name="seller-registration" id="seller-registration" required placeholder="Enter registration number" aria-describedby="seller-registration-error">
+                        <input class="form-control" type="text" name="seller-registration" id="seller-registration" required placeholder="Enter registration number" aria-describedby="seller-registration-error seller-registration-format-hint">
                         <span class="field-error form-error field-error-reserved" id="seller-registration-error" role="alert" aria-live="polite" hidden x-cloak></span>
+                        <small class="field-helper form-help" id="seller-registration-format-hint" aria-live="polite" hidden>Ensure the registration number follows the correct structure for selected country</small>
                       </div>
                       <div class="form-group form-field" x-data="focusField" :class="{ 'is-focused': focused }" @focusin="onFocusin()" @focusout="onFocusout()">
                         <label for="seller-vat"><span class="form-label">Tax number <span class="required-mark" x-show="sellerTab === 'individual'" x-cloak>*</span><span class="label-optional" x-show="sellerTab === 'organisation'">(Optional)</span></span></label>
-                        <input class="form-control" type="text" name="seller-vat" id="seller-vat" :required="sellerTab === 'individual'" placeholder="Enter tax number" aria-describedby="seller-vat-error">
+                        <input class="form-control" type="text" name="seller-vat" id="seller-vat" :required="sellerTab === 'individual'" placeholder="Enter tax number" aria-describedby="seller-vat-error seller-vat-format-hint">
                         <span class="field-error form-error field-error-reserved" id="seller-vat-error" role="alert" aria-live="polite" hidden x-cloak></span>
+                        <small class="field-helper form-help" id="seller-vat-format-hint" aria-live="polite" hidden>Make sure your tax number includes all required characters and no extra spaces</small>
                       </div>
                       <div class="form-group form-field" x-data="focusField" :class="{ 'is-focused': focused }" @focusin="onFocusin()" @focusout="onFocusout()">
                         <label for="seller-street"><span class="form-label">Address <span class="required-mark">*</span></span></label>
@@ -208,8 +210,9 @@
                           <div class="iban-item">
                             <div class="form-group form-field">
                               <label :for="'seller-iban-' + index"><span class="form-label">Bank account number <span class="required-mark">*</span></label>
-                              <input class="form-control" :id="'seller-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" placeholder="Enter IBAN number" :aria-describedby="'seller-iban-' + index + '-error'" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
+                              <input class="form-control" :id="'seller-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" placeholder="Enter IBAN number" :aria-describedby="'seller-iban-' + index + '-error' + (account.ibanHint ? ' seller-iban-' + index + '-hint' : '')" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
                               <span class="field-error form-error field-error-reserved" :id="'seller-iban-' + index + '-error'" role="alert" aria-live="polite" x-show="account.ibanError" x-cloak x-text="account.ibanError"></span>
+                              <small class="field-helper form-help" :id="'seller-iban-' + index + '-hint'" aria-live="polite" x-show="account.ibanHint" x-cloak x-text="account.ibanHint"></small>
                             </div>
                             <div class="form-group form-field">
                               <label :for="'seller-iban-bank-' + index"><span class="form-label">Bank name</span> <span class="label-optional">(Optional)</span></label>
@@ -309,13 +312,15 @@
                       </div>
                       <div class="form-group form-field" x-data="{ focused: false }" x-show="buyerTab === 'organisation'" x-cloak :class="{ 'is-focused': focused }" @focusin="focused = true" @focusout="focused = false">
                         <label for="buyer-registration"><span class="form-label">Registration number <span class="required-mark">*</span></span></label>
-                        <input class="form-control" type="text" name="buyer-registration" id="buyer-registration" required placeholder="Enter registration number" aria-describedby="buyer-registration-error">
+                        <input class="form-control" type="text" name="buyer-registration" id="buyer-registration" required placeholder="Enter registration number" aria-describedby="buyer-registration-error buyer-registration-format-hint">
                         <span class="field-error form-error field-error-reserved" id="buyer-registration-error" role="alert" aria-live="polite" hidden x-cloak></span>
+                        <small class="field-helper form-help" id="buyer-registration-format-hint" aria-live="polite" hidden>Ensure the registration number follows the correct structure for selected country</small>
                       </div>
                       <div class="form-group form-field" x-data="focusField" :class="{ 'is-focused': focused }" @focusin="onFocusin()" @focusout="onFocusout()">
                         <label for="buyer-vat"><span class="form-label">Tax number <span class="required-mark" x-show="buyerTab === 'individual'" x-cloak>*</span><span class="label-optional" x-show="buyerTab === 'organisation'">(Optional)</span></span></label>
-                        <input class="form-control" type="text" name="buyer-vat" id="buyer-vat" :required="buyerTab === 'individual'" placeholder="Enter tax number" aria-describedby="buyer-vat-error">
+                        <input class="form-control" type="text" name="buyer-vat" id="buyer-vat" :required="buyerTab === 'individual'" placeholder="Enter tax number" aria-describedby="buyer-vat-error buyer-vat-format-hint">
                         <span class="field-error form-error field-error-reserved" id="buyer-vat-error" role="alert" aria-live="polite" hidden x-cloak></span>
+                        <small class="field-helper form-help" id="buyer-vat-format-hint" aria-live="polite" hidden>Make sure your tax number includes all required characters and no extra spaces</small>
                       </div>
                       <div class="form-group form-field" x-data="focusField" :class="{ 'is-focused': focused }" @focusin="onFocusin()" @focusout="onFocusout()">
                         <label for="buyer-street"><span class="form-label">Address <span class="required-mark">*</span></span></label>
@@ -354,8 +359,9 @@
                           <div class="iban-item">
                             <div class="form-group form-field">
                               <label :for="'buyer-iban-' + index"><span class="form-label">Bank account number</span> <span class="label-optional">(Optional)</span></label>
-                              <input class="form-control" :id="'buyer-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" placeholder="Enter IBAN number" :aria-describedby="'buyer-iban-' + index + '-error'" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
+                              <input class="form-control" :id="'buyer-iban-' + index" type="text" x-model="account.iban" @input="validateIbanAt(index)" placeholder="Enter IBAN number" :aria-describedby="'buyer-iban-' + index + '-error' + (account.ibanHint ? ' buyer-iban-' + index + '-hint' : '')" :aria-invalid="!!account.ibanError" :name="'iban-' + index">
                               <span class="field-error form-error field-error-reserved" :id="'buyer-iban-' + index + '-error'" role="alert" aria-live="polite" x-show="account.ibanError" x-cloak x-text="account.ibanError"></span>
+                              <small class="field-helper form-help" :id="'buyer-iban-' + index + '-hint'" aria-live="polite" x-show="account.ibanHint" x-cloak x-text="account.ibanHint"></small>
                             </div>
                             <div class="form-group form-field">
                               <label :for="'buyer-iban-bank-' + index"><span class="form-label">Bank name</span> <span class="label-optional">(Optional)</span></label>
@@ -405,14 +411,12 @@
                 <div class="chips">
                   <span class="chips-title">Add fields:</span>
                   <button type="button" class="chip-toggle" :class="showDiscount ? 'chip-active' : 'chip-inactive'" @click="toggleDiscount()" :aria-pressed="String(showDiscount)" aria-label="Toggle discount column">
-                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showDiscount ? 'check' : 'add'"></span>
+                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showDiscount ? 'close' : 'add'"></span>
                     <span class="chip-label">Discount</span>
-                    <span class="material-symbols-rounded chip-close" aria-hidden="true" x-show="showDiscount" x-cloak>close</span>
                   </button>
                   <button type="button" class="chip-toggle" :class="showNote ? 'chip-active' : 'chip-inactive'" @click="toggleNote()" :aria-pressed="String(showNote)" aria-label="Toggle note">
-                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showNote ? 'check' : 'add'"></span>
+                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showNote ? 'close' : 'add'"></span>
                     <span class="chip-label">Note</span>
-                    <span class="material-symbols-rounded chip-close" aria-hidden="true" x-show="showNote" x-cloak>close</span>
                   </button>
                 </div>
 
@@ -657,7 +661,7 @@
         </main>
 
         <footer class="foot">
-          <img class="logo footer-logo" src="assets/logo-invio.svg" alt="Invio" width="114" height="42">
+          <img class="logo footer-logo" src="assets/Invossa.svg" alt="Invio" width="114" height="42">
           <a href="#privacy">Privacy policy</a>
           <a href="#terms">Terms and conditions</a>
       </footer>

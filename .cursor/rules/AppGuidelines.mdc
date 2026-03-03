@@ -1,0 +1,103 @@
+---
+description: 
+alwaysApply: true
+---
+
+# Rules  
+_For Cursor — Always Apply_
+
+# 1. Project Context
+
+Multi-language, multi-currency invoice app built with:
+
+- Custom HTML  
+- Custom CSS  
+- Alpine.js  
+- Static hosting  
+- No heavy frameworks.
+
+Financial product. Accuracy, clarity, and maintainability are mandatory.
+
+# 2. Core Principles
+
+- Optimize for clarity over cleverness.
+- Reduce complexity, don’t hide it.
+- Avoid duplication.
+- Keep components small and focused.
+- No global mutable state.
+- If a change makes the code harder to understand, simplify it.
+
+# 3. Alpine.js Architecture
+
+- Alpine.js is the only reactive framework allowed.
+- No React, Vue, Angular, Tailwind, or CSS frameworks.
+- Break UI into small, isolated components.
+- Define complex components in external `Alpine.data()` modules.
+- Keep `index.html` declarative and minimal.
+- Do not place business logic directly in markup.
+- Use `x-data` for local state.
+- Use `Alpine.store()` for shared state.
+- Do not attach state to `window`.
+- Avoid direct DOM queries; use Alpine patterns instead.
+- Keep reactive scopes small.
+
+# 4. Code Organization
+- The codebase must be:
+- - Modular  
+- - Predictable  
+- - Easy to extend  
+- - Safe for financial calculations  
+- - Translation-ready  
+- - Performance-aware  
+- - Clean and minimal   
+- Structure JS clearly:
+- - Components → UI behavior
+- - Stores → shared state
+- - Utils → pure functions
+- Strict separation:
+- - HTML = structure
+- - JS = logic
+- - CSS = styling
+
+# 5. Financial, locale
+- Never hard-code currency formatting.
+- Use locale-aware number and date formatting.
+- Handle currency precision explicitly.
+- Keep financial calculations isolated and pure.
+- Avoid floating-point errors.
+- Store dates in a consistent internal format.
+
+# 6. Copywriting Standards
+- Use active voice.
+  - ✅ “Save invoice”
+  - ❌ “Invoice will be saved”
+- Be clear, direct, and concise.
+- Remove unnecessary words.
+- Focus on helping the user complete a task.
+- Avoid slang, humor, idioms, or culturally specific phrases.
+- Avoid marketing language.
+- Use only offically supported financial terms 
+
+# 7. Performance Rules
+
+- Reduce `index.html` size.
+- Remove inline scripts.
+- Remove dead code and unused CSS.
+- Lazy-load non-critical components.
+- Defer heavy initialization until needed.
+- Avoid unnecessary watchers and large reactive objects.
+
+# 8. Code Quality
+
+- No magic numbers.
+- No silent type coercion.
+- Extract shared logic into reusable modules.
+- Keep functions small and readable.
+- No unused functions or legacy comments.
+- No temporary hacks in production.
+
+# 9. Icon Standards
+- **Material Symbols Only:** Use Material Symbols for UI icons.
+- **Style:** Use the rounded set (`Material Symbols Rounded`).
+- **Default Axes:** Use `opsz=20`, `wght=400`, `FILL=0`, `GRAD=0` unless a design explicitly requires otherwise.
+- **Consistency:** Keep icon style/axes consistent across buttons, inputs, and navigation controls.
