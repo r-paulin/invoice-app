@@ -405,14 +405,12 @@
                 <div class="chips">
                   <span class="chips-title">Add fields:</span>
                   <button type="button" class="chip-toggle" :class="showDiscount ? 'chip-active' : 'chip-inactive'" @click="toggleDiscount()" :aria-pressed="String(showDiscount)" aria-label="Toggle discount column">
-                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showDiscount ? 'check' : 'add'"></span>
+                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showDiscount ? 'close' : 'add'"></span>
                     <span class="chip-label">Discount</span>
-                    <span class="material-symbols-rounded chip-close" aria-hidden="true" x-show="showDiscount" x-cloak>close</span>
                   </button>
                   <button type="button" class="chip-toggle" :class="showNote ? 'chip-active' : 'chip-inactive'" @click="toggleNote()" :aria-pressed="String(showNote)" aria-label="Toggle note">
-                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showNote ? 'check' : 'add'"></span>
+                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showNote ? 'close' : 'add'"></span>
                     <span class="chip-label">Note</span>
-                    <span class="material-symbols-rounded chip-close" aria-hidden="true" x-show="showNote" x-cloak>close</span>
                   </button>
                 </div>
 
