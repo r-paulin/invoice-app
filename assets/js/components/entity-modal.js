@@ -36,6 +36,8 @@
     if (err) { err.textContent = message || ''; err.hidden = !message; err.removeAttribute('x-cloak'); }
     var hintEl = document.getElementById(id + '-hint');
     if (hintEl) hintEl.hidden = !!message;
+    var formatHint = document.getElementById(id + '-format-hint');
+    if (formatHint) formatHint.hidden = true;
     syncFieldErrorA11y(id, !!message);
   }
 
@@ -48,6 +50,7 @@
       if (err) { err.hidden = true; err.textContent = ''; }
       syncFieldErrorA11y(id, false);
     });
+    updateRegistrationVatHints(role);
   }
 
   function showFormAlert(role, show) {
@@ -71,6 +74,24 @@
     var sel = document.getElementById('payment-type-select');
     var draft = window.__invioDraft;
     return (sel && sel.value) ? sel.value : (draft && draft.payment && draft.payment.meansTypeCode) || '30';
+  }
+
+  function updateRegistrationVatHints(role) {
+    var countryInput = document.getElementById(role + '-country');
+    var countryCode = countryInput ? (C().parseCountryCodeFromInput || function (v) { return (v || '').toUpperCase(); })(countryInput.value) : '';
+    var regEl = document.getElementById(role + '-registration');
+    var vatEl = document.getElementById(role + '-vat');
+    var regHint = document.getElementById(role + '-registration-format-hint');
+    var vatHint = document.getElementById(role + '-vat-format-hint');
+    var v = window.InvioValidation;
+    if (regHint && regEl && v && v.registrationLengthMismatch) {
+      var regVal = (regEl.value || '').trim();
+      regHint.hidden = !(regVal.length >= 6 && countryCode && v.registrationLengthMismatch(regVal, countryCode));
+    }
+    if (vatHint && vatEl && v && v.vatLengthMismatch) {
+      var vatVal = (vatEl.value || '').trim();
+      vatHint.hidden = !(vatVal.length >= 6 && countryCode && v.vatLengthMismatch(vatVal, countryCode));
+    }
   }
 
   function validateEntityForm(role) {
@@ -111,13 +132,6 @@
     if (!postal) { showFieldError(pfx + 'postal', 'Postal code is required'); valid = false; }
 
     var v = window.InvioValidation;
-    if (isOrganisation && reg && v && v.validRegistrationId && !v.validRegistrationId(reg, countryCode)) {
-      showFieldError(pfx + 'registration', 'Invalid registration number for selected country'); valid = false;
-    }
-    if (isOrganisation && vat && v && v.validVatId && !v.validVatId(vat, countryCode)) {
-      showFieldError(pfx + 'vat', 'Invalid VAT number for selected country'); valid = false;
-    }
-
     var phoneCountrySelect = document.getElementById(role + '-phone-country');
     var phoneDialCode = '';
     if (phoneCountrySelect && C().findByIso2) {
@@ -137,15 +151,9 @@
     if (means === '30') {
       var accounts = (typeof Alpine !== 'undefined' && Alpine.store) ? Alpine.store(storeKey) : [];
       var hasOne = false;
-      var allValid = true;
       var i;
-      for (i = 0; i < accounts.length; i++) accounts[i].ibanError = '';
       for (i = 0; i < accounts.length; i++) {
-        var ibanVal = (accounts[i].iban || '').trim();
-        if (ibanVal) {
-          hasOne = true;
-          if (v && v.validIban && !v.validIban(ibanVal)) { allValid = false; accounts[i].ibanError = 'Invalid IBAN'; }
-        }
+        if ((accounts[i].iban || '').trim()) hasOne = true;
       }
       var ibanErr = document.getElementById(role + '-iban-error');
       if (ibanErr) { ibanErr.hidden = true; ibanErr.textContent = ''; }
@@ -153,9 +161,6 @@
       var requireIban = role === 'seller';
       if (requireIban && !hasOne) {
         if (ibanErr) { ibanErr.textContent = 'At least one IBAN is required for credit transfer'; ibanErr.hidden = false; }
-        if (ibanBlock) ibanBlock.classList.add('has-error');
-        valid = false;
-      } else if (!allValid) {
         if (ibanBlock) ibanBlock.classList.add('has-error');
         valid = false;
       }
@@ -265,6 +270,7 @@
     var form = null;
     var countryInput = null;
     var ibanBlock = null;
+    var hintRefs = { reg: null, vat: null, country: null, handler: null };
 
     function cacheElements() {
       form = document.getElementById(role + '-form');
@@ -368,10 +374,11 @@
           iban: (acc.accountId || '').trim(),
           bankName: (acc.bankName || '').trim() || '',
           ibanError: '',
+          ibanHint: '',
           _id: acc._id || 'iban-' + Date.now() + '-' + idx
         };
       });
-      if (!normalized.length) normalized = [{ iban: '', bankName: '', ibanError: '', _id: 'iban-' + Date.now() + '-0' }];
+      if (!normalized.length) normalized = [{ iban: '', bankName: '', ibanError: '', ibanHint: '', _id: 'iban-' + Date.now() + '-0' }];
 
       var storeKey = role + 'BankAccounts';
       if (typeof Alpine !== 'undefined' && Alpine.store && Alpine.store(storeKey)) {
@@ -385,6 +392,21 @@
       var ibanErrEl = document.getElementById(role + '-iban-error');
       if (ibanErrEl) { ibanErrEl.hidden = true; ibanErrEl.textContent = ''; }
 
+      hintRefs.reg = document.getElementById(role + '-registration');
+      hintRefs.vat = document.getElementById(role + '-vat');
+      hintRefs.country = document.getElementById(role + '-country');
+      hintRefs.handler = function () { updateRegistrationVatHints(role); };
+      if (hintRefs.reg) {
+        hintRefs.reg.addEventListener('input', hintRefs.handler);
+        hintRefs.reg.addEventListener('blur', hintRefs.handler);
+      }
+      if (hintRefs.vat) {
+        hintRefs.vat.addEventListener('input', hintRefs.handler);
+        hintRefs.vat.addEventListener('blur', hintRefs.handler);
+      }
+      if (hintRefs.country) hintRefs.country.addEventListener('change', hintRefs.handler);
+      updateRegistrationVatHints(role);
+
       bottomSheet.open();
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
@@ -396,6 +418,20 @@
 
     function close() {
       if (!bottomSheet) return;
+      if (hintRefs.reg) {
+        hintRefs.reg.removeEventListener('input', hintRefs.handler);
+        hintRefs.reg.removeEventListener('blur', hintRefs.handler);
+        hintRefs.reg = null;
+      }
+      if (hintRefs.vat) {
+        hintRefs.vat.removeEventListener('input', hintRefs.handler);
+        hintRefs.vat.removeEventListener('blur', hintRefs.handler);
+        hintRefs.vat = null;
+      }
+      if (hintRefs.country) {
+        hintRefs.country.removeEventListener('change', hintRefs.handler);
+        hintRefs.country = null;
+      }
       bottomSheet.close();
       var root = document.querySelector('.' + role + '-bottom-sheet');
       if (root) root.setAttribute('inert', '');

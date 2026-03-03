@@ -84,6 +84,28 @@ const VAT_REGEX = {
   HR: /^HR[0-9]{11}$/i
 };
 
+/** Per-country registration number length (min, max) for length-only hint. */
+const REGISTRATION_LENGTH = {
+  LV: { min: 11, max: 11 }, LT: { min: 9, max: 9 }, EE: { min: 8, max: 8 }, DE: { min: 1, max: 12 },
+  AT: { min: 6, max: 9 }, NL: { min: 8, max: 8 }, BE: { min: 10, max: 10 }, FR: { min: 9, max: 9 },
+  ES: { min: 8, max: 12 }, IT: { min: 11, max: 11 }, PL: { min: 10, max: 10 }, CZ: { min: 8, max: 8 },
+  SK: { min: 8, max: 8 }, HU: { min: 8, max: 8 }, RO: { min: 2, max: 10 }, BG: { min: 9, max: 13 },
+  GR: { min: 9, max: 9 }, PT: { min: 9, max: 9 }, SE: { min: 11, max: 11 }, DK: { min: 8, max: 8 },
+  FI: { min: 8, max: 8 }, IE: { min: 8, max: 9 }, LU: { min: 8, max: 8 }, MT: { min: 1, max: 8 },
+  CY: { min: 9, max: 9 }, SI: { min: 8, max: 8 }, HR: { min: 11, max: 11 }
+};
+
+/** Per-country VAT number length (min, max) for length-only hint. */
+const VAT_LENGTH = {
+  LV: { min: 13, max: 13 }, LT: { min: 11, max: 14 }, EE: { min: 11, max: 11 }, DE: { min: 11, max: 11 },
+  AT: { min: 11, max: 11 }, NL: { min: 14, max: 14 }, BE: { min: 12, max: 12 }, FR: { min: 13, max: 13 },
+  ES: { min: 11, max: 11 }, IT: { min: 13, max: 13 }, PL: { min: 12, max: 12 }, CZ: { min: 10, max: 12 },
+  SK: { min: 12, max: 12 }, HU: { min: 10, max: 10 }, RO: { min: 4, max: 12 }, BG: { min: 11, max: 12 },
+  GR: { min: 11, max: 11 }, PT: { min: 11, max: 11 }, SE: { min: 14, max: 14 }, DK: { min: 10, max: 10 },
+  FI: { min: 10, max: 10 }, IE: { min: 9, max: 9 }, LU: { min: 10, max: 10 }, MT: { min: 10, max: 10 },
+  CY: { min: 11, max: 11 }, SI: { min: 10, max: 10 }, HR: { min: 13, max: 13 }
+};
+
 function nonEmpty(s) {
   return typeof s === 'string' && s.trim().length > 0;
 }
@@ -153,6 +175,50 @@ function validVatId(value, countryCode) {
   var re = VAT_REGEX[countryCode.toUpperCase()];
   if (!re) return value.trim().length >= 10 && value.trim().length <= 20;
   return re.test(value.trim().replace(/\s/g, ''));
+}
+
+/**
+ * Length-only check for hint: true if value has 6+ chars and length does not match country.
+ * Used for non-blocking UI hint only.
+ */
+function registrationLengthMismatch(value, countryCode) {
+  if (!value || typeof value !== 'string') return false;
+  var trimmed = value.trim();
+  if (trimmed.length < 6) return false;
+  if (!countryCode) return false;
+  var range = REGISTRATION_LENGTH[String(countryCode).toUpperCase()];
+  if (!range) return false;
+  var len = trimmed.length;
+  return len < range.min || len > range.max;
+}
+
+/**
+ * Length-only check for hint: true if normalized IBAN has 6+ chars and length does not match country.
+ * Used for non-blocking UI hint only. Plan uses 20+ chars for IBAN before showing hint.
+ */
+function ibanLengthMismatch(iban, countryCode) {
+  if (!iban || typeof iban !== 'string') return false;
+  var normalized = String(iban).replace(/\s/g, '').toUpperCase();
+  if (normalized.length < 6) return false;
+  if (!countryCode) return false;
+  var expected = IBAN_LENGTH_BY_COUNTRY[String(countryCode).toUpperCase()];
+  if (expected == null) return false;
+  return normalized.length !== expected;
+}
+
+/**
+ * Length-only check for hint: true if value has 6+ chars and length does not match country.
+ * Used for non-blocking UI hint only.
+ */
+function vatLengthMismatch(value, countryCode) {
+  if (!value || typeof value !== 'string') return false;
+  var trimmed = value.trim().replace(/\s/g, '');
+  if (trimmed.length < 6) return false;
+  if (!countryCode) return false;
+  var range = VAT_LENGTH[String(countryCode).toUpperCase()];
+  if (!range) return false;
+  var len = trimmed.length;
+  return len < range.min || len > range.max;
 }
 
 function validPhone(value, dialCode) {
@@ -313,6 +379,9 @@ if (typeof window !== 'undefined') {
     validRegistrationId,
     validVatId,
     validPhone,
+    registrationLengthMismatch,
+    ibanLengthMismatch,
+    vatLengthMismatch,
     VAT_CATEGORY_CODES,
     UNIT_CODES,
     ALLOWED_CURRENCY_CODES
