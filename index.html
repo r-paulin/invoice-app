@@ -625,7 +625,7 @@
                   <span class="field-error form-error" id="invoice-logo-error" role="alert" aria-live="polite" x-show="logoError" x-cloak x-text="logoError"></span>
 
                   <div class="card" x-show="!$store.settings.logo" x-cloak @dragover.prevent @drop.prevent="onLogoDrop($event)">
-                    <img src="assets/invoice-logo.webp" alt="Logo upload illustration" class="card-image" width="248" height="auto">
+                    <img src="assets/img/invoice-sparkle.webp" alt="Logo upload illustration" class="card-image" width="248" height="auto">
                     <p class="style-logo-card-prompt">Click to choose a file or drag here</p>
                     <small class="field-helper form-help" id="invoice-logo-help">Upload a PNG or JPEG logo (optimised for 174 × 56 px, max 1 MB)</small>
                     <button type="button" class="btn btn--primary btn--icon-left" id="invoice-logo-trigger" aria-labelledby="invoice-logo-label" @click="$refs.logoInput.click()">
