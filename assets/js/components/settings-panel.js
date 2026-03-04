@@ -70,9 +70,12 @@
 
         init: function () {
           var draft = this.$store.draft;
+          var draftLang = (draft.header && draft.header.languageCode) || '';
           var langSelect = document.getElementById('lang-select');
           var websiteLang = langSelect ? langSelect.value : '';
-          if (websiteLang && EU_24.indexOf(websiteLang) !== -1) {
+          if (draftLang && EU_24.indexOf(draftLang) !== -1) {
+            this.language = draftLang;
+          } else if (websiteLang && EU_24.indexOf(websiteLang) !== -1) {
             this.language = websiteLang;
           }
           draft.header.languageCode = this.language;
