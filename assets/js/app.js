@@ -140,11 +140,27 @@
   var draft = window.__invioDraft || (window.InvioState && window.InvioState.createDefaultDraft());
   if (typeof window !== 'undefined') window.__invioDraft = draft;
 
-  // syncBasicDetailsToDraft is a no-op: the basicDetails Alpine component
-  // handles reactive sync via x-model / $store.draft.
+  // Sync basic details from DOM to draft before export validation (catches any timing gap).
   if (typeof window !== 'undefined') {
     window.InvioExport = window.InvioExport || {};
-    window.InvioExport.syncBasicDetailsToDraft = function () {};
+    window.InvioExport.syncBasicDetailsToDraft = function () {
+      var d = window.__invioDraft;
+      if (!d || !d.header || !d.payment) return;
+      var invNum = document.getElementById('invoice-number');
+      var payRef = document.getElementById('payment-reference');
+      var issueDate = document.getElementById('issue-date');
+      var dueDate = document.getElementById('due-date');
+      var typeSelect = document.getElementById('invoice-type-select');
+      var currencySelect = document.getElementById('invoice-currency-select');
+      var paymentSelect = document.getElementById('payment-type-select');
+      if (invNum) d.header.invoiceNumber = (invNum.value || '').trim();
+      if (payRef) d.payment.paymentId = (payRef.value || '').trim() || null;
+      if (issueDate) d.header.issueDate = (issueDate.value || '').trim() || d.header.issueDate;
+      if (dueDate) d.header.dueDate = (dueDate.value || '').trim() || d.header.dueDate;
+      if (typeSelect && typeSelect.value) d.header.typeCode = typeSelect.value;
+      if (currencySelect && currencySelect.value) d.header.currencyCode = currencySelect.value;
+      if (paymentSelect && paymentSelect.value) d.payment.meansTypeCode = paymentSelect.value;
+    };
   }
 
   // --- Export validation state ---
@@ -173,7 +189,9 @@
       var bold = document.createElement('b');
       bold.textContent = 'Missing required information';
       var span = document.createElement('span');
-      span.textContent = 'Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again.';
+      span.textContent = errors.length === 1
+        ? errors[0]
+        : 'Please fix the following: ' + errors.join(' ');
       alertEl.textContent = '';
       alertEl.appendChild(bold);
       alertEl.appendChild(span);
