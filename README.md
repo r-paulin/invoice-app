@@ -44,6 +44,18 @@ PEPPOL BIS Billing 3.0 compliant invoice generator built with Jekyll and vanilla
 
 4. Open http://localhost:4000/invoice-app/
 
+### Image assets
+
+Image paths are static (no fallback). Ensure these files exist in `assets/img/` so they load:
+
+- `Invossa.svg` (logo)
+- `laptop-invoices.webp` (header)
+- `invoice-stack.webp`, `invoice-stack-signed.webp` (Seller/Buyer cards)
+- `invoice-sparkle.webp` (Style / logo upload)
+- `invoice-success.webp`, `snail-invoice.webp`, `invoice-error.webp` (export pages)
+
+When the app is served from a subpath (e.g. GitHub Pages at `…/invoice-app/`), a script in each page sets `<base href="/invoice-app/">` so relative URLs (CSS, JS, images) resolve correctly. If images still don’t load, confirm the URL bar path matches that subpath and do a hard refresh (e.g. Ctrl+Shift+R) to avoid cached 404s.
+
 ### File Structure
 
 ```

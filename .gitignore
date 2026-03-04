@@ -9,3 +9,6 @@ _site/
 
 # Ruby
 Gemfile.lock
+
+# Node (optional tooling)
+node_modules/

@@ -1,0 +1,7 @@
+# Critical paths for invoice app (frontend and assets)
+/assets/js/
+/index.html
+/download.html
+/processing.html
+/error.html
+/assets/css/

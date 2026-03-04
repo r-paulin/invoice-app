@@ -1,0 +1,14 @@
+{
+  "name": "invoice-app",
+  "private": true,
+  "description": "Free browser-based invoice generator (Alpine.js, static)",
+  "scripts": {
+    "lint": "eslint assets/js --max-warnings 0"
+  },
+  "devDependencies": {
+    "eslint": "^9.15.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

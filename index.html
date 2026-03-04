@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    (function () {
+      var path = window.location.pathname || '';
+      if (path.indexOf('/invoice-app') === 0) {
+        var base = document.createElement('base');
+        base.href = '/invoice-app/';
+        document.head.insertBefore(base, document.head.firstChild);
+      }
+    })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Free online invoice generator - Invossa</title>
@@ -10,7 +20,7 @@
   <meta name="robots" content="index, follow">
   <meta property="og:title" content="Free Online Invoice Generator">
   <meta property="og:description" content="Generate downloadable PDF invoices and compliant e-invoices directly in your browser with our free online invoice generator.">
-  <meta property="og:image" content="https://invoicing.invio.com/assets/invoice-generator-preview.png">
+  <meta property="og:image" content="assets/img/Invossa.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -660,11 +670,24 @@
           </section>
         </main>
 
-        <footer class="foot">
-          <img class="logo footer-logo" src="assets/img/Invossa.svg" alt="Invossa app logo" width="114" height="42">
-          <a href="#privacy">Privacy policy</a>
-          <a href="#terms">Terms and conditions</a>
-      </footer>
+        <footer class="foot" x-data="{ year: new Date().getFullYear() }">
+          <div class="foot__bg" aria-hidden="true">
+            <img src="assets/img/Invossa.svg" alt="" width="889" height="219" class="foot__bg-img">
+          </div>
+          <div class="foot__inner container">
+            <img class="foot__logo" src="assets/img/Invossa.svg" alt="Invossa" width="124" height="31">
+            <div class="foot__row">
+              <div class="foot__info">
+                <p class="foot__copyright">© <span x-text="year"></span> All rights reserved</p>
+                <p class="foot__tagline">Proudly made in Europe</p>
+              </div>
+              <div class="foot__links">
+                <a href="#terms">Terms and conditions</a>
+                <a href="#privacy">Privacy policy</a>
+              </div>
+            </div>
+          </div>
+        </footer>
     </div>
   </div>
 

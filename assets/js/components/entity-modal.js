@@ -182,7 +182,7 @@
     var a = entity.address || {};
     var c = entity.contact || {};
     var name = (entity.name || '').trim();
-    var imgSrc = role === 'seller' ? 'assets/men-holding-papers.webp' : 'assets/image-men-holding-an-invoice.webp';
+    var imgSrc = role === 'seller' ? 'assets/img/invoice-stack.webp' : 'assets/img/invoice-stack-signed.webp';
     var imgAlt = role === 'seller' ? 'Seller details illustration' : 'Buyer details illustration';
     var emptyText = role === 'seller' ? 'Enter your business details' : 'Enter your customers details';
     var triggerAttr = 'data-' + role + '-modal-trigger';
@@ -271,6 +271,7 @@
     var countryInput = null;
     var ibanBlock = null;
     var hintRefs = { reg: null, vat: null, country: null, handler: null };
+    var lastTrigger = null;
 
     function cacheElements() {
       form = document.getElementById(role + '-form');
@@ -313,6 +314,7 @@
       if (!bottomSheet) return;
       if (!form) cacheElements();
       if (!form) return;
+      lastTrigger = document.activeElement;
       initSheetAlpine();
 
       var draft = window.__invioDraft;
@@ -435,6 +437,10 @@
       bottomSheet.close();
       var root = document.querySelector('.' + role + '-bottom-sheet');
       if (root) root.setAttribute('inert', '');
+      if (lastTrigger && typeof lastTrigger.focus === 'function') {
+        lastTrigger.focus();
+      }
+      lastTrigger = null;
     }
 
     function save() {

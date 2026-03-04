@@ -170,7 +170,13 @@
     if (!errors || !errors.length) return;
     var alertEl = document.getElementById('export-validation-alert');
     if (alertEl) {
-      alertEl.innerHTML = '<b>Missing required information</b><span>Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again.</span>';
+      var bold = document.createElement('b');
+      bold.textContent = 'Missing required information';
+      var span = document.createElement('span');
+      span.textContent = 'Fill in all mandatory fields, such as invoice number, seller and buyer details, item name on line 1, and at least one IBAN, then try again.';
+      alertEl.textContent = '';
+      alertEl.appendChild(bold);
+      alertEl.appendChild(span);
       alertEl.hidden = false;
       alertEl.removeAttribute('x-cloak');
     }

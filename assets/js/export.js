@@ -92,7 +92,7 @@
       }
       return { ok: false, errors: ['Could not save draft for export.'] };
     }
-    window.location.href = 'invoice-processing.html';
+    window.location.href = 'processing.html';
     return { ok: true };
   }
 
@@ -104,7 +104,7 @@
     if (!draftJson) {
       setStorage(STORAGE_KEY_STATE, 'ERROR');
       setStorage(STORAGE_KEY_ERROR, 'No invoice data. Start from the beginning.');
-      window.location.href = 'invoice-error.html';
+      window.location.href = 'error.html';
       return;
     }
     var draft;
@@ -113,7 +113,7 @@
     } catch (e) {
       setStorage(STORAGE_KEY_STATE, 'ERROR');
       setStorage(STORAGE_KEY_ERROR, 'Invalid saved data. Try again.');
-      window.location.href = 'invoice-error.html';
+      window.location.href = 'error.html';
       return;
     }
     if (window.InvioState && window.InvioState.normalizeDraft) {
@@ -127,7 +127,7 @@
       setStorage(STORAGE_KEY_INVOICE_NUMBER, invoiceNumber || '');
       setStorage(STORAGE_KEY_STATE, 'READY');
       setStorage(STORAGE_KEY_ERROR, null);
-      window.location.href = 'invoice-ready.html';
+      window.location.href = 'download.html';
     }
 
     function finishError(msg) {
@@ -135,7 +135,7 @@
       setStorage(STORAGE_KEY_ERROR, msg || 'Your invoice wasn\'t created. Try again.');
       setStorage(STORAGE_KEY_XML, null);
       setStorage(STORAGE_KEY_PDF_B64, null);
-      window.location.href = 'invoice-error.html';
+      window.location.href = 'error.html';
     }
 
     var computed;
@@ -279,15 +279,15 @@
   }
 
   var path = typeof window !== 'undefined' && window.location && window.location.pathname ? window.location.pathname : '';
-  if (path.indexOf('invoice-processing') !== -1) {
+  if (path.indexOf('processing') !== -1) {
     initProcessingPage();
-  } else if (path.indexOf('invoice-ready') !== -1) {
+  } else if (path.indexOf('download') !== -1) {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initReadyPage);
     } else {
       initReadyPage();
     }
-  } else if (path.indexOf('invoice-error') !== -1) {
+  } else if (path.indexOf('error') !== -1) {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initErrorPage);
     } else {
