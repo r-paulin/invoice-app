@@ -188,7 +188,7 @@
     var thickLine = pxToMm(2);
 
     // Top link.
-    drawLinkText('invossa.app', 'https://invossa.app', margin, pxToMm(10));
+    drawLinkText('Invoce', 'https://invoce.app', margin, pxToMm(10));
 
     // Header title block.
     y = pxToMm(36);
@@ -200,7 +200,7 @@
     doc.setFontSize(8.5);
     doc.setFont('helvetica', 'normal');
     setColor(COLOR_MUTED);
-    doc.text('Created by invossa.app', margin, y);
+    drawLinkText('Made with Invoce', 'https://invoce.app', margin, y);
 
     var logoSlotW = pxToMm(174);
     var logoSlotH = pxToMm(56);

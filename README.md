@@ -48,7 +48,7 @@ PEPPOL BIS Billing 3.0 compliant invoice generator built with Jekyll and vanilla
 
 Image paths are static (no fallback). Ensure these files exist in `assets/img/` so they load:
 
-- `Invossa.svg` (logo)
+- `Logotype.svg` (logo)
 - `laptop-invoices.webp` (header)
 - `invoice-stack.webp`, `invoice-stack-signed.webp` (Seller/Buyer cards)
 - `invoice-sparkle.webp` (Style / logo upload)

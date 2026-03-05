@@ -13,14 +13,14 @@
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free online invoice generator - Invossa</title>
+  <title>Free online invoice generator - Invoce</title>
   <meta name="description" content="Generate downloadable PDF invoices and compliant e-invoices directly in your browser with our free online invoice generator.">
   <meta name="keywords" content="invoice generator, online invoice maker, free invoice template, PDF invoice, e-invoice, billing software">
   <meta name="author" content="Invio">
   <meta name="robots" content="index, follow">
   <meta property="og:title" content="Free Online Invoice Generator">
   <meta property="og:description" content="Generate downloadable PDF invoices and compliant e-invoices directly in your browser with our free online invoice generator.">
-  <meta property="og:image" content="assets/img/Invossa.svg">
+  <meta property="og:image" content="assets/img/Logotype.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@
   <div class="page-surface">
      <header class="top">
         <div class="header-grid container">
-          <img class="logo header-grid__logo" src="assets/img/Invossa.svg" alt="Invossa app logo" width="120" height="auto" fetchpriority="high">
+          <img class="logo header-grid__logo" src="assets/img/Logotype.svg" alt="Invoce app logo" width="120" height="auto" fetchpriority="high">
           <div class="header-grid__lang lang-control" x-data="languageSwitcher()" x-init="init()" x-cloak>
             <div class="lang-switcher" x-ref="wrapper" role="group" aria-labelledby="lang-switcher-label">
               <span id="lang-switcher-label" class="visually-hidden">Language</span>
@@ -438,7 +438,9 @@
                         <th class="col-qty col-right" scope="col">Quantity</th>
                         <th class="col-price col-right" scope="col">Unit price <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
                         <th class="col-subtotal col-right" scope="col">Subtotal <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
-                        <th class="col-discount col-right" scope="col" x-show="showDiscount" x-cloak>Discount <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
+                        <th class="col-discount col-right" scope="col" :class="{ 'col-discount--visible': showDiscount }" :aria-hidden="String(!showDiscount)">
+                          <span class="col-discount__content">Discount <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></span>
+                        </th>
                         <th class="col-taxrate col-right" scope="col">Tax rate</th>
                         <th class="col-taxamt col-right" scope="col">Tax amount <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
                         <th class="col-total col-right" scope="col">Total <span class="th-currency" x-text="'(' + currencyCode + ')'"></span></th>
@@ -468,8 +470,10 @@
                           <td class="cell-subtotal cell-numeric cell-disabled">
                             <span class="cell-amount" x-text="fmt(getSubtotal(line))"></span>
                           </td>
-                          <td class="cell-discount cell-right" x-show="showDiscount" x-cloak>
-                            <input class="discount-input" type="text" inputmode="decimal" x-init="$el.value = fmt(line.discountAmount)" @focus="$el.value = line.discountAmount || ''" @blur="line.discountAmount = parseFloat($el.value) || 0; clampDiscount(line); $el.value = fmt(line.discountAmount)" @input="line.discountAmount = parseFloat($el.value) || 0" :aria-label="'Discount amount, line ' + (i + 1)">
+                          <td class="cell-discount cell-right" :class="{ 'col-discount--visible': showDiscount }" :aria-hidden="String(!showDiscount)">
+                            <span class="cell-discount__content">
+                              <input class="discount-input" type="text" inputmode="decimal" x-init="$el.value = fmt(line.discountAmount)" @focus="$el.value = line.discountAmount || ''" @blur="line.discountAmount = parseFloat($el.value) || 0; clampDiscount(line); $el.value = fmt(line.discountAmount)" @input="line.discountAmount = parseFloat($el.value) || 0" :aria-label="'Discount amount, line ' + (i + 1)">
+                            </span>
                           </td>
                           <td class="cell-taxrate cell-right">
                             <div class="taxrate-group">
@@ -504,7 +508,7 @@
                     <span>Subtotal</span>
                     <span class="sum-amount" x-text="fmtCurrency(summarySubtotal())"></span>
                   </div>
-                  <div class="sum-row" x-show="showDiscount && summaryDiscountTotal() > 0" x-cloak>
+                  <div class="sum-row" x-show="showDiscount && summaryDiscountTotal() > 0" x-cloak x-transition:enter="show-ease-enter" x-transition:enter-start="show-ease-enter-start" x-transition:enter-end="show-ease-enter-end" x-transition:leave="show-ease-leave" x-transition:leave-start="show-ease-leave-start" x-transition:leave-end="show-ease-leave-end">
                     <span>Discount</span>
                     <span class="sum-amount" x-text="'- ' + fmtCurrency(summaryDiscountTotal())"></span>
                   </div>
@@ -520,7 +524,7 @@
                   </div>
                 </div>
 
-                <div class="items-note" x-show="showNote" x-cloak>
+                <div class="items-note" x-show="showNote" x-cloak x-transition:enter="show-ease-enter" x-transition:enter-start="show-ease-enter-start" x-transition:enter-end="show-ease-enter-end" x-transition:leave="show-ease-leave" x-transition:leave-start="show-ease-leave-start" x-transition:leave-end="show-ease-leave-end">
                   <label for="invoice-note" class="form-label">Note</label>
                   <textarea id="invoice-note" class="note-textarea" placeholder="Add a note to this invoice" x-model="noteText" @input="syncNote()" aria-label="Invoice note"></textarea>
                 </div>
@@ -672,10 +676,10 @@
 
         <footer class="foot" x-data="{ year: new Date().getFullYear() }">
           <div class="foot__bg" aria-hidden="true">
-            <img src="assets/img/Invossa.svg" alt="" width="889" height="219" class="foot__bg-img">
+            <img src="assets/img/Logotype.svg" alt="" width="889" height="219" class="foot__bg-img">
           </div>
           <div class="foot__inner container">
-            <img class="foot__logo" src="assets/img/Invossa.svg" alt="Invossa" width="124" height="31">
+            <img class="foot__logo" src="assets/img/Logotype.svg" alt="Invoce" width="140" height="40">
             <div class="foot__row">
               <div class="foot__info">
                 <p class="foot__copyright">© <span x-text="year"></span> All rights reserved</p>
@@ -684,6 +688,7 @@
               <div class="foot__links">
                 <a href="#terms">Terms and conditions</a>
                 <a href="#privacy">Privacy policy</a>
+                <a href="#privacy">Send feedback</a>
               </div>
             </div>
           </div>
