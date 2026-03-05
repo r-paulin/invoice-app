@@ -182,6 +182,11 @@
   }
   window.clearExportValidationState = clearExportValidationState;
 
+  function formatErrorAsSentence(text) {
+    var t = (text || '').trim().replace(/\s*\.\s*$/, '');
+    return t ? t + '.' : '';
+  }
+
   window.onInvioExportValidationFailed = function (errors) {
     if (!errors || !errors.length) return;
     var alertEl = document.getElementById('export-validation-alert');
@@ -189,9 +194,10 @@
       var bold = document.createElement('b');
       bold.textContent = 'Missing required information';
       var span = document.createElement('span');
-      span.textContent = errors.length === 1
-        ? errors[0]
-        : 'Please fix the following: ' + errors.join(' ');
+      var formatted = errors.map(formatErrorAsSentence).filter(Boolean);
+      span.textContent = formatted.length === 1
+        ? formatted[0]
+        : 'Please fix the following: ' + formatted.join(' ');
       alertEl.textContent = '';
       alertEl.appendChild(bold);
       alertEl.appendChild(span);
@@ -210,13 +216,17 @@
     };
     Object.keys(fieldErrorMap).forEach(function (id) {
       var keyword = fieldErrorMap[id];
-      var hasError = errors.some(function (e) { return e.indexOf(keyword) !== -1; });
+      var matchingError = errors.filter(function (e) { return e.indexOf(keyword) !== -1; })[0];
+      var hasError = !!matchingError;
       var field = document.getElementById(id + '-field');
       var input = document.getElementById(id);
       var err = document.getElementById(id + '-error');
       if (field) field.classList.toggle('has-error', hasError);
       if (input) input.setAttribute('aria-invalid', String(hasError));
-      if (err) { err.hidden = !hasError; err.textContent = ''; }
+      if (err) {
+        err.hidden = !hasError;
+        err.textContent = hasError ? formatErrorAsSentence(matchingError) : '';
+      }
     });
     if (alertEl) alertEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };

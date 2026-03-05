@@ -202,8 +202,8 @@
     setColor(COLOR_MUTED);
     drawLinkText('Made with Invoce', 'https://invoce.app', margin, y);
 
-    var logoSlotW = pxToMm(174);
-    var logoSlotH = pxToMm(56);
+    var logoSlotW = pxToMm(140);
+    var logoSlotH = pxToMm(80);
     var logoSlotX = pageW - margin - logoSlotW;
     var logoSlotY = pxToMm(24);
     drawLogoSlot(logoSlotX, logoSlotY, logoSlotW, logoSlotH);

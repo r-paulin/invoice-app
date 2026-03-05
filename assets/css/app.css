@@ -31,20 +31,21 @@
   --color-surface: var(--white);
   --color-border: var(--grey-200);
   --color-border-hover: var(--grey-300);
-  --color-border-focus: #FB8B24;
+  --color-border-focus: var(--focus-outline-color);
   --color-error: var(--red-800);
   --color-error-border: var(--red-700);
   --color-disabled-bg: var(--grey-50);
   --color-disabled-text: var(--grey-500);
 
   /* Invoice style (overridden by settings) */
-  --invoice-accent-color: #008236;
+  --invoice-accent-color: var(--green-700);
 
   /* Focus outline (keyboard-only, high-contrast) */
   --focus-outline-color: #FB8B24;
   --focus-outline-offset: 0.1rem;
   --focus-outline-style: solid;
   --focus-outline-width: 2px;
+  --focus-ring-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
 
   --radius-input: 0.25rem;
   --radius-md: 0.5rem;
@@ -56,8 +57,6 @@
   --space-sm: 0.375rem;
   --space-md: 0.5rem;
   --space-lg: 0.75rem;
-  --space-xl: 1rem;
-  --space-2xl: 1.25rem;
 
   --font-size-label: 1rem;
   --font-size-value: 1rem;
@@ -75,19 +74,18 @@
   --btn-min-width: 5.625rem;
   --btn-radius: 0.25rem;
   --btn-border-width: 0.0625rem;
-  --btn-gap: 0.5rem;
+  --btn-gap: var(--space-md);
   --btn-padding-y: 0.75rem;
   --btn-padding-x: 0.75rem;
   --btn-padding-icon-start: 0.625rem;
   --btn-padding-icon-end: 0.625rem;
   --btn-icon-size: 1.5em;
   --btn-shadow: 0 0.0625rem 0.125rem rgba(18, 18, 23, 0.05);
-  --btn-focus-ring: 0 0 0 0.125rem rgba(251, 139, 36, 0.2);
   --btn-active-scale: 0.975;
 
   --btn-primary-bg: var(--green-700);
   --btn-primary-border: var(--green-800);
-  --btn-primary-text: #fafaf9;
+  --btn-primary-text: var(--grey-50);
   --btn-primary-hover-bg: var(--green-800);
   --btn-primary-hover-border: var(--green-900);
 
@@ -105,7 +103,7 @@
 
   --btn-danger-bg: var(--red-200);
   --btn-danger-border: var(--red-800);
-  --btn-danger-text: #fafaf9;
+  --btn-danger-text: var(--grey-50);
   --btn-danger-hover-bg: var(--red-800);
   --btn-danger-hover-border: var(--red-900);
 
@@ -303,7 +301,7 @@ h3{
 
 .lang-switcher:focus-within {
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
+  box-shadow: var(--focus-ring-shadow);
 }
 
 .lang-switcher-sizer {
@@ -397,7 +395,7 @@ h3{
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-0.5rem);
+    transform: translateY(-var(--space-md));
   }
 }
 
@@ -430,7 +428,7 @@ h3{
   font-optical-sizing: auto;
   letter-spacing: -2px;
   line-height: 1.1;
-  margin: 0 0 0.75rem;
+  margin: 0 0 var(--space-lg);
   max-width: 42.5rem;
   text-align: left;
 }
@@ -449,7 +447,7 @@ h3{
 .tabs {
   align-items: flex-end;
   display: flex;
-  gap: 0.25rem;
+  gap: var(--space-xs);
   margin-top: 1.5rem;
   overflow-x: auto;
   padding: 0;
@@ -467,7 +465,7 @@ h3{
   cursor: pointer;
   display: inline-flex;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-weight: 500;
   gap: var(--btn-gap);
   justify-content: center;
@@ -533,7 +531,7 @@ h3{
 .btn--sm {
   min-height: 2rem;
   min-width: 0;
-  padding: 0.375rem 0.625rem;
+  padding: var(--space-sm) var(--btn-padding-icon-start);
 }
 
 .btn--pill {
@@ -599,7 +597,7 @@ h3{
   color: var(--grey-500);
   min-height: 3.125rem;
   min-width: 0;
-  padding: 0.75rem;
+  padding: var(--space-lg);
 }
 
 .btn--tab:hover:not(:disabled):not([aria-disabled="true"]) {
@@ -654,25 +652,45 @@ h3{
 .section-content {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-lg);
   min-width: 0;
 }
 
-.style-logo-card-prompt {
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.5;
-  color: var(--color-text);
-  margin: 0;
-  text-align: center;
+.style-logo-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5em;
+  padding: 1.5em 0;
 }
 
-.style-logo-preview-box {
-  width: 174px;
-  height: 56px;
+.style-logo-container {
+  width: 140px;
+  height: 80px;
   border-radius: var(--radius-input);
   overflow: hidden;
   background: var(--grey-100);
+  flex-shrink: 0;
+}
+
+.style-logo-container--placeholder {
+  cursor: pointer;
+}
+
+.style-logo-placeholder-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.style-logo-preview-box {
+  width: 140px;
+  height: 80px;
+  border: 1px solid var(--grey-300);
+  background: var(--white);
+  border-radius: var(--radius-input);
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -680,23 +698,68 @@ h3{
 
 .style-logo-preview-box img {
   display: block;
-  width: 174px;
-  height: 56px;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
+  object-position: center;
 }
 
-.style-logo-filename {
-  font-size: 1rem;
+.style-logo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  min-width: 0;
+  flex: 1 1 0;
+}
+
+.style-logo-content .field-helper {
+  margin-top: 0;
+  padding-bottom: var(--space-lg);
+}
+
+.style-logo-content .btn,
+.style-logo-actions .btn {
+  align-self: flex-start;
+}
+
+.style-logo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  margin-top: 0.25em;
+}
+
+.style-logo-card-prompt {
+  font-size: var(--font-size-value);
+  font-weight: 600;
   line-height: 1.5;
   color: var(--color-text);
   margin: 0;
-  font-weight: 400;
+}
+
+.style-logo-filename {
+  font-size: var(--font-size-value);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-text);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .style-logo-row.card {
+    flex-direction: column;
+  }
 }
 
 .style-accent-row {
   display: flex;
   align-items: flex-end;
-  gap: 0.75rem;
+  gap: var(--space-lg);
 }
 
 .style-accent-hex-input {
@@ -729,7 +792,7 @@ h3{
 .buyer-summary {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-md);
   padding: 0;
 }
 
@@ -739,12 +802,12 @@ h3{
   font-weight: 600;
   line-height: 1.25;
   color: var(--grey-800);
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 var(--space-xs) 0;
 }
 
 .seller-summary__text,
 .buyer-summary__text {
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   line-height: 1.5;
   color: var(--grey-800);
   margin: 0;
@@ -753,7 +816,7 @@ h3{
 .seller-summary__edit,
 .buyer-summary__edit {
   align-self: flex-start;
-  margin-top: 0.5rem;
+  margin-top: var(--space-md);
 }
 
 .field {
@@ -776,16 +839,16 @@ h3{
 input {
   background: var(--white);
   border: 1px solid var(--grey-200);
-  border-radius: 0.25rem;
-  box-shadow: 0 0.0625rem 0.125rem rgba(18, 18, 23, 0.05);
+  border-radius: var(--radius-input);
+  box-shadow: var(--shadow-input);
   color: var(--grey-800);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-weight: 400;
   letter-spacing: -0.0125em;
   line-height: 1.5;
   outline: none;
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-md) var(--space-lg);
 }
 
 input::placeholder {
@@ -987,7 +1050,7 @@ input::placeholder {
 .form-field.is-focused .form-select,
 .form-field.is-focused .form-textarea {
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
+  box-shadow: var(--focus-ring-shadow);
 }
 
 .form-field.has-error .form-control,
@@ -1026,13 +1089,13 @@ input::placeholder {
 .date-updating {
   align-items: center;
   background: var(--white);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-input);
   color: var(--grey-500);
   display: flex;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   inset: 0;
   justify-content: flex-start;
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-md) var(--space-lg);
   pointer-events: none;
   position: absolute;
 }
@@ -1045,19 +1108,27 @@ input::placeholder {
   align-items: center;
   background: var(--white);
   border: 1px solid var(--grey-200);
-  border-radius: 0.25rem;
-  box-shadow: 0 0.0625rem 0.125rem rgba(18, 18, 23, 0.05);
+  border-radius: var(--radius-input);
+  box-shadow: var(--shadow-input);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-lg);
   justify-content: center;
   min-height: 7.75rem;
-  padding: 0.75rem 0.75rem 2rem 0.75rem;
+  padding: var(--space-lg) var(--space-lg) 2rem var(--space-lg);
 }
 
+.style-logo-row.card {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1.5em;
+  padding: 1.5em var(--space-lg) 1.5em var(--space-lg);
+  min-height: 0;
+  justify-content: flex-start;
+}
 
 .card p {
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-weight: 600;
   line-height: 1.5;
   margin: 0;
@@ -1065,12 +1136,13 @@ input::placeholder {
 }
 
 .card.card--error {
-  border-color: var(--color-error-border, var(--red-700));
+  border-color: var(--color-error-border);
   border-width: 2px;
+  background-color: var(--red-50);
 }
 
 .card.card--error .btn {
-  background-color: var(--red-700, #c70036);
+  background-color: var(--red-700);
   border: 1px solid var(--white);
   color: var(--white);
   box-shadow: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.1);
@@ -1083,7 +1155,7 @@ input::placeholder {
 
 .card.card--error .btn:hover,
 .card.card--error .btn:focus {
-  background-color: var(--red-800, #a50036);
+  background-color: var(--red-800);
   border-color: var(--white);
   color: var(--white);
 }
@@ -1101,12 +1173,12 @@ input::placeholder {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-md);
 }
 
 .chips-title {
   color: var(--grey-500);
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-weight: 400;
   letter-spacing: -0.0125em;
 }
@@ -1119,7 +1191,7 @@ input::placeholder {
   display: inline-flex;
   font-family: inherit;
   min-height: 2.25rem;
-  padding: 0.375rem 0.75rem;
+  padding: var(--space-sm) var(--space-lg);
   transition: background-color 0.2s ease-out, border-color 0.2s ease-out, color 0.2s ease-out;
 }
 
@@ -1129,8 +1201,8 @@ input::placeholder {
 }
 
 .chip-toggle:focus-visible {
-  outline: 2px solid #FB8B24;
-  outline-offset: 0.1rem;
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
 }
 
 .chip-inactive {
@@ -1145,10 +1217,10 @@ input::placeholder {
 
 .chip-inactive .chip-label {
   color: var(--grey-800);
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-weight: 600;
   line-height: 1.5;
-  padding: 0 0.25rem;
+  padding: 0 var(--space-xs);
 }
 
 .chip-active {
@@ -1163,10 +1235,10 @@ input::placeholder {
 
 .chip-active .chip-label {
   color: white;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-weight: 600;
   line-height: 1.5;
-  padding: 0 0.25rem;
+  padding: 0 var(--space-xs);
 }
 
 /* Ease-out transition for elements shown by chip toggles (Discount column, Note) */
@@ -1200,7 +1272,7 @@ input::placeholder {
 .items-table {
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   width: 100%;
 }
 
@@ -1208,7 +1280,7 @@ input::placeholder {
   background: transparent;
   border: none;
   color: var(--grey-800);
-  font-size: 0.875rem;
+  font-size: var(--font-size-help);
   font-weight: 600;
   line-height: 1.4;
   padding: 0.4em 0.2em;
@@ -1300,7 +1372,7 @@ input::placeholder {
   background: var(--white);
   border: none;
   border-bottom: 1px solid var(--grey-300);
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   line-height: 1.5;
   padding: 0.25em 0.5em 0.25em 0.25em;
   vertical-align: middle;
@@ -1311,7 +1383,7 @@ input::placeholder {
 .items-table .cell-actions {
   background: transparent;
   border: none;
-  padding: 0.25rem;
+  padding: var(--space-xs);
   text-align: center;
   vertical-align: middle;
 }
@@ -1322,7 +1394,7 @@ input::placeholder {
 
 /* Cell focus: highlight entire cell when input inside is focused */
 .items-table tbody td:focus-within {
-  box-shadow: inset 0 0 0 2px #FB8B24;
+  box-shadow: inset 0 0 0 var(--focus-outline-width) var(--focus-outline-color);
 }
 
 /* Disabled / read-only cells */
@@ -1361,7 +1433,7 @@ input::placeholder {
   color: var(--grey-800);
   field-sizing: content;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   letter-spacing: -0.0125em;
   line-height: 1.5;
   max-height: 10lh;
@@ -1396,7 +1468,7 @@ input::placeholder {
 .qty-group {
   align-items: center;
   display: flex;
-  gap: 0.25rem;
+  gap: var(--space-xs);
   justify-content: flex-end;
   position: relative;
 }
@@ -1409,7 +1481,7 @@ input::placeholder {
   box-shadow: none;
   color: var(--grey-800);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-variant-numeric: tabular-nums;
   min-height: 1.5rem;
   outline: none;
@@ -1433,7 +1505,7 @@ input::placeholder {
   color: var(--grey-500);
   cursor: pointer;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   min-height: 1.5rem;
   outline: none;
   padding: 0 1.25rem 0 0;
@@ -1465,7 +1537,7 @@ input::placeholder {
   box-shadow: none;
   color: var(--grey-800);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-variant-numeric: tabular-nums;
   min-height: 1.5rem;
   outline: none;
@@ -1488,7 +1560,7 @@ input::placeholder {
   box-shadow: none;
   color: var(--grey-800);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-variant-numeric: tabular-nums;
   min-height: 1.5rem;
   outline: none;
@@ -1514,7 +1586,7 @@ input::placeholder {
   box-shadow: none;
   color: var(--grey-800);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-variant-numeric: tabular-nums;
   min-height: 1.5rem;
   outline: none;
@@ -1531,7 +1603,7 @@ input::placeholder {
 
 .taxrate-symbol {
   color: var(--grey-500);
-  font-size: 1rem;
+  font-size: var(--font-size-value);
 }
 
 /* --- Remove button --- */
@@ -1541,7 +1613,7 @@ input::placeholder {
   background: var(--white);
   border: 1px solid var(--grey-200);
   border-radius: 3rem;
-  box-shadow: 0 0.0625rem 0.125rem rgba(18, 18, 23, 0.05);
+  box-shadow: var(--shadow-input);
   color: var(--green-700);
   cursor: pointer;
   display: inline-flex;
@@ -1549,7 +1621,7 @@ input::placeholder {
   justify-content: center;
   min-height: 2rem;
   min-width: 2rem;
-  padding: 0.375rem;
+  padding: var(--space-sm);
 }
 
 .line-remove-btn:hover {
@@ -1565,8 +1637,8 @@ input::placeholder {
 }
 
 .line-remove-btn:focus-visible {
-  outline: 2px solid #FB8B24;
-  outline-offset: 0.1rem;
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
 }
 
 /* --- Summary --- */
@@ -1580,11 +1652,11 @@ input::placeholder {
 .sum-row {
   color: var(--grey-800);
   display: flex;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   gap: 1rem;
   justify-content: flex-end;
   line-height: 1.5;
-  padding: 0.25rem 0.5rem;
+  padding: var(--space-xs) var(--space-md);
 }
 
 .sum-amount {
@@ -1626,7 +1698,7 @@ input::placeholder {
   color: var(--grey-800);
   field-sizing: content;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   line-height: 1.5;
   min-height: 4.5lh;
   outline: none;
@@ -1637,7 +1709,7 @@ input::placeholder {
 
 .note-textarea:focus {
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
+  box-shadow: var(--focus-ring-shadow);
 }
 
 .note-textarea::placeholder {
@@ -1650,7 +1722,7 @@ input::placeholder {
 
 .note-display-text {
   color: var(--grey-700);
-  font-size: 0.875rem;
+  font-size: var(--font-size-help);
   line-height: 1.4;
   margin: 0;
   white-space: pre-wrap;
@@ -1714,7 +1786,7 @@ input::placeholder {
   gap: 1rem;
   padding: 0 1.5rem;
   font-family: 'Source Sans 3', sans-serif;
-  font-size: 0.875rem;
+  font-size: var(--font-size-help);
   font-weight: 500;
   line-height: 1.4;
 }
@@ -1737,28 +1809,28 @@ input::placeholder {
 .foot__info {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-md);
 }
 
 .foot__copyright {
-  color: var(--grey-700, #44403b);
+  color: var(--grey-700);
   margin: 0;
 }
 
 .foot__tagline {
-  color: var(--grey-500, #79716b);
+  color: var(--grey-500);
   margin: 0;
 }
 
 .foot__links {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-md);
   align-items: flex-start;
 }
 
 .foot__links a {
-  color: var(--green-700, #008236);
+  color: var(--green-700);
   font-weight: 500;
   text-decoration: none;
 }
@@ -1770,7 +1842,7 @@ input::placeholder {
 }
 
 .foot__links a:focus-visible {
-  outline: 2px solid var(--focus-outline-color, var(--green-700));
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
   outline-offset: 2px;
 }
 
@@ -1871,8 +1943,8 @@ input::placeholder {
 .buyer-modal-header {
   align-items: flex-end;
   display: flex;
-  gap: 0.75rem;
-  padding: 1.5rem 1.5rem 0.75rem 1.5rem;
+  gap: var(--space-lg);
+  padding: 1.5rem 1.5rem var(--space-lg) 1.5rem;
   background: var(--white);
 }
 
@@ -1892,7 +1964,7 @@ input::placeholder {
   border-radius: 50%;
   flex-shrink: 0;
   min-width: 2.5rem;
-  padding: 0.5rem;
+  padding: var(--space-md);
   width: 2.5rem;
   color: var(--grey-800);
 }
@@ -1905,7 +1977,7 @@ input::placeholder {
 .seller-modal-tabs,
 .buyer-modal-tabs {
   display: flex;
-  gap: 0.25rem;
+  gap: var(--space-xs);
   padding: 0 1rem 0 1rem;
   background: var(--white);
 }
@@ -1919,7 +1991,7 @@ input::placeholder {
   min-height: 3.125rem;
   min-width: 0;
   line-height: 1.5;
-  padding: 0.75rem;
+  padding: var(--space-lg);
   position: relative;
 }
 
@@ -1962,12 +2034,12 @@ input::placeholder {
 
 .form-field.is-focused .country-select-wrapper {
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
+  box-shadow: var(--focus-ring-shadow);
 }
 
 .country-select-wrapper:focus-within {
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
+  box-shadow: var(--focus-ring-shadow);
 }
 
 .country-select-display {
@@ -2055,7 +2127,7 @@ input::placeholder {
 
 .phone-input-row {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-lg);
   min-width: 0;
 }
 
@@ -2079,7 +2151,7 @@ input::placeholder {
 
 .form-field.is-focused .phone-country-box {
   border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 0.125rem rgba(251, 139, 36, 0.15);
+  box-shadow: var(--focus-ring-shadow);
 }
 
 /* When closed: flag (flag-icons) + dial code. Native select overlaid for dropdown. */
@@ -2117,7 +2189,7 @@ input::placeholder {
   box-shadow: none;
   color: transparent;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   height: 100%;
   min-height: 2.5rem;
   min-width: 0;
@@ -2184,7 +2256,7 @@ input::placeholder {
   border: 1px solid var(--red-800);
   color: var(--red-800);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-weight: 500;
   line-height: 1.5;
   letter-spacing: -0.01em;
@@ -2254,7 +2326,7 @@ input::placeholder {
 .buyer-modal-section {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 0.75rem;
+  gap: var(--space-lg);
   padding: 1rem;
   align-items: flex-start;
 }
@@ -2284,12 +2356,12 @@ input::placeholder {
 .buyer-section-fields .field {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: var(--space-sm);
 }
 
 .seller-section-fields .field span,
 .buyer-section-fields .field span {
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-weight: 600;
   line-height: 1.5;
   color: var(--grey-800);
@@ -2299,10 +2371,10 @@ input::placeholder {
 .buyer-section-fields .field input:not(.form-control) {
   background: var(--white);
   border: 1px solid var(--grey-200);
-  border-radius: 0.25rem;
-  box-shadow: 0 0.0625rem 0.125rem rgba(18, 18, 23, 0.05);
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
+  border-radius: var(--radius-input);
+  box-shadow: var(--shadow-input);
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--font-size-value);
   line-height: 1.5;
   color: var(--grey-800);
   font-family: inherit;
@@ -2343,9 +2415,9 @@ input::placeholder {
 
 .seller-form .payment-means legend,
 .buyer-form .payment-means legend {
-  font-size: 1rem;
+  font-size: var(--font-size-value);
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-md);
 }
 
 .seller-form .radio-label,
@@ -2353,8 +2425,8 @@ input::placeholder {
   align-items: center;
   display: flex;
   font-weight: 400;
-  gap: 0.5rem;
-  margin-bottom: 0.375rem;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
 .seller-payment-add-wrap,
@@ -2394,9 +2466,9 @@ input::placeholder {
   position: absolute;
   top: 100%;
   left: 0;
-  margin-top: 0.25rem;
-  padding: 0.375rem 0.5rem;
-  font-size: 0.875rem;
+  margin-top: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-help);
   line-height: 1.4;
   color: var(--grey-800);
   background: var(--grey-100);
@@ -2414,7 +2486,7 @@ input::placeholder {
     top: anchor(bottom);
     left: anchor(center);
     translate: -50% 0;
-    margin-top: 0.25rem;
+    margin-top: var(--space-xs);
   }
 }
 
@@ -2428,14 +2500,14 @@ input::placeholder {
 .buyer-form .iban-block {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-lg);
 }
 
 .seller-form .iban-item,
 .buyer-form .iban-item {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-lg);
 }
 
 .seller-form .iban-item .field-helper,
@@ -2448,7 +2520,7 @@ input::placeholder {
 .buyer-form .iban-item .iban-row-actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-md);
   flex-wrap: wrap;
 }
 
@@ -2457,7 +2529,7 @@ input::placeholder {
   background: var(--white);
   border-top: 1px solid var(--grey-200);
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-lg);
   justify-content: flex-end;
   padding: 1rem;
   flex-shrink: 0;
@@ -2468,7 +2540,7 @@ input::placeholder {
 @media (min-width: 768px) {
   .seller-modal-tabs,
   .buyer-modal-tabs {
-    padding: 0 0.75rem 0 1.5rem;
+    padding: 0 var(--space-lg) 0 1.5rem;
     border-bottom: 1px solid var(--grey-300);
   }
 
@@ -2534,7 +2606,7 @@ input::placeholder {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--grey-100, #f5f5f4);
+  background: var(--grey-100);
 }
 
 .export-main {
@@ -2597,7 +2669,7 @@ input::placeholder {
   font-size: 2.875rem;
   line-height: 1.1;
   letter-spacing: -0.0625em;
-  color: var(--grey-800, #292524);
+  color: var(--grey-800);
   margin: 0;
 }
 
@@ -2631,7 +2703,7 @@ input::placeholder {
   font-size: 1.25rem;
   line-height: 1.5;
   letter-spacing: -0.2px;
-  color: var(--grey-800, #292524);
+  color: var(--grey-800);
   margin: 0;
 }
 
@@ -2641,7 +2713,7 @@ input::placeholder {
   font-size: 1.25rem;
   line-height: 1.5;
   letter-spacing: -0.2px;
-  color: var(--grey-800, #292524);
+  color: var(--grey-800);
   margin: 0;
   padding: 0;
 }
@@ -2649,7 +2721,7 @@ input::placeholder {
 .export-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-lg);
   justify-content: center;
   padding: 1.5rem 0;
 }
@@ -2662,7 +2734,7 @@ input::placeholder {
   margin-top: 1.5rem;
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: var(--grey-700, #44403b);
+  color: var(--grey-700);
 }
 
 .export-validation-hint a {
@@ -2684,11 +2756,11 @@ input::placeholder {
 .export-validation-alert {
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: var(--color-error, var(--red-800));
-  background: var(--red-50, #fff1f2);
-  border: 1px solid var(--color-error-border, var(--red-700));
+  color: var(--color-error);
+  background: var(--red-50);
+  border: 1px solid var(--color-error-border);
   border-radius: var(--radius-input);
-  padding: 0.75rem 1rem;
+  padding: var(--space-lg) 1rem;
   margin: 1em;
   width: auto;
 }
@@ -2696,7 +2768,7 @@ input::placeholder {
 .export-validation-alert b {
   display: block;
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--space-xs);
 }
 
 .export-validation-alert span {

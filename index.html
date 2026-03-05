@@ -13,6 +13,12 @@
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="assets/img/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="shortcut icon" href="assets/img/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="Invoce">
+  <link rel="manifest" href="assets/img/site.webmanifest">
   <title>Free online invoice generator - Invoce</title>
   <meta name="description" content="Generate downloadable PDF invoices and compliant e-invoices directly in your browser with our free online invoice generator.">
   <meta name="keywords" content="invoice generator, online invoice maker, free invoice template, PDF invoice, e-invoice, billing software">
@@ -638,26 +644,34 @@
                   <input type="file" accept="image/*" id="invoice-logo-input" class="visually-hidden" x-ref="logoInput" aria-describedby="invoice-logo-help invoice-logo-error" @change="onLogoFileChange($event)">
                   <span class="field-error form-error" id="invoice-logo-error" role="alert" aria-live="polite" x-show="logoError" x-cloak x-text="logoError"></span>
 
-                  <div class="card" x-show="!$store.settings.logo" x-cloak @dragover.prevent @drop.prevent="onLogoDrop($event)">
-                    <img src="assets/img/invoice-sparkle.webp" alt="Logo upload illustration" class="card-image" width="248" height="auto">
-                    <p class="style-logo-card-prompt">Click to choose a file or drag here</p>
-                    <small class="field-helper form-help" id="invoice-logo-help">Upload a PNG or JPEG logo (optimised for 174 × 56 px, max 1 MB)</small>
-                    <button type="button" class="btn btn--primary btn--icon-left" id="invoice-logo-trigger" aria-labelledby="invoice-logo-label" @click="$refs.logoInput.click()">
-                      <span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span>
-                      <span class="btn__label">Choose file</span>
-                    </button>
+                  <div class="style-logo-row" x-show="!$store.settings.logo" x-cloak @dragover.prevent @drop.prevent="onLogoDrop($event)">
+                    <div class="style-logo-container style-logo-container--placeholder" @click="$refs.logoInput.click()">
+                      <img src="assets/img/invoice-sparkle.webp" alt="" class="style-logo-placeholder-img" width="140" height="80">
+                    </div>
+                    <div class="style-logo-content">
+                      <p class="style-logo-card-prompt">Choose invoice logo</p>
+                      <small class="field-helper form-help" id="invoice-logo-help">Upload a PNG or JPEG logo (optimised for 140 × 80 px, max 1 MB)</small>
+                      <button type="button" class="btn btn--primary btn--icon-left" id="invoice-logo-trigger" aria-labelledby="invoice-logo-label" @click="$refs.logoInput.click()">
+                        <span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span>
+                        <span class="btn__label">Select image</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <div class="card" x-show="$store.settings.logo" x-cloak>
-                    <div class="style-logo-preview-box" aria-hidden="true">
-                      <img :src="$store.settings.logo" alt="" width="174" height="56">
+                  <div class="style-logo-row" x-show="$store.settings.logo" x-cloak>
+                    <div class="style-logo-container style-logo-preview-box" aria-hidden="true">
+                      <img :src="$store.settings.logo" alt="">
                     </div>
-                    <p class="style-logo-filename" x-text="logoFileName || 'Logo uploaded'"></p>
-                    <small class="field-helper form-help">Upload a PNG or JPEG logo (optimised for 174 × 56 px, max 1 MB)</small>
-                    <button type="button" class="btn btn--danger btn--icon-left" aria-label="Remove logo" @click="removeLogo()">
-                      <span class="material-symbols-rounded btn__icon" aria-hidden="true">delete</span>
-                      <span class="btn__label">Remove</span>
-                    </button>
+                    <div class="style-logo-content">
+                      <p class="style-logo-filename" x-text="logoFileName || 'Logo uploaded'" :title="logoFileName || ''"></p>
+                      <small class="field-helper form-help">Upload a PNG or JPEG logo (optimised for 140 × 80 px, max 1 MB)</small>
+                      <div class="style-logo-actions">
+                        <button type="button" class="btn btn--danger btn--icon-left" aria-label="Remove logo" @click="removeLogo()">
+                          <span class="material-symbols-rounded btn__icon" aria-hidden="true">delete</span>
+                          <span class="btn__label">Remove</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="form-group form-field">

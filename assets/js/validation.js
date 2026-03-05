@@ -253,45 +253,47 @@ function validateDraft(draft) {
   const payment = draft.payment || {};
 
   // BT-1
-  if (!nonEmpty(h.invoiceNumber)) errors.push('Invoice number (BT-1) is required');
+  if (!nonEmpty(h.invoiceNumber)) errors.push('Invoice number is required');
   // BT-2
-  if (!validIsoDate(h.issueDate)) errors.push('Invoice date (BT-2) must be a valid ISO date (YYYY-MM-DD)');
+  if (!validIsoDate(h.issueDate)) errors.push('Invoice date must be a valid ISO date (YYYY-MM-DD)');
   // BT-3
-  if (!nonEmpty(h.typeCode)) errors.push('Invoice type code (BT-3) is required');
-  // BT-5: currency must be from allowed ISO 4217 list
+  if (!nonEmpty(h.typeCode)) errors.push('Invoice type code is required');
+  // BT-5
   const currencyCode = (h.currencyCode || '').trim().toUpperCase();
   if (!currencyCode) {
-    errors.push('Currency code (BT-5) is required');
+    errors.push('Currency code is required');
   } else if (!ALLOWED_CURRENCY_CODES.includes(currencyCode)) {
-    errors.push('Currency code (BT-5) must be a valid ISO 4217 code from the allowed list');
+    errors.push('Currency code must be a valid ISO 4217 code from the allowed list');
   }
 
-  // Seller BT-27, BG-5, BT-40 (country: ISO 3166-1 alpha-2)
-  if (!nonEmpty(seller.name)) errors.push('Seller name (BT-27) is required');
+  // Seller
+  if (!nonEmpty(seller.name)) errors.push('Seller name is required');
   if (!nonEmpty(addrS.city)) errors.push('Seller city is required');
   const sellerCountry = (addrS.countryCode || '').trim().toUpperCase();
-  if (!sellerCountry) errors.push('Seller country (BT-40) is required');
-  else if (sellerCountry.length !== 2) errors.push('Seller country (BT-40) must be a 2-letter ISO 3166-1 code');
+  if (!sellerCountry) errors.push('Seller country is required');
+  else if (sellerCountry.length !== 2) errors.push('Seller country must be a 2-letter ISO 3166-1 code');
 
-  // Buyer BT-44, BG-8, BT-55 (country: ISO 3166-1 alpha-2)
-  if (!nonEmpty(buyer.name)) errors.push('Buyer name (BT-44) is required');
+  // Buyer
+  if (!nonEmpty(buyer.name)) errors.push('Buyer name is required');
   if (!nonEmpty(addrB.city)) errors.push('Buyer city is required');
   const buyerCountry = (addrB.countryCode || '').trim().toUpperCase();
-  if (!buyerCountry) errors.push('Buyer country (BT-55) is required');
-  else if (buyerCountry.length !== 2) errors.push('Buyer country (BT-55) must be a 2-letter ISO 3166-1 code');
+  if (!buyerCountry) errors.push('Buyer country is required');
+  else if (buyerCountry.length !== 2) errors.push('Buyer country must be a 2-letter ISO 3166-1 code');
 
-  // At least one line (BG-25)
-  if (!lines.length) errors.push('At least one invoice line (BG-25) is required');
+  // At least one line with item name
+  var hasLineItemError = !lines.length || lines.some(function (line) { return !nonEmpty(line.itemName); });
+  if (hasLineItemError) errors.push('At least one Service or Product is required');
 
   lines.forEach((line, i) => {
     const idx = i + 1;
-    if (!nonEmpty(line.itemName)) errors.push(`Line ${idx}: Item name (BT-153) is required`);
-    const q = Number(line.quantity);
-    if (isNaN(q) || q <= 0) errors.push(`Line ${idx}: Quantity (BT-129) must be greater than 0`);
-    if (!validUnitCode(line.unitCode)) errors.push(`Line ${idx}: Unit code (BT-130) must be a valid UN/ECE code (e.g. C62, DAY)`);
-    const p = Number(line.netPrice);
-    if (isNaN(p) || p < 0) errors.push(`Line ${idx}: Net price (BT-146) must be a non-negative number`);
-    if (!validVatCategory(line.vatCategoryCode)) errors.push(`Line ${idx}: VAT category code (BT-151) is required and must be one of: ${VAT_CATEGORY_CODES.join(', ')}`);
+    if (nonEmpty(line.itemName)) {
+      const q = Number(line.quantity);
+      if (isNaN(q) || q <= 0) errors.push(`Line ${idx}: Quantity must be greater than 0`);
+      if (!validUnitCode(line.unitCode)) errors.push(`Line ${idx}: Unit code must be a valid UN/ECE code (e.g. C62, DAY)`);
+      const p = Number(line.netPrice);
+      if (isNaN(p) || p < 0) errors.push(`Line ${idx}: Net price must be a non-negative number`);
+      if (!validVatCategory(line.vatCategoryCode)) errors.push(`Line ${idx}: VAT category code is required and must be one of: ${VAT_CATEGORY_CODES.join(', ')}`);
+    }
   });
 
   if (seller.contact && seller.contact.email && !validEmail(seller.contact.email)) {
@@ -308,21 +310,24 @@ function validateDraft(draft) {
     if (accounts.length) {
       accounts.forEach(function (acc, i) {
         if (nonEmpty(acc.accountId) && !validIban(acc.accountId)) {
-          errors.push('IBAN (BT-84) #' + (i + 1) + ' must be a valid IBAN');
+          errors.push('IBAN #' + (i + 1) + ' must be a valid IBAN');
         }
       });
       if (accounts.every(function (acc) { return !nonEmpty(acc.accountId); })) {
         errors.push('At least one bank account (IBAN) is required for credit transfer');
       }
     } else if (nonEmpty(payment.accountId) && !validIban(payment.accountId)) {
-      errors.push('IBAN (BT-84) must be a valid IBAN when payment is by credit transfer');
+      errors.push('IBAN must be a valid IBAN when payment is by credit transfer');
     } else if (!nonEmpty(payment.accountId)) {
       errors.push('At least one bank account (IBAN) is required for credit transfer');
     }
   }
 
   // Due date if present
-  if (h.dueDate && !validIsoDate(h.dueDate)) errors.push('Due date (BT-9) must be a valid ISO date');
+  if (h.dueDate && !validIsoDate(h.dueDate)) errors.push('Due date must be a valid ISO date');
+
+  // Payment reference
+  if (!nonEmpty(payment.paymentId)) errors.push('Payment reference is required');
 
   return {
     valid: errors.length === 0,
@@ -341,15 +346,15 @@ function validateForExport(draft) {
   const errors = [];
   const h = draft.header || {};
 
-  // Peppol BIS 3.0: ProfileID (BT-23) mandatory, format urn:fdc:peppol.eu:2017:poacc:billing:NN:1.0
+  // Peppol BIS 3.0: ProfileID mandatory
   const profileId = (h.profileId || '').trim();
-  if (!profileId) errors.push('ProfileID (BT-23) is required for Peppol BIS 3.0 export');
-  else if (!PEPPOL_PROFILE_ID_PATTERN.test(profileId)) errors.push('ProfileID (BT-23) must match format urn:fdc:peppol.eu:2017:poacc:billing:NN:1.0');
+  if (!profileId) errors.push('ProfileID is required for Peppol BIS 3.0 export');
+  else if (!PEPPOL_PROFILE_ID_PATTERN.test(profileId)) errors.push('ProfileID must match format urn:fdc:peppol.eu:2017:poacc:billing:NN:1.0');
 
-  // Peppol BIS 3.0: CustomizationID (BT-24) must have the required value
+  // Peppol BIS 3.0: CustomizationID must have the required value
   const customizationId = (h.customizationId || h.specificationId || '').trim();
-  if (!customizationId) errors.push('CustomizationID (BT-24) is required for Peppol BIS 3.0 export');
-  else if (customizationId !== PEPPOL_CUSTOMIZATION_ID) errors.push('CustomizationID (BT-24) must be the Peppol BIS Billing 3.0 value for compliant export');
+  if (!customizationId) errors.push('CustomizationID is required for Peppol BIS 3.0 export');
+  else if (customizationId !== PEPPOL_CUSTOMIZATION_ID) errors.push('CustomizationID must be the Peppol BIS Billing 3.0 value for compliant export');
 
   if (errors.length) return { valid: false, errors };
 
