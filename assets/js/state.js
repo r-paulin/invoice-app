@@ -55,7 +55,8 @@ function defaultContact() {
   return {
     contactName: null,
     phone: null,
-    email: null
+    email: null,
+    website: null
   };
 }
 

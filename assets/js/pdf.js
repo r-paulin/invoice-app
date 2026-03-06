@@ -169,6 +169,13 @@
 
       drawField('Email', contact.email || '');
       drawField('Phone number', contact.phone || '');
+      if (contact.website) {
+        var urlToDisplayDomain = (typeof window !== 'undefined' && window.InvioValidation && window.InvioValidation.urlToDisplayDomain)
+          ? window.InvioValidation.urlToDisplayDomain
+          : function (u) { return u || ''; };
+        var websiteLabel = urlToDisplayDomain(contact.website);
+        if (websiteLabel) drawField('Website', websiteLabel);
+      }
 
       return lineY;
     }

@@ -119,6 +119,56 @@ function validEmail(s) {
   return typeof s === 'string' && EMAIL.test(s.trim());
 }
 
+const MAX_WEBSITE_LENGTH = 2048;
+
+/**
+ * Returns true if the value is empty or a safe http/https URL. Rejects javascript:, data:, etc.
+ */
+function validWebsite(s) {
+  if (!s || typeof s !== 'string') return true;
+  const trimmed = s.trim();
+  if (!trimmed) return true;
+  if (trimmed.length > MAX_WEBSITE_LENGTH) return false;
+  try {
+    const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : 'https://' + trimmed;
+    const url = new URL(withScheme);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch (_) {
+    return false;
+  }
+}
+
+/**
+ * Returns domain only (hostname) for display on invoice/summary, or '' if invalid.
+ */
+function urlToDisplayDomain(url) {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+  try {
+    const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : 'https://' + trimmed;
+    return new URL(withScheme).hostname;
+  } catch (_) {
+    return '';
+  }
+}
+
+/**
+ * Returns normalized full URL (with scheme) for storage, or null if invalid/empty.
+ */
+function normalizeWebsiteUrl(s) {
+  if (!s || typeof s !== 'string') return null;
+  const trimmed = s.trim();
+  if (!trimmed) return null;
+  if (!validWebsite(trimmed)) return null;
+  try {
+    const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : 'https://' + trimmed;
+    return new URL(withScheme).href;
+  } catch (_) {
+    return null;
+  }
+}
+
 function mod97(str) {
   let remainder = '';
   for (let i = 0; i < str.length; i++) {
@@ -302,6 +352,12 @@ function validateDraft(draft) {
   if (buyer.contact && buyer.contact.email && !validEmail(buyer.contact.email)) {
     errors.push('Buyer email must be a valid email address');
   }
+  if (seller.contact && seller.contact.website && !validWebsite(seller.contact.website)) {
+    errors.push('Seller website must be a valid http or https URL');
+  }
+  if (buyer.contact && buyer.contact.website && !validWebsite(buyer.contact.website)) {
+    errors.push('Buyer website must be a valid http or https URL');
+  }
 
   // Payment: if credit transfer (30), at least one valid IBAN required
   const meansCode = payment.meansTypeCode || '';
@@ -377,6 +433,9 @@ if (typeof window !== 'undefined') {
     validateForExport,
     validIsoDate,
     validEmail,
+    validWebsite,
+    urlToDisplayDomain,
+    normalizeWebsiteUrl,
     validIban,
     validIbanFormatForCountry,
     validVatCategory,

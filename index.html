@@ -19,13 +19,13 @@
   <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-title" content="Invoce">
   <link rel="manifest" href="assets/img/site.webmanifest">
-  <title>Free online invoice generator - Invoce</title>
-  <meta name="description" content="Generate downloadable PDF invoices and compliant e-invoices directly in your browser with our free online invoice generator.">
-  <meta name="keywords" content="invoice generator, online invoice maker, free invoice template, PDF invoice, e-invoice, billing software">
-  <meta name="author" content="Invio">
+  <title>Invoce – Online Invoice Generator | Free PDF & E-Invoice Tool</title>
+  <meta name="description" content="Create professional PDF invoices and EU-compliant e-invoices in seconds — free, no sign-up, no software. Built for European freelancers, sole traders, and small businesses. VAT-ready, Peppol-compatible.">
+  <meta name="keywords" content="invoice generator, free invoice generator, online invoice maker, e-invoice EU, EU compliant e-invoice, PDF invoice creator, VAT invoice, Peppol invoice, electronic invoice Europe, invoice no sign up, free invoice template, billing software small business, freelancer invoice, sole trader invoice, invoice generator Europe">
+  <meta name="author" content="Invoce>
   <meta name="robots" content="index, follow">
-  <meta property="og:title" content="Free Online Invoice Generator">
-  <meta property="og:description" content="Generate downloadable PDF invoices and compliant e-invoices directly in your browser with our free online invoice generator.">
+  <meta property="og:title" content="Invoce – Online Invoice Generator | Free PDF & E-Invoice Tool">
+  <meta property="og:description" content="Create professional PDF invoices and EU-compliant e-invoices in seconds — free, no sign-up, no software. Built for European freelancers, sole traders, and small businesses. VAT-ready, Peppol-compatible.">
   <meta property="og:image" content="assets/img/Logotype.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -262,6 +262,11 @@
                         </div>
                         <span class="field-error form-error field-error-reserved" id="seller-phone-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
+                      <div class="form-group form-field" x-data="focusField" :class="{ 'is-focused': focused }" @focusin="onFocusin()" @focusout="onFocusout()">
+                        <label for="seller-website"><span class="form-label">Website</span> <span class="label-optional">(Optional)</span></label>
+                        <input class="form-control" type="url" name="seller-website" id="seller-website" placeholder="https://example.com" pattern="https?://.+" aria-describedby="seller-website-error">
+                        <span class="field-error form-error field-error-reserved" id="seller-website-error" role="alert" aria-live="polite" hidden x-cloak></span>
+                      </div>
                     </div>
                   </div>
                   <div class="seller-modal-actions">
@@ -410,6 +415,11 @@
                           <input class="form-control phone-number-input" type="tel" inputmode="tel" name="buyer-phone" id="buyer-phone" placeholder="222222" aria-labelledby="buyer-phone-label" aria-describedby="buyer-phone-error" autocomplete="tel-national">
                         </div>
                         <span class="field-error form-error field-error-reserved" id="buyer-phone-error" role="alert" aria-live="polite" hidden x-cloak></span>
+                      </div>
+                      <div class="form-group form-field" x-data="focusField" :class="{ 'is-focused': focused }" @focusin="onFocusin()" @focusout="onFocusout()">
+                        <label for="buyer-website"><span class="form-label">Website</span> <span class="label-optional">(Optional)</span></label>
+                        <input class="form-control" type="url" name="buyer-website" id="buyer-website" placeholder="https://example.com" pattern="https?://.+" aria-describedby="buyer-website-error">
+                        <span class="field-error form-error field-error-reserved" id="buyer-website-error" role="alert" aria-live="polite" hidden x-cloak></span>
                       </div>
                     </div>
                   </div>

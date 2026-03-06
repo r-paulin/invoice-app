@@ -41,7 +41,7 @@
     syncFieldErrorA11y(id, !!message);
   }
 
-  var FIELD_IDS = ['country', 'name', 'registration', 'vat', 'street', 'city', 'postal', 'phone', 'email'];
+  var FIELD_IDS = ['country', 'name', 'registration', 'vat', 'street', 'city', 'postal', 'phone', 'email', 'website'];
 
   function hideFieldErrors(role) {
     FIELD_IDS.forEach(function (f) {
@@ -144,6 +144,11 @@
     if (email && v && v.validEmail && !v.validEmail(email)) {
       showFieldError(pfx + 'email', 'Invalid email address'); valid = false;
     }
+    var websiteEl = document.getElementById(role + '-website');
+    var website = websiteEl ? websiteEl.value.trim() : '';
+    if (website && v && v.validWebsite && !v.validWebsite(website)) {
+      showFieldError(pfx + 'website', 'Enter a valid http or https URL'); valid = false;
+    }
 
     var means = getPaymentMeansFromGeneral();
     var storeKey = role + 'BankAccounts';
@@ -233,10 +238,13 @@
 
     var phone = (c.phone || '').trim();
     var email = (c.email || '').trim();
-    if (phone || email) {
+    var websiteDisplay = (c.website && window.InvioValidation && window.InvioValidation.urlToDisplayDomain)
+      ? window.InvioValidation.urlToDisplayDomain(c.website) : '';
+    if (phone || email || websiteDisplay) {
       var cp = [];
       if (phone) cp.push('Phone: ' + phone);
       if (email) cp.push('Email: ' + email);
+      if (websiteDisplay) cp.push('Website: ' + websiteDisplay);
       html += '<p class="' + role + '-summary__text" aria-label="Contacts">' + escapeHtml(cp.join(' ')) + '</p>';
     }
 
@@ -334,6 +342,7 @@
       var localPhone = C().getLocalPartFromFullPhone ? C().getLocalPartFromFullPhone(contact.phone || '') : (contact.phone || '');
       setFormValue(role + '-phone', localPhone);
       setFormValue(role + '-email', contact.email);
+      setFormValue(role + '-website', contact.website);
 
       var phoneCountryInput = document.getElementById(role + '-phone-country');
       var cc = (addr.countryCode || '').toUpperCase();
@@ -474,6 +483,11 @@
       if (!contact.phone || !contact.phone.trim()) contact.phone = null;
       contact.email = (document.getElementById(role + '-email') && document.getElementById(role + '-email').value) || null;
       if (!contact.email || !contact.email.trim()) contact.email = null;
+      var websiteRaw = (document.getElementById(role + '-website') && document.getElementById(role + '-website').value) || '';
+      contact.website = (websiteRaw && window.InvioValidation && window.InvioValidation.normalizeWebsiteUrl)
+        ? window.InvioValidation.normalizeWebsiteUrl(websiteRaw)
+        : (websiteRaw.trim() || null);
+      if (!contact.website) contact.website = null;
 
       var means = getPaymentMeansFromGeneral();
       if (!draft.payment) draft.payment = {};
