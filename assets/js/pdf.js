@@ -5,9 +5,11 @@
 
 (function () {
   var MM_PER_PX = 210 / 595; // Keep Figma 595px canvas proportions on A4 width.
-  var COLOR_TEXT = [41, 37, 36];
-  var COLOR_MUTED = [87, 83, 77];
-  var COLOR_BORDER = [214, 211, 209];
+  var COLOR_TEXT = [41, 37, 36];       // grey-800 #292524
+  var COLOR_MUTED = [120, 113, 108];   // grey-500 #78716c (matches CSS --grey-500)
+  var COLOR_BORDER = [214, 211, 209];  // grey-300 #d6d3d1
+  var COLOR_BG_GREY = [245, 245, 244]; // grey-100 #f5f5f4
+  var COLOR_WARNING = [251, 139, 36];  // amber for date validation warnings
 
   function pxToMm(px) {
     return px * MM_PER_PX;
@@ -56,6 +58,14 @@
     var JsPDF = (typeof window !== 'undefined' && window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
     if (!JsPDF) return null;
     var doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    
+    // Register Source Sans 3 font if available, otherwise fallback to helvetica.
+    var fontFamily = 'helvetica';
+    if (typeof window !== 'undefined' && window.InvioPDFFonts && window.InvioPDFFonts.register) {
+      if (window.InvioPDFFonts.register(doc)) {
+        fontFamily = 'SourceSans3';
+      }
+    }
     var pageW = 210;
     var pageH = 297;
     var margin = pxToMm(24); // Align with Figma frame.
@@ -91,7 +101,7 @@
 
     function drawLinkText(text, url, x, y) {
       setColor(COLOR_MUTED);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(fontFamily, 'normal');
       doc.setFontSize(8);
       if (typeof doc.textWithLink === 'function') {
         doc.textWithLink(text, x, y, { url: url });
@@ -101,9 +111,13 @@
     }
 
     function drawLogoSlot(x, y, w, h) {
-      if (!(settings && settings.logo && typeof settings.logo === 'string' && settings.logo.indexOf('data:image') === 0)) {
+      var hasLogo = settings && settings.logo && typeof settings.logo === 'string' && settings.logo.indexOf('data:image') === 0;
+      
+      // If no logo, don't draw anything - just reserve the space.
+      if (!hasLogo) {
         return;
       }
+      
       try {
         var format = settings.logo.indexOf('image/png') !== -1 ? 'PNG' : 'JPEG';
         var props = doc.getImageProperties ? doc.getImageProperties(settings.logo) : null;
@@ -114,8 +128,8 @@
           imgW = props.width * ratio;
           imgH = props.height * ratio;
         }
-        var imgX = x + (w - imgW); // Right-aligned.
-        var imgY = y + ((h - imgH) / 2);
+        var imgX = x + (w - imgW); // Right-aligned within slot.
+        var imgY = y + ((h - imgH) / 2); // Vertically centered.
         doc.addImage(settings.logo, format, imgX, imgY, imgW, imgH);
       } catch (e) {}
     }
@@ -124,57 +138,86 @@
       var addr = party.address || {};
       var contact = party.contact || {};
       var lineY = topY;
+      var lineHeight = pxToMm(12);
+      var fontSize = 10;
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
+      // Row 1: Title label (e.g., "Seller:" / "Buyer:").
+      doc.setFont(fontFamily, 'normal');
+      doc.setFontSize(fontSize);
       setColor(COLOR_MUTED);
       doc.text(title, x, lineY);
-      lineY += pxToMm(12);
+      lineY += lineHeight;
 
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
+      // Row 2: Company name (bold, dark).
+      doc.setFont(fontFamily, 'bold');
+      doc.setFontSize(fontSize);
       setColor(COLOR_TEXT);
-      doc.text(ellipsis(safeText(party.name, '—'), 42), x, lineY);
-      lineY += pxToMm(10);
+      var companyName = safeText(party.name, '—');
+      var wrappedName = doc.splitTextToSize(companyName, width);
+      for (var i = 0; i < wrappedName.length; i++) {
+        doc.text(wrappedName[i], x, lineY);
+        lineY += lineHeight;
+      }
+      lineY += pxToMm(4);
 
-      function drawField(label, value) {
+      // Inline field: "Label: Value" on same line.
+      function drawInlineField(label, value) {
         if (!value) return;
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8.5);
+        doc.setFont(fontFamily, 'normal');
+        doc.setFontSize(fontSize);
+        
+        var labelText = label + ': ';
         setColor(COLOR_MUTED);
-        doc.text(label, x, lineY);
-        lineY += pxToMm(9);
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
+        var labelWidth = doc.getTextWidth(labelText);
+        doc.text(labelText, x, lineY);
+        
         setColor(COLOR_TEXT);
-        var wrapped = doc.splitTextToSize(String(value), width);
-        for (var i = 0; i < wrapped.length; i++) {
-          doc.text(ellipsis(wrapped[i], 68), x, lineY);
-          lineY += pxToMm(9);
+        var valueWidth = width - labelWidth;
+        var wrappedValue = doc.splitTextToSize(String(value), valueWidth);
+        
+        for (var i = 0; i < wrappedValue.length; i++) {
+          if (i === 0) {
+            doc.text(wrappedValue[i], x + labelWidth, lineY);
+          } else {
+            lineY += lineHeight;
+            doc.text(wrappedValue[i], x + labelWidth, lineY);
+          }
         }
+        lineY += lineHeight;
       }
 
       var addressValue = [addr.line1, addr.city, addr.postalCode, addr.countryCode].filter(Boolean).join(', ');
-      drawField('Address', addressValue);
-      drawField('Registration number', party.legalRegistrationId || '');
-      drawField('VAT number', party.vatId || '');
+      drawInlineField('Address', addressValue);
+      drawInlineField('Registration number', party.legalRegistrationId || '');
+      drawInlineField('VAT number', party.vatId || '');
 
       if (Array.isArray(bankAccounts) && bankAccounts.length) {
         for (var i = 0; i < bankAccounts.length; i++) {
           var account = bankAccounts[i] || {};
-          drawField('Bank account', account.accountId || '');
-          if (account.bankName) drawField('Bank name', account.bankName);
+          var bankValue = account.accountId || '';
+          if (account.bankName) {
+            bankValue += ' , ' + account.bankName;
+          }
+          if (account.bic) {
+            bankValue += ' (BIC: ' + account.bic + ')';
+          }
+          drawInlineField('Bank account', bankValue);
         }
       }
 
-      drawField('Email', contact.email || '');
-      drawField('Phone number', contact.phone || '');
+      // Contact fields (with extra top padding per Figma).
+      if (contact.email || contact.phone) {
+        lineY += pxToMm(8);
+      }
+      drawInlineField('Email', contact.email || '');
+      drawInlineField('Phone number', contact.phone || '');
+      
       if (contact.website) {
         var urlToDisplayDomain = (typeof window !== 'undefined' && window.InvioValidation && window.InvioValidation.urlToDisplayDomain)
           ? window.InvioValidation.urlToDisplayDomain
           : function (u) { return u || ''; };
         var websiteLabel = urlToDisplayDomain(contact.website);
-        if (websiteLabel) drawField('Website', websiteLabel);
+        if (websiteLabel) drawInlineField('Website', websiteLabel);
       }
 
       return lineY;
@@ -194,20 +237,22 @@
     var rgb = hexToRgb(accentHex);
     var thickLine = pxToMm(2);
 
-    // Top link.
-    drawLinkText('Invoce', 'https://invoce.app', margin, pxToMm(10));
+    // Grey-100 background zone (page 1 only, full width from top to ~354px).
+    var greyZoneHeight = pxToMm(354);
+    doc.setFillColor(COLOR_BG_GREY[0], COLOR_BG_GREY[1], COLOR_BG_GREY[2]);
+    doc.rect(0, 0, pageW, greyZoneHeight, 'F');
 
-    // Header title block.
+    // Header title block (34px in Figma ≈ 24pt in PDF).
     y = pxToMm(36);
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(24);
+    doc.setFont(fontFamily, 'bold');
     setColor(COLOR_TEXT);
     doc.text('Invoice', margin, y);
     y += pxToMm(12);
     doc.setFontSize(8.5);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(fontFamily, 'normal');
     setColor(COLOR_MUTED);
-    drawLinkText('Made with Invoce', 'https://invoce.app', margin, y);
+    drawLinkText('Made with invoce.app', 'https://invoce.app', margin, y);
 
     var logoSlotW = pxToMm(140);
     var logoSlotH = pxToMm(80);
@@ -220,17 +265,35 @@
     var c1X = margin;
     var c2X = margin + (contentW * 0.5);
     var c3X = margin + (contentW * 0.76);
-    doc.setFont('helvetica', 'normal');
+    doc.setFont(fontFamily, 'normal');
     doc.setFontSize(8.5);
     setColor(COLOR_MUTED);
     doc.text('Invoice number:', c1X, metaYLabel);
     doc.text('Issue date:', c2X, metaYLabel);
     doc.text('Due date:', c3X, metaYLabel);
-    doc.setFont('helvetica', 'bold');
+    doc.setFont(fontFamily, 'bold');
     doc.setFontSize(12);
+    
+    // Invoice number with visible placeholder if missing.
+    var invoiceNumber = (h.invoiceNumber || '').trim();
+    if (!invoiceNumber) {
+      setColor(COLOR_WARNING);
+      doc.text('[Invoice Number Required]', c1X, metaYValue);
+    } else {
+      setColor(COLOR_TEXT);
+      doc.text(ellipsis(invoiceNumber, 28), c1X, metaYValue);
+    }
+    
     setColor(COLOR_TEXT);
-    doc.text(ellipsis(safeText(h.invoiceNumber, '—'), 28), c1X, metaYValue);
     doc.text(formatDate(h.issueDate), c2X, metaYValue);
+    
+    // Due date: warn if earlier than issue date.
+    var dueDateInvalid = h.dueDate && h.issueDate && h.dueDate < h.issueDate;
+    if (dueDateInvalid) {
+      setColor(COLOR_WARNING);
+    } else {
+      setColor(COLOR_TEXT);
+    }
     doc.text(formatDate(h.dueDate), c3X, metaYValue);
 
     // CustomBorder (2px accent).
@@ -251,7 +314,7 @@
 
     // Payment reference.
     if ((payment.paymentId || '').trim()) {
-      doc.setFont('helvetica', 'bold');
+      doc.setFont(fontFamily, 'bold');
       doc.setFontSize(10);
       setColor(COLOR_TEXT);
       doc.text('Payment reference: ' + safeText(payment.paymentId), margin, y);
@@ -261,8 +324,9 @@
     }
 
     function drawTableHeader(startY) {
-      var labelY = startY + pxToMm(10);
-      doc.setFont('helvetica', 'bold');
+      var headerRowH = pxToMm(20); // Compact header row height per Figma.
+      var labelY = startY + pxToMm(14);
+      doc.setFont(fontFamily, 'bold');
       doc.setFontSize(8.5);
       setColor(COLOR_TEXT);
       doc.text('Service / Product', xService + pxToMm(4), labelY);
@@ -274,8 +338,8 @@
       // Cell bottom border (2px accent).
       doc.setDrawColor(rgb.r, rgb.g, rgb.b);
       doc.setLineWidth(thickLine);
-      doc.line(margin, startY + rowH, pageW - margin, startY + rowH);
-      return startY + rowH;
+      doc.line(margin, startY + headerRowH, pageW - margin, startY + headerRowH);
+      return startY + headerRowH;
     }
 
     y = drawTableHeader(y);
@@ -285,24 +349,41 @@
     var lineMap = {};
     lineComputed.forEach(function (l) { lineMap[l.id] = l; });
 
+    // Helper to draw amount with currency code in muted color (right-aligned).
+    function drawAmountWithCurrency(amount, currency, xRight, textY) {
+      var amountStr = formatAmount(amount);
+      var currencyStr = ' ' + currency;
+      var fullWidth = doc.getTextWidth(amountStr + currencyStr);
+      var amountX = xRight - fullWidth;
+      
+      setColor(COLOR_TEXT);
+      doc.text(amountStr, amountX, textY);
+      setColor(COLOR_MUTED);
+      doc.text(currencyStr, amountX + doc.getTextWidth(amountStr), textY);
+    }
+
     for (var i = 0; i < lines.length; i++) {
       ensureSpace(rowH + pxToMm(2), drawTableHeader);
       var line = lines[i] || {};
       var comp = lineMap[line.id] || {};
       var rowTextY = y + pxToMm(15);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(fontFamily, 'normal');
       doc.setFontSize(8.5);
       setColor(COLOR_TEXT);
       doc.text(ellipsis(safeText(line.itemName, '—'), 44), xService + pxToMm(4), rowTextY);
       doc.text(ellipsis(formatQuantity(line.quantity, line.unitCode), 12), xQty + pxToMm(4), rowTextY);
-      doc.text(formatAmount(Number(line.netPrice || 0)) + ' ' + cc, xUnit + colUnit - pxToMm(4), rowTextY, { align: 'right' });
+      
+      drawAmountWithCurrency(Number(line.netPrice || 0), cc, xUnit + colUnit - pxToMm(4), rowTextY);
+      
+      setColor(COLOR_TEXT);
       doc.text(String(line.vatRate == null ? '—' : (line.vatRate + '%')), xTax + colTax - pxToMm(4), rowTextY, { align: 'right' });
-      doc.text(formatAmount(comp.lineTaxAmount || 0) + ' ' + cc, xTaxAmount + colTaxAmount - pxToMm(4), rowTextY, { align: 'right' });
-      doc.text(formatAmount(comp.lineGrossAmount || 0) + ' ' + cc, xTotal + colTotal - pxToMm(4), rowTextY, { align: 'right' });
+      
+      drawAmountWithCurrency(comp.lineTaxAmount || 0, cc, xTaxAmount + colTaxAmount - pxToMm(4), rowTextY);
+      drawAmountWithCurrency(comp.lineGrossAmount || 0, cc, xTotal + colTotal - pxToMm(4), rowTextY);
 
-      // Row divider (neutral).
+      // Row divider (1px thin grey line).
       doc.setDrawColor(COLOR_BORDER[0], COLOR_BORDER[1], COLOR_BORDER[2]);
-      doc.setLineWidth(pxToMm(1));
+      doc.setLineWidth(0.15); // Thin 1px line in mm.
       doc.line(margin, y + rowH, pageW - margin, y + rowH);
       y += rowH;
     }
@@ -319,44 +400,88 @@
     var scenario = (typeof window !== 'undefined' && window.Invio && window.Invio.euVat)
       ? window.Invio.euVat.getVatScenarioFromDraft(draft)
       : 'domestic';
+    
+    // totalRows: { label, labelSuffix (muted), amount, currency, strong, isDiscount }
     var totalRows = [];
-    totalRows.push({ label: 'Subtotal', value: formatAmount(subtotal) + ' ' + cc, strong: false });
+    totalRows.push({ label: 'Subtotal', labelSuffix: '', amount: subtotal, currency: cc, strong: false, isDiscount: false });
+    
     if (scenario === 'intra_eu_rc') {
-      totalRows.push({ label: 'VAT (Reverse charged)', value: '—', strong: false });
+      totalRows.push({ label: 'VAT', labelSuffix: ' (Reverse charged)', amount: null, currency: '', strong: false, isDiscount: false });
     } else if (scenario === 'export') {
-      totalRows.push({ label: 'VAT (Zero rated)', value: '—', strong: false });
+      totalRows.push({ label: 'VAT', labelSuffix: ' (Zero rated)', amount: null, currency: '', strong: false, isDiscount: false });
     } else if (scenario === 'no_vat_seller') {
-      totalRows.push({ label: 'VAT (Not applicable)', value: '—', strong: false });
+      totalRows.push({ label: 'VAT', labelSuffix: ' (Not applicable)', amount: null, currency: '', strong: false, isDiscount: false });
     } else if (computed && computed.taxBreakdown && computed.taxBreakdown.length) {
       computed.taxBreakdown.forEach(function (tb) {
-        totalRows.push({ label: 'Tax (' + tb.rate + '%)', value: formatAmount(tb.taxAmount) + ' ' + cc, strong: false });
+        // Skip Tax (0%) rows where taxAmount is 0 unless there's only one tax rate.
+        if (tb.rate === 0 && tb.taxAmount === 0 && computed.taxBreakdown.length > 1) {
+          return;
+        }
+        totalRows.push({ label: 'Tax', labelSuffix: ' (' + tb.rate + '%)', amount: tb.taxAmount, currency: cc, strong: false, isDiscount: false });
       });
-    } else {
-      totalRows.push({ label: 'Total VAT', value: formatAmount(totalVAT) + ' ' + cc, strong: false });
+    } else if (totalVAT > 0) {
+      totalRows.push({ label: 'Total VAT', labelSuffix: '', amount: totalVAT, currency: cc, strong: false, isDiscount: false });
     }
+    
     if (documentDiscount > 0) {
-      totalRows.push({ label: 'Discount', value: '- ' + formatAmount(documentDiscount) + ' ' + cc, strong: false });
+      totalRows.push({ label: 'Discount', labelSuffix: '', amount: documentDiscount, currency: cc, strong: false, isDiscount: true });
     }
-    totalRows.push({ label: 'Total', value: formatAmount(payableAmount) + ' ' + cc, strong: true });
+    totalRows.push({ label: 'Total', labelSuffix: '', amount: payableAmount, currency: cc, strong: true, isDiscount: false });
 
+    // Draw totals rows.
     for (var r = 0; r < totalRows.length; r++) {
       var tr = totalRows[r];
       var rowTop = y + r * rowH;
       var textY = rowTop + pxToMm(15);
-      doc.setFont('helvetica', tr.strong ? 'bold' : 'normal');
-      doc.setFontSize(tr.strong ? 10 : 8.5);
-      setColor(COLOR_TEXT);
-      doc.text(tr.label, xTaxAmount + colTaxAmount - pxToMm(4), textY, { align: 'right' });
-      doc.text(tr.value, xTotal + colTotal - pxToMm(4), textY, { align: 'right' });
-
-      if (!tr.strong) {
-        doc.setDrawColor(COLOR_BORDER[0], COLOR_BORDER[1], COLOR_BORDER[2]);
-        doc.setLineWidth(pxToMm(1));
-        doc.line(xTaxAmount, rowTop + rowH, xTaxAmount + colTaxAmount + colTotal, rowTop + rowH);
+      var labelX = xTaxAmount + colTaxAmount - pxToMm(4);
+      var valueX = xTotal + colTotal - pxToMm(4);
+      
+      // Draw label with optional suffix in muted color.
+      doc.setFont(fontFamily, tr.strong ? 'bold' : 'normal');
+      doc.setFontSize(tr.strong ? 12 : 10);
+      
+      if (tr.labelSuffix) {
+        // Draw "Tax" in dark, "(rate%)" in muted.
+        var fullLabel = tr.label + tr.labelSuffix;
+        var fullWidth = doc.getTextWidth(fullLabel);
+        var labelWidth = doc.getTextWidth(tr.label);
+        var labelStartX = labelX - fullWidth;
+        
+        setColor(COLOR_TEXT);
+        doc.text(tr.label, labelStartX, textY);
+        setColor(COLOR_MUTED);
+        doc.text(tr.labelSuffix, labelStartX + labelWidth, textY);
+      } else {
+        setColor(COLOR_TEXT);
+        doc.text(tr.label, labelX, textY, { align: 'right' });
       }
+      
+      // Draw value.
+      if (tr.amount === null) {
+        setColor(COLOR_TEXT);
+        doc.text('—', valueX, textY, { align: 'right' });
+      } else if (tr.isDiscount) {
+        // Discount: "- 12.50 EUR".
+        var discountStr = '- ' + formatAmount(tr.amount);
+        var currStr = ' ' + tr.currency;
+        var totalDiscWidth = doc.getTextWidth(discountStr + currStr);
+        var discStartX = valueX - totalDiscWidth;
+        setColor(COLOR_TEXT);
+        doc.text(discountStr, discStartX, textY);
+        setColor(COLOR_MUTED);
+        doc.text(currStr, discStartX + doc.getTextWidth(discountStr), textY);
+      } else if (tr.strong) {
+        // Total row: bold, full string.
+        setColor(COLOR_TEXT);
+        doc.text(formatAmount(tr.amount) + ' ' + tr.currency, valueX, textY, { align: 'right' });
+      } else {
+        // Amount with muted currency.
+        drawAmountWithCurrency(tr.amount, tr.currency, valueX, textY);
+      }
+
     }
 
-    // Total / Value top border (2px accent).
+    // Total row top border only (2px accent) - no lines on Subtotal, Tax, or Discount rows.
     var strongTopY = y + (totalRows.length - 1) * rowH;
     doc.setDrawColor(rgb.r, rgb.g, rgb.b);
     doc.setLineWidth(thickLine);
@@ -367,7 +492,7 @@
     // Note paragraph.
     if (h.note && String(h.note).trim()) {
       ensureSpace(pxToMm(40), null);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(fontFamily, 'normal');
       doc.setFontSize(7.5);
       setColor(COLOR_MUTED);
       var noteLines = doc.splitTextToSize(String(h.note).trim(), contentW);
@@ -383,7 +508,7 @@
     for (var p = 1; p <= totalPages; p++) {
       doc.setPage(p);
       doc.setFontSize(7.5);
-      doc.setFont('helvetica', 'normal');
+      doc.setFont(fontFamily, 'normal');
       setColor(COLOR_MUTED);
       doc.text('Page ' + p + ' of ' + totalPages, margin, footerY);
       doc.text('Invoice number: ' + safeText(h.invoiceNumber, '—'), pageW - margin, footerY, { align: 'right' });
