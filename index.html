@@ -431,7 +431,8 @@
               </div>
             </template>
 
-            <section class="section items" x-data="invoiceItems">
+            <div x-data="invoiceItems">
+            <section class="section items">
               <h2>Items</h2>
               <div class="section-content">
                 <div class="chips">
@@ -439,10 +440,6 @@
                   <button type="button" class="chip-toggle" :class="showDiscount ? 'chip-active' : 'chip-inactive'" @click="toggleDiscount()" :aria-pressed="String(showDiscount)" aria-label="Toggle discount column">
                     <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showDiscount ? 'close' : 'add'"></span>
                     <span class="chip-label">Discount</span>
-                  </button>
-                  <button type="button" class="chip-toggle" :class="showNote ? 'chip-active' : 'chip-inactive'" @click="toggleNote()" :aria-pressed="String(showNote)" aria-label="Toggle note">
-                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showNote ? 'close' : 'add'"></span>
-                    <span class="chip-label">Note</span>
                   </button>
                 </div>
 
@@ -539,17 +536,23 @@
                     <span class="sum-amount" x-text="fmtCurrency(summaryTotal())"></span>
                   </div>
                 </div>
+              </div>
+            </section>
 
-                <div class="items-note" x-show="showNote" x-cloak x-transition:enter="show-ease-enter" x-transition:enter-start="show-ease-enter-start" x-transition:enter-end="show-ease-enter-end" x-transition:leave="show-ease-leave" x-transition:leave-start="show-ease-leave-start" x-transition:leave-end="show-ease-leave-end">
-                  <label for="invoice-note" class="form-label">Note</label>
-                  <textarea id="invoice-note" class="note-textarea" placeholder="Add a note to this invoice" x-model="noteText" @input="syncNote()" aria-label="Invoice note"></textarea>
-                </div>
-
-                <div class="note-display" x-show="!showNote && noteText && noteText.trim()" x-cloak>
-                  <p class="note-display-text" x-text="noteText"></p>
+            <section class="section" id="note-section">
+              <div class="note-section-left">
+                <h2>Note</h2>
+                <p class="section-helper form-help" id="invoice-note-hint">Add any free-form text you'd like to display on the invoice, such as payment instructions, a thank-you note, or special terms.</p>
+              </div>
+              <div class="section-content">
+                <div class="form-group form-field">
+                  <label for="invoice-note" class="visually-hidden">Note</label>
+                  <textarea id="invoice-note" class="note-textarea" placeholder="Enter note" x-model="noteText" @input="syncNote()" aria-label="Invoice note" aria-describedby="invoice-note-hint"></textarea>
                 </div>
               </div>
             </section>
+
+            </div>
 
             <section class="ready">
               <p>Invoice all set and ready to go?</p>

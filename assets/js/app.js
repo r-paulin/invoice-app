@@ -31,7 +31,6 @@
       return {
         lines: d.lines,
         showDiscount: false,
-        showNote: false,
         noteText: d.header.note || '',
         unitCodes: UNIT_CODES,
         _cc: (d.header && d.header.currencyCode) || 'EUR',
@@ -126,10 +125,6 @@
         toggleDiscount: function () {
           this.showDiscount = !this.showDiscount;
           if (!this.showDiscount) this.lines.forEach(function (line) { line.discountAmount = 0; });
-        },
-        toggleNote: function () {
-          this.showNote = !this.showNote;
-          if (!this.showNote) { this.noteText = ''; if (window.__invioDraft) window.__invioDraft.header.note = null; }
         },
         syncNote: function () { if (window.__invioDraft) window.__invioDraft.header.note = this.noteText || null; }
       };

@@ -1241,7 +1241,7 @@ input::placeholder {
   padding: 0 var(--space-xs);
 }
 
-/* Ease-out transition for elements shown by chip toggles (Discount column, Note) */
+/* Ease-out transition for elements shown by chip toggles (Discount column) */
 .show-ease-enter {
   transition: opacity 0.2s ease-out;
 }
@@ -1684,10 +1684,31 @@ input::placeholder {
   font-weight: 600;
 }
 
-/* --- Note --- */
+/* --- Note (Figma: Section / Buyer layout) --- */
 
-.items-note {
-  margin-top: 1rem;
+#note-section {
+  padding-bottom: calc(4 * var(--space-lg))
+}
+
+#note-section .note-section-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+#note-section .note-section-left h2 {
+  font-size: 1.6875rem;
+  font-weight: 600;
+  letter-spacing: -0.03125rem;
+  line-height: 1.1;
+  margin: 0;
+}
+
+#note-section .section-helper {
+  font-size: 1rem;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  margin: 0;
 }
 
 .note-textarea {
@@ -1700,9 +1721,9 @@ input::placeholder {
   font-family: inherit;
   font-size: var(--font-size-value);
   line-height: 1.5;
-  min-height: 4.5lh;
+  min-height: 7.75rem;
   outline: none;
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-md) var(--space-md) var(--space-md) var(--space-lg);
   resize: vertical;
   width: 100%;
 }
@@ -1716,18 +1737,6 @@ input::placeholder {
   color: var(--grey-400);
 }
 
-.note-display {
-  margin-top: 1.5rem;
-}
-
-.note-display-text {
-  color: var(--grey-700);
-  font-size: var(--font-size-help);
-  line-height: 1.4;
-  margin: 0;
-  white-space: pre-wrap;
-}
-
 /* --- Add item button: full-width on mobile only --- */
 
 .add-item-btn {
@@ -1736,6 +1745,9 @@ input::placeholder {
 
 .ready {
   align-items: stretch;
+  background: var(--ready-bar-bg, #2d2d2d);
+  border: 1px solid var(--ready-bar-border, rgba(255, 255, 255, 0.12));
+  border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1743,6 +1755,7 @@ input::placeholder {
 }
 
 .ready p {
+  color: var(--white);
   font-size: 1.6875rem;
   font-weight: 600;
   letter-spacing: -0.03125rem;
@@ -1858,7 +1871,6 @@ input::placeholder {
     display: grid;
     gap: 1.5rem;
     grid-template-columns: minmax(9.375rem, 1fr) 34.125rem;
-    padding: 3rem 1.5rem;
   }
 
   .items {
@@ -1871,8 +1883,8 @@ input::placeholder {
 
   .ready {
     align-items: center;
-    background: var(--white);
-    border: 1px solid var(--grey-200);
+    background: var(--ready-bar-bg, #2d2d2d);
+    border: 1px solid var(--ready-bar-border, rgba(255, 255, 255, 0.12));
     display: grid;
     gap: 0;
     grid-template-columns: 1fr auto;
