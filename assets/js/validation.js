@@ -414,6 +414,16 @@ function validateForExport(draft) {
 
   if (errors.length) return { valid: false, errors };
 
+  if (typeof window !== 'undefined' && window.Invio && window.Invio.euVat) {
+    var scenario = window.Invio.euVat.getVatScenarioFromDraft(draft);
+    if (scenario === 'intra_eu_rc') {
+      var buyer = draft.buyer || {};
+      if (!nonEmpty(buyer.vatId)) errors.push('Buyer VAT ID is required for intra-EU reverse charge');
+    }
+  }
+
+  if (errors.length) return { valid: false, errors };
+
   if (typeof window !== 'undefined' && window.InvioCalc) {
     const recon = window.InvioCalc.checkReconciliation(draft);
     if (!recon.ok) {

@@ -751,8 +751,18 @@ h3{
 }
 
 @media (max-width: 600px) {
-  .style-logo-row.card {
+  .style-logo-row {
     flex-direction: column;
+  }
+
+  .style-logo-content {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .style-logo-filename {
+    white-space: normal;
+    word-break: break-word;
   }
 }
 
@@ -765,6 +775,14 @@ h3{
 .style-accent-hex-input {
   width: 17.9375rem;
   flex: none;
+}
+
+@media (max-width: 600px) {
+  .style-accent-hex-input {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+  }
 }
 
 .style-accent-circle {
@@ -817,6 +835,10 @@ h3{
 .buyer-summary__edit {
   align-self: flex-start;
   margin-top: var(--space-md);
+}
+
+.summary__label {
+  color: var(--grey-500);
 }
 
 .field {
@@ -1601,6 +1623,11 @@ input::placeholder {
   margin: 0;
 }
 
+.taxrate-input:disabled {
+  color: var(--grey-500);
+  cursor: not-allowed;
+}
+
 .taxrate-symbol {
   color: var(--grey-500);
   font-size: var(--font-size-value);
@@ -1657,6 +1684,7 @@ input::placeholder {
   justify-content: flex-end;
   line-height: 1.5;
   padding: var(--space-xs) var(--space-md);
+  text-align: end;
 }
 
 .sum-amount {
@@ -1745,9 +1773,9 @@ input::placeholder {
 
 .ready {
   align-items: stretch;
-  background: var(--ready-bar-bg, #2d2d2d);
+  background: var(--grey-900);
   border: 1px solid var(--ready-bar-border, rgba(255, 255, 255, 0.12));
-  border-radius: var(--radius-md);
+  border-radius: 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1883,8 +1911,9 @@ input::placeholder {
 
   .ready {
     align-items: center;
-    background: var(--ready-bar-bg, #2d2d2d);
+    background: var(--grey-900);
     border: 1px solid var(--ready-bar-border, rgba(255, 255, 255, 0.12));
+    border-radius: var(--radius-md);
     display: grid;
     gap: 0;
     grid-template-columns: 1fr auto;

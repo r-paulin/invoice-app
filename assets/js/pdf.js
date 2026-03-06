@@ -316,9 +316,18 @@
     var totalVAT = (computed && computed.totalVAT != null) ? computed.totalVAT : 0;
     var payableAmount = (computed && computed.payableAmount != null) ? computed.payableAmount : 0;
 
+    var scenario = (typeof window !== 'undefined' && window.Invio && window.Invio.euVat)
+      ? window.Invio.euVat.getVatScenarioFromDraft(draft)
+      : 'domestic';
     var totalRows = [];
     totalRows.push({ label: 'Subtotal', value: formatAmount(subtotal) + ' ' + cc, strong: false });
-    if (computed && computed.taxBreakdown && computed.taxBreakdown.length) {
+    if (scenario === 'intra_eu_rc') {
+      totalRows.push({ label: 'VAT (Reverse charged)', value: '—', strong: false });
+    } else if (scenario === 'export') {
+      totalRows.push({ label: 'VAT (Zero rated)', value: '—', strong: false });
+    } else if (scenario === 'no_vat_seller') {
+      totalRows.push({ label: 'VAT (Not applicable)', value: '—', strong: false });
+    } else if (computed && computed.taxBreakdown && computed.taxBreakdown.length) {
       computed.taxBreakdown.forEach(function (tb) {
         totalRows.push({ label: 'Tax (' + tb.rate + '%)', value: formatAmount(tb.taxAmount) + ' ' + cc, strong: false });
       });

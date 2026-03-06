@@ -37,6 +37,18 @@
         _nf: null,
         _nfCurrency: null,
 
+        get vatRateLocked() {
+          return this.$store && this.$store.euVat && this.$store.euVat.locksVatRates();
+        },
+
+        get vatScenario() {
+          return this.$store && this.$store.euVat ? this.$store.euVat.vatScenario : 'domestic';
+        },
+
+        notePlaceholder: function () {
+          return 'Add payment terms or legal notes';
+        },
+
         init: function () {
           var self = this;
           this._buildFormatter();
@@ -44,6 +56,38 @@
             self._cc = (e.detail && e.detail.code) || 'EUR';
             self._buildFormatter();
           });
+          if (this.$store && this.$store.euVat) {
+            this.$watch('$store.euVat.vatScenario', function (scenario, oldScenario) {
+              var draft = window.__invioDraft;
+              if (!draft || !draft.header) return;
+              var locks = self.$store.euVat.locksVatRates();
+              var oldLocks = window.Invio && window.Invio.euVat && window.Invio.euVat.scenarioLocksVatRates(oldScenario);
+              if (locks) {
+                self.lines.forEach(function (line) {
+                  if (Number(line.vatRate) !== 0) {
+                    line._vatRateBeforeRC = line.vatRate;
+                    line.vatRate = 0;
+                  }
+                });
+              } else if (oldLocks) {
+                self.lines.forEach(function (line) {
+                  if (line._vatRateBeforeRC != null) {
+                    line.vatRate = line._vatRateBeforeRC;
+                    delete line._vatRateBeforeRC;
+                  }
+                });
+              }
+            });
+            var initialScenario = this.$store.euVat.vatScenario;
+            if (window.Invio && window.Invio.euVat && window.Invio.euVat.scenarioLocksVatRates(initialScenario)) {
+              self.lines.forEach(function (line) {
+                if (Number(line.vatRate) !== 0) {
+                  line._vatRateBeforeRC = line.vatRate;
+                  line.vatRate = 0;
+                }
+              });
+            }
+          }
         },
 
         _buildFormatter: function () {
@@ -77,7 +121,9 @@
         addLine: function () {
           var ids = this.lines.map(function (l) { return parseInt(l.id, 10); }).filter(function (n) { return !isNaN(n); });
           var nextId = ids.length ? Math.max.apply(null, ids) + 1 : 1;
-          this.lines.push(window.InvioState.defaultLine(nextId));
+          var line = window.InvioState.defaultLine(nextId);
+          if (this.vatRateLocked) line.vatRate = 0;
+          this.lines.push(line);
         },
         removeLine: function (index) { if (this.lines.length <= 1) return; this.lines.splice(index, 1); },
         clampQuantity: function (line) { var v = Number(line.quantity); if (isNaN(v) || v < 0) line.quantity = 0; },
@@ -104,6 +150,16 @@
         summaryDiscountTotal: function () { var self = this; return this.lines.reduce(function (s, l) { return s + self.getDiscount(l); }, 0); },
         summaryTaxBreakdown: function () {
           var self = this;
+          var scenario = this.vatScenario;
+          if (scenario === 'intra_eu_rc') {
+            return [{ categoryCode: 'AE', rate: 0, amount: 0, label: 'VAT (Reverse charged)' }];
+          }
+          if (scenario === 'export') {
+            return [{ categoryCode: 'Z', rate: 0, amount: 0, label: 'VAT (Zero rated)' }];
+          }
+          if (scenario === 'no_vat_seller') {
+            return [{ categoryCode: 'O', rate: 0, amount: 0, label: 'VAT (Not applicable)' }];
+          }
           var buckets = {};
           this.lines.forEach(function (line) {
             var rate = Number(line.vatRate) || 0;
@@ -126,7 +182,11 @@
           this.showDiscount = !this.showDiscount;
           if (!this.showDiscount) this.lines.forEach(function (line) { line.discountAmount = 0; });
         },
-        syncNote: function () { if (window.__invioDraft) window.__invioDraft.header.note = this.noteText || null; }
+        syncNote: function () {
+          if (window.__invioDraft) {
+            window.__invioDraft.header.note = this.noteText || null;
+          }
+        }
       };
     });
   });
@@ -148,6 +208,8 @@
       var typeSelect = document.getElementById('invoice-type-select');
       var currencySelect = document.getElementById('invoice-currency-select');
       var paymentSelect = document.getElementById('payment-type-select');
+      var noteEl = document.getElementById('invoice-note');
+      var taxPointEl = document.getElementById('tax-point-date');
       if (invNum) d.header.invoiceNumber = (invNum.value || '').trim();
       if (payRef) d.payment.paymentId = (payRef.value || '').trim() || null;
       if (issueDate) d.header.issueDate = (issueDate.value || '').trim() || d.header.issueDate;
@@ -155,6 +217,8 @@
       if (typeSelect && typeSelect.value) d.header.typeCode = typeSelect.value;
       if (currencySelect && currencySelect.value) d.header.currencyCode = currencySelect.value;
       if (paymentSelect && paymentSelect.value) d.payment.meansTypeCode = paymentSelect.value;
+      if (noteEl) d.header.note = (noteEl.value || '').trim() || null;
+      if (taxPointEl && taxPointEl.value) d.header.taxPointDate = taxPointEl.value.trim();
     };
   }
 

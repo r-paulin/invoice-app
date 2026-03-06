@@ -86,6 +86,12 @@ function buildInvoiceXML(draft, computed, settings) {
   addChild(root, elCbc(doc, 'ID', h.invoiceNumber));
   addChild(root, elCbc(doc, 'IssueDate', h.issueDate));
   if (h.dueDate) addChild(root, elCbc(doc, 'DueDate', h.dueDate));
+  var scenario = (typeof window !== 'undefined' && window.Invio && window.Invio.euVat)
+    ? window.Invio.euVat.getVatScenarioFromDraft(draft)
+    : 'domestic';
+  if (scenario === 'intra_eu_rc' && (h.taxPointDate || h.issueDate)) {
+    addChild(root, elCbc(doc, 'TaxPointDate', h.taxPointDate || h.issueDate));
+  }
   addChild(root, elCbc(doc, 'InvoiceTypeCode', h.typeCode || '380'));
 
   // —— 2. Note(s) [0..*] ——
@@ -184,22 +190,69 @@ function buildInvoiceXML(draft, computed, settings) {
   }
   addChild(root, paymentMeans);
 
-  // —— 8. TaxTotal [0..*] (BG-23) ——
+  // —— 8. TaxTotal [0..*] (BG-23) — scenario-aware ——
+  var docTotalVat = totals.totalVat;
+  var docTaxExclusive = totals.taxExclusive;
+  if (scenario === 'no_vat_seller' || scenario === 'intra_eu_rc' || scenario === 'export') {
+    docTotalVat = 0;
+  }
   const taxTotal = elCac(doc, 'TaxTotal');
-  addChild(taxTotal, elCbc(doc, 'TaxAmount', totals.totalVat.toFixed(2), { currencyID: cc }));
-  (totals.vatBreakdown || []).forEach(vb => {
+  addChild(taxTotal, elCbc(doc, 'TaxAmount', docTotalVat.toFixed(2), { currencyID: cc }));
+  if (scenario === 'no_vat_seller') {
     const sub = elCac(doc, 'TaxSubtotal');
-    addChild(sub, elCbc(doc, 'TaxableAmount', vb.taxableAmount.toFixed(2), { currencyID: cc }));
-    addChild(sub, elCbc(doc, 'TaxAmount', vb.taxAmount.toFixed(2), { currencyID: cc }));
+    addChild(sub, elCbc(doc, 'TaxableAmount', docTaxExclusive.toFixed(2), { currencyID: cc }));
+    addChild(sub, elCbc(doc, 'TaxAmount', '0.00', { currencyID: cc }));
     const cat = elCac(doc, 'TaxCategory');
-    addChild(cat, elCbc(doc, 'ID', vb.categoryCode));
-    if (vb.rate != null) addChild(cat, elCbc(doc, 'Percent', String(vb.rate)));
+    addChild(cat, elCbc(doc, 'ID', 'O'));
+    addChild(cat, elCbc(doc, 'Percent', '0'));
     const taxScheme = elCac(doc, 'TaxScheme');
     addChild(taxScheme, elCbc(doc, 'ID', 'VAT'));
     addChild(cat, taxScheme);
     addChild(sub, cat);
     addChild(taxTotal, sub);
-  });
+  } else if (scenario === 'intra_eu_rc') {
+    const sub = elCac(doc, 'TaxSubtotal');
+    addChild(sub, elCbc(doc, 'TaxableAmount', docTaxExclusive.toFixed(2), { currencyID: cc }));
+    addChild(sub, elCbc(doc, 'TaxAmount', '0.00', { currencyID: cc }));
+    const cat = elCac(doc, 'TaxCategory');
+    addChild(cat, elCbc(doc, 'ID', 'AE'));
+    addChild(cat, elCbc(doc, 'Percent', '0'));
+    addChild(cat, elCbc(doc, 'TaxExemptionReasonCode', 'VATEX-EU-AE'));
+    addChild(cat, elCbc(doc, 'TaxExemptionReason', 'Reverse charge'));
+    const taxScheme = elCac(doc, 'TaxScheme');
+    addChild(taxScheme, elCbc(doc, 'ID', 'VAT'));
+    addChild(cat, taxScheme);
+    addChild(sub, cat);
+    addChild(taxTotal, sub);
+  } else if (scenario === 'export') {
+    const sub = elCac(doc, 'TaxSubtotal');
+    addChild(sub, elCbc(doc, 'TaxableAmount', docTaxExclusive.toFixed(2), { currencyID: cc }));
+    addChild(sub, elCbc(doc, 'TaxAmount', '0.00', { currencyID: cc }));
+    const cat = elCac(doc, 'TaxCategory');
+    addChild(cat, elCbc(doc, 'ID', 'Z'));
+    addChild(cat, elCbc(doc, 'Percent', '0'));
+    addChild(cat, elCbc(doc, 'TaxExemptionReasonCode', 'VATEX-EU-146'));
+    addChild(cat, elCbc(doc, 'TaxExemptionReason', 'Export outside the EU'));
+    const taxScheme = elCac(doc, 'TaxScheme');
+    addChild(taxScheme, elCbc(doc, 'ID', 'VAT'));
+    addChild(cat, taxScheme);
+    addChild(sub, cat);
+    addChild(taxTotal, sub);
+  } else {
+    (totals.vatBreakdown || []).forEach(function (vb) {
+      const sub = elCac(doc, 'TaxSubtotal');
+      addChild(sub, elCbc(doc, 'TaxableAmount', vb.taxableAmount.toFixed(2), { currencyID: cc }));
+      addChild(sub, elCbc(doc, 'TaxAmount', vb.taxAmount.toFixed(2), { currencyID: cc }));
+      const cat = elCac(doc, 'TaxCategory');
+      addChild(cat, elCbc(doc, 'ID', vb.categoryCode));
+      if (vb.rate != null) addChild(cat, elCbc(doc, 'Percent', String(vb.rate)));
+      const taxScheme = elCac(doc, 'TaxScheme');
+      addChild(taxScheme, elCbc(doc, 'ID', 'VAT'));
+      addChild(cat, taxScheme);
+      addChild(sub, cat);
+      addChild(taxTotal, sub);
+    });
+  }
   addChild(root, taxTotal);
 
   // —— 9. LegalMonetaryTotal [1..1] — schema: LineExtensionAmount, TaxExclusiveAmount, TaxInclusiveAmount, AllowanceTotalAmount, ChargeTotalAmount, PrepaidAmount, PayableRoundingAmount, PayableAmount ——
@@ -222,10 +275,28 @@ function buildInvoiceXML(draft, computed, settings) {
   addChild(monetary, elCbc(doc, 'PayableAmount', totals.payable.toFixed(2), { currencyID: cc }));
   addChild(root, monetary);
 
-  // —— 10. InvoiceLine(s) [1..*] — schema: ID, InvoicedQuantity, LineExtensionAmount, Item, Price ——
+  // —— 10. InvoiceLine(s) [1..*] — schema: ID, InvoicedQuantity, LineExtensionAmount, Item, Price (scenario-aware line tax) ——
   const lineNetsMap = {};
-  (totals.lineNets || []).forEach(ln => { lineNetsMap[ln.id] = ln.lineNet; });
-  (draft.lines || []).forEach(line => {
+  (totals.lineNets || []).forEach(function (ln) { lineNetsMap[ln.id] = ln.lineNet; });
+  (draft.lines || []).forEach(function (line) {
+    var lineCat = line.vatCategoryCode || 'S';
+    var lineRate = line.vatRate;
+    if (scenario === 'no_vat_seller') {
+      lineCat = 'O';
+      lineRate = 0;
+    } else if (scenario === 'intra_eu_rc') {
+      if (Number(line.vatRate) !== 0 && typeof console !== 'undefined' && console.warn) {
+        console.warn('Invoice line had non-zero VAT rate under intra-EU reverse charge; output as 0/AE');
+      }
+      lineCat = 'AE';
+      lineRate = 0;
+    } else if (scenario === 'export') {
+      if (Number(line.vatRate) !== 0 && typeof console !== 'undefined' && console.warn) {
+        console.warn('Invoice line had non-zero VAT rate under export; output as 0/Z');
+      }
+      lineCat = 'Z';
+      lineRate = 0;
+    }
     const lineEl = elCac(doc, 'InvoiceLine');
     addChild(lineEl, elCbc(doc, 'ID', line.id));
     const qty = elCbc(doc, 'InvoicedQuantity', String(line.quantity));
@@ -236,8 +307,8 @@ function buildInvoiceXML(draft, computed, settings) {
     if (line.itemDescription) addChild(item, elCbc(doc, 'Description', line.itemDescription));
     addChild(item, elCbc(doc, 'Name', line.itemName));
     const taxCat = elCac(doc, 'ClassifiedTaxCategory');
-    addChild(taxCat, elCbc(doc, 'ID', line.vatCategoryCode || 'S'));
-    if (line.vatRate != null) addChild(taxCat, elCbc(doc, 'Percent', String(line.vatRate)));
+    addChild(taxCat, elCbc(doc, 'ID', lineCat));
+    if (lineRate != null) addChild(taxCat, elCbc(doc, 'Percent', String(lineRate)));
     const lineTaxScheme = elCac(doc, 'TaxScheme');
     addChild(lineTaxScheme, elCbc(doc, 'ID', 'VAT'));
     addChild(taxCat, lineTaxScheme);

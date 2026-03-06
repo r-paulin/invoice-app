@@ -30,7 +30,8 @@ function defaultHeader() {
     profileId: PEPPOL_PROFILE_ID,
     dueDate: due.toISOString().slice(0, 10),
     buyerReference: null,
-    note: null
+    note: null,
+    taxPointDate: null
   };
 }
 
