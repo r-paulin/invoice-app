@@ -204,12 +204,13 @@
     html += '<h4 class="' + role + '-summary__title">' + escapeHtml(name) + '</h4>';
 
     var reg = (entity.legalRegistrationId || '').trim();
+    if (reg) {
+      html += '<p class="' + role + '-summary__text"><span class="summary__label">Registration number:</span> ' + escapeHtml(reg) + '</p>';
+    }
+
     var vat = (entity.vatId || '').trim();
-    if (reg || vat) {
-      var parts = [];
-      if (reg) parts.push('Registration number: ' + reg);
-      if (vat) parts.push('Tax number: ' + vat);
-      html += '<p class="' + role + '-summary__text">' + escapeHtml(parts.join(', ')) + '</p>';
+    if (vat) {
+      html += '<p class="' + role + '-summary__text"><span class="summary__label">Tax ID:</span> ' + escapeHtml(vat) + '</p>';
     }
 
     var line1 = (a.line1 || '').trim();
@@ -222,7 +223,7 @@
       if (co && co.name) countryName = co.name;
     }
     if (line1 || city || postal || countryName) {
-      html += '<p class="' + role + '-summary__text" aria-label="Address">' + escapeHtml([line1, city, postal, countryName].filter(Boolean).join(', ')) + '</p>';
+      html += '<p class="' + role + '-summary__text" aria-label="Address"><span class="summary__label">Address:</span> ' + escapeHtml([line1, city, postal, countryName].filter(Boolean).join(', ')) + '</p>';
     }
 
     var bankAccounts = role === 'seller'
@@ -233,19 +234,21 @@
       if (!iban) return;
       var bn = (acc.bankName || '').trim();
       var line = bn ? iban + ' \u2013 ' + bn : iban;
-      html += '<p class="' + role + '-summary__text"' + (idx === 0 ? ' aria-label="Bank account"' : '') + '>' + escapeHtml(line) + '</p>';
+      html += '<p class="' + role + '-summary__text"' + (idx === 0 ? ' aria-label="Bank account"' : '') + '><span class="summary__label">Bank account:</span> ' + escapeHtml(line) + '</p>';
     });
 
     var phone = (c.phone || '').trim();
     var email = (c.email || '').trim();
     var websiteDisplay = (c.website && window.InvioValidation && window.InvioValidation.urlToDisplayDomain)
       ? window.InvioValidation.urlToDisplayDomain(c.website) : '';
-    if (phone || email || websiteDisplay) {
-      var cp = [];
-      if (phone) cp.push('Phone: ' + phone);
-      if (email) cp.push('Email: ' + email);
-      if (websiteDisplay) cp.push('Website: ' + websiteDisplay);
-      html += '<p class="' + role + '-summary__text" aria-label="Contacts">' + escapeHtml(cp.join(' ')) + '</p>';
+    if (phone) {
+      html += '<p class="' + role + '-summary__text"><span class="summary__label">Phone:</span> ' + escapeHtml(phone) + '</p>';
+    }
+    if (email) {
+      html += '<p class="' + role + '-summary__text"><span class="summary__label">Email:</span> ' + escapeHtml(email) + '</p>';
+    }
+    if (websiteDisplay) {
+      html += '<p class="' + role + '-summary__text"><span class="summary__label">Website:</span> ' + escapeHtml(websiteDisplay) + '</p>';
     }
 
     html += '<button type="button" class="btn btn--secondary ' + role + '-summary__edit" ' + triggerAttr + ' aria-label="Edit ' + role + ' details"><span class="btn__label">Edit</span></button>';

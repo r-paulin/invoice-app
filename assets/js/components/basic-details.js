@@ -50,6 +50,13 @@
           this.$store.draft.header.dueDate = v;
         },
 
+        get taxPointDate() {
+          return this.$store.draft.header.taxPointDate || '';
+        },
+        set taxPointDate(v) {
+          this.$store.draft.header.taxPointDate = (v && v.trim()) ? v.trim() : null;
+        },
+
         get dueMin() {
           var today = todayISO();
           var issue = this.issueDate || today;

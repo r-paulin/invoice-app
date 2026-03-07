@@ -27,9 +27,6 @@
   <meta property="og:title" content="Invoce – Online Invoice Generator | Free PDF & E-Invoice Tool">
   <meta property="og:description" content="Create professional PDF invoices and EU-compliant e-invoices in seconds — free, no sign-up, no software. Built for European freelancers, sole traders, and small businesses. VAT-ready, Peppol-compatible.">
   <meta property="og:image" content="assets/img/Logotype.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,0,0&display=block">
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" integrity="sha384-Rpe/8orFUm5Q1GplYBHxbuA8Az8O8C5sAoOsdbRWkqPjKFaxPgGZipj4zeHL7lxX" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
@@ -185,9 +182,10 @@
                       </div>
                       <div class="form-group form-field" x-data="focusField" :class="{ 'is-focused': focused }" @focusin="onFocusin()" @focusout="onFocusout()">
                         <label for="seller-vat"><span class="form-label">Tax number <span class="required-mark" x-show="sellerTab === 'individual'" x-cloak>*</span><span class="label-optional" x-show="sellerTab === 'organisation'">(Optional)</span></span></label>
-                        <input class="form-control" type="text" name="seller-vat" id="seller-vat" :required="sellerTab === 'individual'" placeholder="Enter tax number" aria-describedby="seller-vat-error seller-vat-format-hint">
+                        <input class="form-control" type="text" name="seller-vat" id="seller-vat" :required="sellerTab === 'individual'" placeholder="Enter tax number" aria-describedby="seller-vat-error seller-vat-format-hint seller-vat-no-vat-hint">
                         <span class="field-error form-error field-error-reserved" id="seller-vat-error" role="alert" aria-live="polite" hidden x-cloak></span>
                         <small class="field-helper form-help" id="seller-vat-format-hint" aria-live="polite" hidden>Make sure your tax number includes all required characters and no extra spaces</small>
+                        <small class="field-helper form-help" id="seller-vat-no-vat-hint" aria-live="polite" x-show="!($store.draft.seller.vatId && $store.draft.seller.vatId.trim())" x-cloak x-transition>Without a VAT ID, VAT won't be added to this invoice. Reverse charge does not apply.</small>
                       </div>
                       <div class="form-group form-field" x-data="focusField" :class="{ 'is-focused': focused }" @focusin="onFocusin()" @focusout="onFocusout()">
                         <label for="seller-street"><span class="form-label">Address <span class="required-mark">*</span></span></label>
@@ -339,9 +337,12 @@
                       </div>
                       <div class="form-group form-field" x-data="focusField" :class="{ 'is-focused': focused }" @focusin="onFocusin()" @focusout="onFocusout()">
                         <label for="buyer-vat"><span class="form-label">Tax number <span class="required-mark" x-show="buyerTab === 'individual'" x-cloak>*</span><span class="label-optional" x-show="buyerTab === 'organisation'">(Optional)</span></span></label>
-                        <input class="form-control" type="text" name="buyer-vat" id="buyer-vat" :required="buyerTab === 'individual'" placeholder="Enter tax number" aria-describedby="buyer-vat-error buyer-vat-format-hint">
+                        <input class="form-control" type="text" name="buyer-vat" id="buyer-vat" :required="buyerTab === 'individual'" placeholder="Enter tax number" aria-describedby="buyer-vat-error buyer-vat-format-hint buyer-vat-rc-hint buyer-vat-format-warning buyer-vat-ni-hint">
                         <span class="field-error form-error field-error-reserved" id="buyer-vat-error" role="alert" aria-live="polite" hidden x-cloak></span>
                         <small class="field-helper form-help" id="buyer-vat-format-hint" aria-live="polite" hidden>Make sure your tax number includes all required characters and no extra spaces</small>
+                        <small class="field-helper form-help" id="buyer-vat-rc-hint" aria-live="polite" x-show="$store.euVat && $store.euVat.vatScenario === 'intra_eu_b2c'" x-cloak x-transition>Enter the buyer's VAT ID to use reverse charge</small>
+                        <small class="field-helper form-help" id="buyer-vat-format-warning" aria-live="polite" x-show="($store.draft.buyer.vatId && window.Invio && window.Invio.euVat && window.Invio.euVat.vatIdFormatWarning($store.draft.buyer.vatId, ($store.draft.buyer.address || {}).countryCode))" x-cloak x-transition x-text="(window.Invio && window.Invio.euVat) ? (window.Invio.euVat.vatIdFormatWarning($store.draft.buyer.vatId, ($store.draft.buyer.address || {}).countryCode) || '') : ''"></small>
+                        <small class="field-helper form-help" id="buyer-vat-ni-hint" aria-live="polite" x-show="window.Invio && window.Invio.euVat && window.Invio.euVat.isNorthernIreland(($store.draft.buyer.address || {}).countryCode, $store.draft.buyer.vatId)" x-cloak x-transition>Northern Ireland (XI) has special VAT status under the Windsor Framework.</small>
                       </div>
                       <div class="form-group form-field" x-data="focusField" :class="{ 'is-focused': focused }" @focusin="onFocusin()" @focusout="onFocusout()">
                         <label for="buyer-street"><span class="form-label">Address <span class="required-mark">*</span></span></label>
@@ -490,7 +491,7 @@
                           </td>
                           <td class="cell-taxrate cell-right">
                             <div class="taxrate-group">
-                              <input class="taxrate-input" type="number" step="any" min="0" x-model.number="line.vatRate" @change="clampVatRate(line)" :aria-label="'Tax rate, line ' + (i + 1)">
+                              <input class="taxrate-input" type="number" step="any" min="0" x-model.number="line.vatRate" @change="clampVatRate(line)" :disabled="vatRateLocked" :aria-label="'Tax rate, line ' + (i + 1)">
                               <span class="taxrate-symbol">%</span>
                             </div>
                           </td>
@@ -525,10 +526,10 @@
                     <span>Discount</span>
                     <span class="sum-amount" x-text="'- ' + fmtCurrency(summaryDiscountTotal())"></span>
                   </div>
-                  <template x-for="tax in summaryTaxBreakdown()" :key="tax.categoryCode + tax.rate">
+                  <template x-for="tax in summaryTaxBreakdown()" :key="(tax.label || '') + tax.categoryCode + tax.rate">
                     <div class="sum-row">
-                      <span>Tax <span class="sum-tax-rate" x-text="tax.rate + '%'"></span></span>
-                      <span class="sum-amount" x-text="fmtCurrency(tax.amount)"></span>
+                      <span x-text="tax.label || ('Tax ' + tax.rate + '%')"></span>
+                      <span class="sum-amount" x-text="tax.label ? '—' : fmtCurrency(tax.amount)"></span>
                     </div>
                   </template>
                   <div class="sum-row sum-total">
@@ -545,9 +546,13 @@
                 <p class="section-helper form-help" id="invoice-note-hint">Add any free-form text you'd like to display on the invoice, such as payment instructions, a thank-you note, or special terms.</p>
               </div>
               <div class="section-content">
+                <p class="field-helper form-help hint" id="invoice-note-export-hint" aria-live="polite" x-show="$store.euVat && $store.euVat.vatScenario === 'export'" x-cloak x-transition>Zero-rated export (Article 146, EU VAT Directive 2006/112/EC)</p>
                 <div class="form-group form-field">
                   <label for="invoice-note" class="visually-hidden">Note</label>
-                  <textarea id="invoice-note" class="note-textarea" placeholder="Enter note" x-model="noteText" @input="syncNote()" aria-label="Invoice note" aria-describedby="invoice-note-hint"></textarea>
+                  <textarea id="invoice-note" class="note-textarea" :placeholder="notePlaceholder()" x-model="noteText" @input="syncNote()" aria-label="Invoice note" aria-describedby="invoice-note-hint invoice-note-scenario-hint"></textarea>
+                  <small class="field-helper form-help" id="invoice-note-scenario-hint" aria-live="polite" x-show="$store.euVat && $store.euVat.vatScenario === 'no_vat_seller'" x-cloak x-transition>Suggestion: No VAT applies because the seller is not VAT registered</small>
+                  <small class="field-helper form-help" id="invoice-note-rc-hint" aria-live="polite" x-show="$store.euVat && $store.euVat.vatScenario === 'intra_eu_rc'" x-cloak x-transition>Suggestion: This transaction uses reverse charge. The buyer is responsible for VAT</small>
+                  <small class="field-helper form-help" id="invoice-note-b2c-hint" aria-live="polite" x-show="$store.euVat && $store.euVat.vatScenario === 'intra_eu_b2c'" x-cloak x-transition>Suggestion: Local VAT is charged because no VAT ID was provided</small>
                 </div>
               </div>
             </section>
@@ -732,6 +737,7 @@
   <script src="assets/js/components/style-section.js"></script>
   <script src="assets/js/components/lang-switcher.js"></script>
   <script src="assets/js/state.js"></script>
+  <script src="assets/js/utils/eu-vat.js"></script>
   <script src="assets/js/stores/draft.js"></script>
   <script src="assets/js/components/basic-details.js"></script>
   <script src="assets/js/utils/countries.js"></script>
