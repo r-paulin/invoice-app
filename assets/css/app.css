@@ -1828,6 +1828,95 @@ input::placeholder {
   text-align: center;
 }
 
+/* FAQ — native <details>/<summary>, toggle icon via CSS */
+.faq {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  min-width: 0;
+}
+
+.faq__item {
+  border: 1px solid var(--grey-300, oklch(0.88 0 0 / 0.2));
+  border-radius: var(--radius-md, 0.25rem);
+  margin-bottom: 0.75rem;
+}
+
+.faq__item:last-child {
+  margin-bottom: 0;
+}
+
+.faq__question {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.35;
+  list-style: none;
+  cursor: pointer;
+  min-height: 2.5rem;
+}
+
+.faq__question::-webkit-details-marker,
+.faq__question::marker {
+  display: none;
+}
+
+.faq__question::after {
+  content: "";
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-left: auto;
+  background-image: url("../img/plus.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.faq__item[open] .faq__question::after {
+  background-image: url("../img/x.svg");
+}
+
+.faq__question:focus-visible {
+  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.faq__answer {
+  padding: 0 1.25rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.faq__answer p,
+.faq__answer ul {
+  margin: 0 0 0.75rem;
+}
+
+.faq__answer p:last-child,
+.faq__answer ul:last-child {
+  margin-bottom: 0;
+}
+
+.faq__answer ul {
+  padding-left: 1.25rem;
+}
+
+.faq__answer li {
+  margin-bottom: 0.25rem;
+}
+
+.faq h2 {
+  font-size: 1.6875rem;
+  font-weight: 600;
+  letter-spacing: -0.03125rem;
+  line-height: 1.1;
+  margin: 0 0 1rem;
+}
+
 .foot {
   position: relative;
   overflow: hidden;
