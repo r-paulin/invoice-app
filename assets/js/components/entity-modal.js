@@ -303,7 +303,7 @@
       bottomSheet = window.BottomSheet.createBottomSheet({
         content: sheetTemplate.innerHTML,
         shouldShowHandle: false,
-        backdropColor: 'rgba(0, 0, 0, 0.4)',
+        backdropColor: 'oklch(0 0 0 / 0.4)',
         rootClass: role + '-sheet-root',
         containerClass: role + '-sheet-container',
         contentWrapperClass: role + '-sheet-content-wrapper'
