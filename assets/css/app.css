@@ -424,6 +424,8 @@ h3{
   flex-shrink: 0;
   vertical-align: middle;
   display: block;
+  margin-left: 0.75em;
+  w
 }
 
 .hero {
@@ -518,15 +520,11 @@ h3{
 }
 
 .btn--icon-left {
-  gap: var(--btn-gap-icon);
   padding-left: var(--btn-padding-icon-start);
-  padding-right: var(--btn-padding-icon-end);
 }
 
 .btn--icon-right {
-  gap: var(--btn-gap-icon);
-  padding-left: var(--btn-padding-icon-end);
-  padding-right: var(--btn-padding-icon-start);
+  padding-right: var(--btn-padding-icon-end);
 }
 
 .btn--icon-only {
@@ -540,16 +538,6 @@ h3{
   min-height: 2rem;
   min-width: 0;
   padding: var(--space-sm) var(--btn-padding-icon-start);
-}
-
-.btn--sm.btn--icon-left {
-  padding-left: var(--btn-padding-icon-start);
-  padding-right: var(--btn-padding-icon-end);
-}
-
-.btn--sm.btn--icon-right {
-  padding-left: var(--btn-padding-icon-end);
-  padding-right: var(--btn-padding-icon-start);
 }
 
 .btn--pill {
@@ -1298,10 +1286,6 @@ input::placeholder {
 
 .chip-active .chip-icon {
   color: white;
-}
-
-.chip-active .chip-icon .chip-icon__img {
-  filter: brightness(0) invert(1);
 }
 
 .chip-active .chip-label {
@@ -2545,23 +2529,14 @@ input::placeholder {
 .seller-add-iban-anchor,
 .buyer-add-iban-anchor {
   anchor-name: --add-iban-btn;
-  color: var(--btn-secondary-text);
-}
-
-.seller-add-iban-anchor .btn__icon,
-.buyer-add-iban-anchor .btn__icon {
-  /* plus.svg is green; ensure it stays green when button is secondary */
-  filter: none;
+  color: var(--green-700);
+  font-weight: 600;
 }
 
 .seller-add-iban-anchor:hover:not(:disabled),
 .buyer-add-iban-anchor:hover:not(:disabled) {
+  color: var(--green-800);
   border-color: var(--grey-200);
-}
-
-.seller-add-iban-anchor:disabled .btn__icon,
-.buyer-add-iban-anchor:disabled .btn__icon {
-  filter: opacity(0.6);
 }
 
 .seller-add-iban-anchor:disabled,
@@ -2573,22 +2548,6 @@ input::placeholder {
 .seller-remove-iban,
 .buyer-remove-iban {
   align-self: flex-start;
-  color: var(--btn-secondary-text);
-}
-
-.seller-remove-iban .btn__icon,
-.buyer-remove-iban .btn__icon {
-  filter: brightness(0) saturate(100%) invert(42%) sepia(65%) saturate(800%) hue-rotate(105deg);
-}
-
-.seller-remove-iban:hover:not(:disabled) .btn__icon,
-.buyer-remove-iban:hover:not(:disabled) .btn__icon {
-  filter: brightness(0) saturate(100%) invert(35%) sepia(70%) saturate(800%) hue-rotate(105deg);
-}
-
-.seller-remove-iban:disabled .btn__icon,
-.buyer-remove-iban:disabled .btn__icon {
-  filter: brightness(0) saturate(100%) invert(75%) sepia(10%) saturate(500%) hue-rotate(100deg);
 }
 
 #seller-add-iban-tooltip,
