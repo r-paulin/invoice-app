@@ -89,7 +89,7 @@
   /* Shared button tokens (Figma node 1:4378) */
   --btn-height: 2.5rem;
   --btn-min-width: 5.625rem;
-  --btn-radius: 0.25rem;
+  --btn-radius: 999px;
   --btn-border-width: 0.0625rem;
   --btn-gap: var(--space-md);
   --btn-padding-y: 0.75rem;
