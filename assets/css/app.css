@@ -87,17 +87,17 @@
   --font-weight-optional: 500;
 
   /* Shared button tokens (Figma node 1:4378) */
-  --btn-height: 2.5rem;
-  --btn-min-width: 5.625rem;
+  --btn-height: 2.5em;
+  --btn-min-width: 5.625em;
   --btn-radius: 999px;
   --btn-border-width: 0.0625rem;
   --btn-gap: var(--space-md);
   --btn-padding-y: 0.75em;
   --btn-padding-x: 1.5em;
-  --btn-padding-icon-start: 0.5rem;
-  --btn-padding-icon-end: 1rem;
-  --btn-gap-icon: 0.25rem;
-  --btn-icon-size: 1.5em;
+  --btn-padding-icon-start: 0.5em;
+  --btn-padding-icon-end: 1em;
+  --btn-gap-icon: 0.25em;
+  --btn-icon-size: 1em;
   --btn-shadow: 0 0.0625em 0.125em oklch(0.18 0.005 286.4 / 0.05);
   --btn-active-scale: 0.975;
 
@@ -424,9 +424,6 @@ h3{
   flex-shrink: 0;
   vertical-align: middle;
   display: block;
-  margin-left: 0.75em;
-  width: 20px;
-  height: 20px;
 }
 
 .hero {
