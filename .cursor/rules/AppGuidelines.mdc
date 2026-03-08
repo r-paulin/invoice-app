@@ -97,7 +97,6 @@ Financial product. Accuracy, clarity, and maintainability are mandatory.
 - No temporary hacks in production.
 
 # 9. Icon Standards
-- **Material Symbols Only:** Use Material Symbols for UI icons.
-- **Style:** Use the rounded set (`Material Symbols Rounded`).
-- **Default Axes:** Use `opsz=20`, `wght=400`, `FILL=0`, `GRAD=0` unless a design explicitly requires otherwise.
-- **Consistency:** Keep icon style/axes consistent across buttons, inputs, and navigation controls.
+- **Local assets only:** Use SVG icons from `assets/img/` (e.g. `x.svg`, `trash.svg`, `chevron-down.svg`, `chevron-up.svg`, `plus.svg`, `calendar-fold.svg`). No icon font or runtime icon library.
+- **Usage:** Add `<img src="assets/img/icon-name.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true">` for button icons; for chevrons/selects use the same with a wrapper span that has the layout class (e.g. `<span class="select-chevron"><img src="assets/img/chevron-down.svg" ...></span>`).
+- **Consistency:** Keep icon size consistent; icon-only buttons must have an `aria-label`.

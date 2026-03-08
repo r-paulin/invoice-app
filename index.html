@@ -27,7 +27,6 @@
   <meta property="og:title" content="Invoce – Online Invoice Generator | Free PDF & E-Invoice Tool">
   <meta property="og:description" content="Create professional PDF invoices and EU-compliant e-invoices in seconds — free, no sign-up, no software. Built for European freelancers, sole traders, and small businesses. VAT-ready, Peppol-compatible.">
   <meta property="og:image" content="assets/img/Logotype.svg">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,0,0&display=block">
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" integrity="sha384-Rpe/8orFUm5Q1GplYBHxbuA8Az8O8C5sAoOsdbRWkqPjKFaxPgGZipj4zeHL7lxX" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
@@ -104,6 +103,7 @@
                     <label for="issue-date"><span class="form-label">Issue date <span class="required-mark">*</span></span></label>
                     <div class="date-field">
                       <input class="form-control" type="date" id="issue-date" name="issue-date" required aria-describedby="issue-date-hint" aria-label="Invoice issue date (YYYY-MM-DD)" x-model="issueDate" @change="onIssueDateChange()">
+                      <img src="assets/img/calendar-fold.svg" alt="" class="date-field__icon" width="20" height="20" aria-hidden="true">
                     </div>
                     <small class="field-helper form-help" id="issue-date-hint">Date the invoice is issued</small>
                   </div>
@@ -112,6 +112,7 @@
                     <div class="date-field" id="due-date-field">
                       <span class="date-updating" aria-live="polite" x-show="showDueDateUpdating" x-cloak>Updating…</span>
                       <input class="form-control" type="date" id="due-date" name="due-date" required aria-describedby="due-date-hint" aria-label="Due date (YYYY-MM-DD)" x-model="dueDate" :min="dueMin" @change="onDueDateChange()">
+                      <img src="assets/img/calendar-fold.svg" alt="" class="date-field__icon" width="20" height="20" aria-hidden="true">
                     </div>
                     <small class="field-helper form-help" id="due-date-hint">Payment due date</small>
                   </div>
@@ -126,7 +127,7 @@
                 <div class="card" id="seller-card">
                     <img src="assets/img/invoice-stack.webp" alt="Seller details illustration" class="card-image" width="248" height="auto">
                   <h3 id="seller-card-summary">Enter your business details</h3>
-                  <button type="button" class="btn btn--primary btn--icon-left" data-seller-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button>
+                  <button type="button" class="btn btn--primary" data-seller-modal-trigger><span class="btn__label">Add details</span></button>
                 </div>
               </div>
             </section>
@@ -136,7 +137,7 @@
                 <header class="seller-modal-header">
                   <h2 id="seller-dialog-title" class="seller-modal-title">Seller</h2>
                   <button type="button" class="btn btn--secondary btn--icon-only seller-modal-close" id="seller-close" aria-label="Close seller modal">
-                    <span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span>
+                    <img src="assets/img/x.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true">
                   </button>
                 </header>
                 <div class="seller-modal-tabs" role="tablist">
@@ -146,9 +147,9 @@
                 <form id="seller-form" class="seller-form" novalidate role="tabpanel" :aria-labelledby="sellerTab === 'organisation' ? 'seller-tab-organisation' : 'seller-tab-individual'">
                   <div class="seller-form-alert-wrap" x-show="$store.sellerFormAlert.show" x-cloak>
                     <div class="seller-form-alert" id="seller-form-errors" role="alert" tabindex="-1" aria-live="polite" :aria-hidden="!$store.sellerFormAlert.show ? 'true' : 'false'">
-                      <span class="seller-form-alert__icon" aria-hidden="true"><span class="material-symbols-rounded" aria-hidden="true">warning</span></span>
+                      <span class="seller-form-alert__icon" aria-hidden="true">&#x26A0;</span>
                       <span class="seller-form-alert__message" x-text="$store.sellerFormAlert.message"></span>
-                      <button type="button" class="seller-form-alert__dismiss" aria-label="Dismiss error" @click="$store.sellerFormAlert.show = false; $store.sellerFormAlert.message = ''"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
+                      <button type="button" class="seller-form-alert__dismiss" aria-label="Dismiss error" @click="$store.sellerFormAlert.show = false; $store.sellerFormAlert.message = ''"><img src="assets/img/x.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true"></button>
                     </div>
                   </div>
                   <div class="seller-modal-section">
@@ -163,7 +164,7 @@
                               <option value="">Select country</option>
                             </select>
                           </span>
-                          <span class="material-symbols-rounded country-select-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                          <span class="country-select-chevron"><img src="assets/img/chevron-down.svg" alt="" width="20" height="20" aria-hidden="true"></span>
                         </div>
                         <small class="field-helper form-help" id="seller-country-hint">Country of registration</small>
                         <span class="field-error form-error field-error-reserved" id="seller-country-error" role="alert" aria-live="polite" hidden x-cloak></span>
@@ -213,7 +214,7 @@
                   <div>
                     <div class="seller-section-title">Payment details</div>
                     <div class="seller-payment-add-wrap">
-                      <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left seller-add-iban-anchor" id="seller-add-iban" :disabled="$store.sellerBankAccounts.length >= 6" :title="$store.sellerBankAccounts.length >= 6 ? 'Max number of 6 bank accounts are allowed.' : null" :aria-describedby="$store.sellerBankAccounts.length >= 6 ? 'seller-add-iban-tooltip' : null" @click="addAccount()"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add bank account</span></button>
+                      <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left seller-add-iban-anchor" id="seller-add-iban" :disabled="$store.sellerBankAccounts.length >= 6" :title="$store.sellerBankAccounts.length >= 6 ? 'Max number of 6 bank accounts are allowed.' : null" :aria-describedby="$store.sellerBankAccounts.length >= 6 ? 'seller-add-iban-tooltip' : null" @click="addAccount()"><img src="assets/img/plus.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true"><span class="btn__label">Add bank account</span></button>
                       <span id="seller-add-iban-tooltip" class="seller-add-iban-tooltip" role="tooltip" x-show="$store.sellerBankAccounts.length >= 6" x-cloak>Max number of 6 bank accounts are allowed.</span>
                     </div>
                     </div>
@@ -232,7 +233,7 @@
                               <label :for="'seller-iban-bank-' + index"><span class="form-label">Bank name</span> <span class="label-optional">(Optional)</span></label>
                               <input class="form-control" :id="'seller-iban-bank-' + index" type="text" x-model="account.bankName" placeholder="Enter bank name" :name="'iban-bank-' + index">
                             </div>
-                            <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left seller-remove-iban" @click="removeAccount(index)" :aria-label="'Remove bank account ' + (index + 1)" x-show="$store.sellerBankAccounts.length > 1" x-cloak><span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span><span class="btn__label">Remove</span></button>
+                            <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left seller-remove-iban" @click="removeAccount(index)" :aria-label="'Remove bank account ' + (index + 1)" x-show="$store.sellerBankAccounts.length > 1" x-cloak><img src="assets/img/x.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true"><span class="btn__label">Remove</span></button>
                           </div>
                         </template>
                       </div>
@@ -254,7 +255,7 @@
                             <select class="form-control form-select phone-country-select" id="seller-phone-country" name="seller-phone-country" aria-label="Phone country code">
                               <option value="">Select</option>
                             </select>
-                            <span class="material-symbols-rounded phone-country-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                            <span class="phone-country-chevron"><img src="assets/img/chevron-down.svg" alt="" width="20" height="20" aria-hidden="true"></span>
                           </div>
                           <input class="form-control phone-number-input" type="tel" inputmode="tel" name="seller-phone" id="seller-phone" placeholder="222222" aria-labelledby="seller-phone-label" aria-describedby="seller-phone-error" autocomplete="tel-national">
                         </div>
@@ -281,7 +282,7 @@
                 <div class="card" id="buyer-card">
                   <img src="assets/img/invoice-stack-signed.webp" alt="Invoice details artwork" class="card-image" width="248" height="auto">
                   <h3 id="buyer-card-summary">Enter your customers details</h3>
-                  <button type="button" class="btn btn--primary btn--icon-left" data-buyer-modal-trigger><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button>
+                  <button type="button" class="btn btn--primary" data-buyer-modal-trigger><span class="btn__label">Add details</span></button>
                 </div>
               </div>
             </section>
@@ -291,7 +292,7 @@
                 <header class="buyer-modal-header">
                   <h2 id="buyer-dialog-title" class="buyer-modal-title">Buyer</h2>
                   <button type="button" class="btn btn--secondary btn--icon-only buyer-modal-close" id="buyer-close" aria-label="Close buyer modal">
-                    <span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span>
+                    <img src="assets/img/x.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true">
                   </button>
                 </header>
                 <div class="buyer-modal-tabs" role="tablist">
@@ -301,9 +302,9 @@
                 <form id="buyer-form" class="buyer-form" novalidate role="tabpanel" :aria-labelledby="buyerTab === 'organisation' ? 'buyer-tab-organisation' : 'buyer-tab-individual'">
                   <div class="buyer-form-alert-wrap" x-show="$store.buyerFormAlert.show" x-cloak>
                     <div class="buyer-form-alert" id="buyer-form-errors" role="alert" tabindex="-1" aria-live="polite" :aria-hidden="!$store.buyerFormAlert.show ? 'true' : 'false'">
-                      <span class="buyer-form-alert__icon" aria-hidden="true"><span class="material-symbols-rounded" aria-hidden="true">warning</span></span>
+                      <span class="buyer-form-alert__icon" aria-hidden="true">&#x26A0;</span>
                       <span class="buyer-form-alert__message" x-text="$store.buyerFormAlert.message"></span>
-                      <button type="button" class="buyer-form-alert__dismiss" aria-label="Dismiss error" @click="$store.buyerFormAlert.show = false; $store.buyerFormAlert.message = ''"><span class="material-symbols-rounded" aria-hidden="true">close</span></button>
+                      <button type="button" class="buyer-form-alert__dismiss" aria-label="Dismiss error" @click="$store.buyerFormAlert.show = false; $store.buyerFormAlert.message = ''"><img src="assets/img/x.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true"></button>
                     </div>
                   </div>
                   <div class="buyer-modal-section">
@@ -318,7 +319,7 @@
                               <option value="">Select country</option>
                             </select>
                           </span>
-                          <span class="material-symbols-rounded country-select-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                          <span class="country-select-chevron"><img src="assets/img/chevron-down.svg" alt="" width="20" height="20" aria-hidden="true"></span>
                         </div>
                         <small class="field-helper form-help" id="buyer-country-hint">Country of registration</small>
                         <span class="field-error form-error field-error-reserved" id="buyer-country-error" role="alert" aria-live="polite" hidden x-cloak></span>
@@ -370,7 +371,7 @@
                   <div>
                     <div class="buyer-section-title">Payment details</div>
                     <div class="buyer-payment-add-wrap">
-                      <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left buyer-add-iban-anchor" id="buyer-add-iban" :disabled="$store.buyerBankAccounts.length >= 6" :title="$store.buyerBankAccounts.length >= 6 ? 'Max number of 6 bank accounts are allowed.' : null" :aria-describedby="$store.buyerBankAccounts.length >= 6 ? 'buyer-add-iban-tooltip' : null" @click="addAccount()"><span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add bank account</span></button>
+                      <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left buyer-add-iban-anchor" id="buyer-add-iban" :disabled="$store.buyerBankAccounts.length >= 6" :title="$store.buyerBankAccounts.length >= 6 ? 'Max number of 6 bank accounts are allowed.' : null" :aria-describedby="$store.buyerBankAccounts.length >= 6 ? 'buyer-add-iban-tooltip' : null" @click="addAccount()"><img src="assets/img/plus.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true"><span class="btn__label">Add bank account</span></button>
                       <span id="buyer-add-iban-tooltip" class="buyer-add-iban-tooltip" role="tooltip" x-show="$store.buyerBankAccounts.length >= 6" x-cloak>Max number of 6 bank accounts are allowed.</span>
                     </div>
                     </div>
@@ -389,7 +390,7 @@
                               <label :for="'buyer-iban-bank-' + index"><span class="form-label">Bank name</span> <span class="label-optional">(Optional)</span></label>
                               <input class="form-control" :id="'buyer-iban-bank-' + index" type="text" x-model="account.bankName" placeholder="Enter bank name" :name="'iban-bank-' + index">
                             </div>
-                            <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left buyer-remove-iban" @click="removeAccount(index)" :aria-label="'Remove bank account ' + (index + 1)" x-show="$store.buyerBankAccounts.length > 1" x-cloak><span class="material-symbols-rounded btn__icon" aria-hidden="true">close</span><span class="btn__label">Remove</span></button>
+                            <button type="button" class="btn btn--secondary btn--sm btn--pill btn--icon-left buyer-remove-iban" @click="removeAccount(index)" :aria-label="'Remove bank account ' + (index + 1)" x-show="$store.buyerBankAccounts.length > 1" x-cloak><img src="assets/img/x.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true"><span class="btn__label">Remove</span></button>
                           </div>
                         </template>
                       </div>
@@ -411,7 +412,7 @@
                             <select class="form-control form-select phone-country-select" id="buyer-phone-country" name="buyer-phone-country" aria-label="Phone country code">
                               <option value="">Select</option>
                             </select>
-                            <span class="material-symbols-rounded phone-country-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                            <span class="phone-country-chevron"><img src="assets/img/chevron-down.svg" alt="" width="20" height="20" aria-hidden="true"></span>
                           </div>
                           <input class="form-control phone-number-input" type="tel" inputmode="tel" name="buyer-phone" id="buyer-phone" placeholder="222222" aria-labelledby="buyer-phone-label" aria-describedby="buyer-phone-error" autocomplete="tel-national">
                         </div>
@@ -439,7 +440,8 @@
                 <div class="chips">
                   <span class="chips-title">Add fields:</span>
                   <button type="button" class="chip-toggle" :class="showDiscount ? 'chip-active' : 'chip-inactive'" @click="toggleDiscount()" :aria-pressed="String(showDiscount)" aria-label="Toggle discount column">
-                    <span class="material-symbols-rounded chip-icon" aria-hidden="true" x-text="showDiscount ? 'close' : 'add'"></span>
+                    <span class="chip-icon" aria-hidden="true" x-show="!showDiscount"><img src="assets/img/plus.svg" alt="" class="chip-icon__img" width="20" height="20"></span>
+                    <span class="chip-icon" aria-hidden="true" x-show="showDiscount" x-cloak><img src="assets/img/x.svg" alt="" class="chip-icon__img" width="20" height="20"></span>
                     <span class="chip-label">Discount</span>
                   </button>
                 </div>
@@ -475,7 +477,7 @@
                                   <option :value="u.code" x-text="u.label"></option>
                                 </template>
                               </select>
-                              <span class="material-symbols-rounded qty-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                              <span class="qty-chevron"><img src="assets/img/chevron-down.svg" alt="" width="20" height="20" aria-hidden="true"></span>
                             </div>
                           </td>
                           <td class="cell-price cell-right">
@@ -503,7 +505,7 @@
                           </td>
                           <td class="cell-actions">
                             <button type="button" class="line-remove-btn" @click="removeLine(i)" :disabled="lines.length <= 1" :aria-label="'Remove line ' + (i + 1)">
-                              <span class="material-symbols-rounded" aria-hidden="true">close</span>
+                              <img src="assets/img/x.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true">
                             </button>
                           </td>
                         </tr>
@@ -512,8 +514,7 @@
                   </table>
                 </div>
 
-                <button type="button" class="btn btn--primary btn--icon-left add-item-btn" @click="addLine()">
-                  <span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span>
+                <button type="button" class="btn btn--primary add-item-btn" @click="addLine()">
                   <span class="btn__label">Add item</span>
                 </button>
 
@@ -604,7 +605,7 @@
                         <option value="sv">Svenska</option>
                       </select>
                     </span>
-                    <span class="material-symbols-rounded country-select-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                    <span class="country-select-chevron"><img src="assets/img/chevron-down.svg" alt="" width="20" height="20" aria-hidden="true"></span>
                   </div>
                   <small class="field-helper form-help" id="invoice-language-hint">Language for generated XML/PDF labels and static text</small>
                   <span id="invoice-language-live" class="visually-hidden" aria-live="polite" aria-atomic="true"></span>
@@ -617,7 +618,7 @@
                         <option :value="cur.value" x-text="cur.label"></option>
                       </template>
                     </select>
-                    <span class="material-symbols-rounded select-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                    <span class="select-chevron"><img src="assets/img/chevron-down.svg" alt="" width="20" height="20" aria-hidden="true"></span>
                   </div>
                   <small class="field-helper form-help" id="invoice-currency-hint">All calculations use this currency</small>
                 </div>
@@ -634,7 +635,7 @@
                       <option value="876">Partial final construction invoice</option>
                       <option value="877">Final construction invoice</option>
                     </select>
-                    <span class="material-symbols-rounded select-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                    <span class="select-chevron"><img src="assets/img/chevron-down.svg" alt="" width="20" height="20" aria-hidden="true"></span>
                   </div>
                   <small class="field-helper form-help" id="invoice-type-subtext" aria-live="polite" aria-atomic="true" x-text="invoiceTypeSubtext"></small>
                 </div>
@@ -646,7 +647,7 @@
                       <option value="10">Cash</option>
                       <option value="48">Credit card</option>
                     </select>
-                    <span class="material-symbols-rounded select-chevron" aria-hidden="true">keyboard_arrow_down</span>
+                    <span class="select-chevron"><img src="assets/img/chevron-down.svg" alt="" width="20" height="20" aria-hidden="true"></span>
                   </div>
                   <small class="field-helper form-help" id="payment-type-hint">Bank details shown only for bank transfer</small>
                   <span id="payment-type-live" class="visually-hidden" aria-live="polite" aria-atomic="true" x-text="paymentTypeLive"></span>
@@ -669,8 +670,7 @@
                     <div class="style-logo-content">
                       <p class="style-logo-card-prompt">Choose invoice logo</p>
                       <small class="field-helper form-help" id="invoice-logo-help">Upload a PNG or JPEG logo (optimised for 140 × 80 px, max 1 MB)</small>
-                      <button type="button" class="btn btn--primary btn--icon-left" id="invoice-logo-trigger" aria-labelledby="invoice-logo-label" @click="$refs.logoInput.click()">
-                        <span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span>
+                      <button type="button" class="btn btn--primary" id="invoice-logo-trigger" aria-labelledby="invoice-logo-label" @click="$refs.logoInput.click()">
                         <span class="btn__label">Select image</span>
                       </button>
                     </div>
@@ -685,7 +685,7 @@
                       <small class="field-helper form-help">Upload a PNG or JPEG logo (optimised for 140 × 80 px, max 1 MB)</small>
                       <div class="style-logo-actions">
                         <button type="button" class="btn btn--danger btn--icon-left" aria-label="Remove logo" @click="removeLogo()">
-                          <span class="material-symbols-rounded btn__icon" aria-hidden="true">delete</span>
+                          <img src="assets/img/trash.svg" alt="" class="btn__icon" width="20" height="20" aria-hidden="true">
                           <span class="btn__label">Remove</span>
                         </button>
                       </div>

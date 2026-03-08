@@ -196,8 +196,7 @@
       return '<div class="card" id="' + role + '-card">' +
         '<img src="' + imgSrc + '" alt="' + imgAlt + '" class="card-image" width="248" height="auto">' +
         '<h3 id="' + role + '-card-summary">' + emptyText + '</h3>' +
-        '<button type="button" class="btn btn--primary btn--icon-left" ' + triggerAttr + '>' +
-        '<span class="material-symbols-rounded btn__icon" aria-hidden="true">add</span><span class="btn__label">Add details</span></button></div>';
+        '<button type="button" class="btn btn--primary" ' + triggerAttr + '><span class="btn__label">Add details</span></button></div>';
     }
 
     var html = '<div class="' + role + '-summary" aria-live="polite" aria-atomic="true">';
