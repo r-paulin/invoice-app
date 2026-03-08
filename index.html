@@ -87,9 +87,10 @@
             </div>
           </div>
 
-          <div class="hero header-grid__hero">
+          <div class="hero header-grid__hero" x-data="invoicesTodayCounter()">
             <h1>Free browser-based invoice generator</h1>
             <p>Make professional invoices, download print-ready PDFs, and issue compliant e-invoices from your browser.</p>
+            <p class="invoices-today" aria-live="polite">Invoices created today: <span class="invoices-today-num" :class="{ 'invoices-today-num--bump': animating }" x-text="count"></span></p>
           </div>
 
           <nav class="tabs header-grid__tabs" x-data="tabNav" role="tablist" aria-label="Invoice sections">
@@ -762,11 +763,6 @@
                 <p class="foot__copyright">© <span x-text="year"></span> All rights reserved</p>
                 <p class="foot__tagline">Proudly made in Europe</p>
               </div>
-              <div class="foot__links">
-                <a href="#terms">Terms and conditions</a>
-                <a href="#privacy">Privacy policy</a>
-                <a href="#privacy">Send feedback</a>
-              </div>
             </div>
           </div>
         </footer>
@@ -781,6 +777,7 @@
   <script src="assets/js/stores/settings.js"></script>
   <script src="assets/js/components/style-section.js"></script>
   <script src="assets/js/components/lang-switcher.js"></script>
+  <script src="assets/js/components/invoices-today-counter.js"></script>
   <script src="assets/js/state.js"></script>
   <script src="assets/js/utils/eu-vat.js"></script>
   <script src="assets/js/stores/draft.js"></script>

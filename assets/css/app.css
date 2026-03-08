@@ -433,7 +433,7 @@ h3{
 
 .hero h1 {
   font-size: 2.825rem;
-  font-weight: 700;
+  font-weight: 600;
   font-optical-sizing: auto;
   letter-spacing: -2px;
   line-height: 1.1;
@@ -451,6 +451,23 @@ h3{
   margin: 0;
   max-width: 42.5rem;
   text-align: left;
+}
+
+.hero .invoices-today {
+  font-size: 1rem;
+  color: var(--grey-500);
+  font-weight: 500;
+  margin-top: 0.8rem;
+}
+
+.invoices-today-num {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.2s ease-out;
+}
+
+.invoices-today-num--bump {
+  transform: scale(1.12);
 }
 
 .tabs {
@@ -1949,12 +1966,14 @@ input::placeholder {
   z-index: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
   padding: 0 1.5rem;
   font-family: inherit;
   font-size: var(--font-size-help);
   font-weight: 500;
   line-height: 1.4;
+  text-align: center;
 }
 
 .foot__logo {
@@ -1967,14 +1986,15 @@ input::placeholder {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
-  text-align: left;
+  text-align: center;
 }
 
 .foot__info {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-md);
 }
 
@@ -1988,35 +2008,6 @@ input::placeholder {
   margin: 0;
 }
 
-.foot__links {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  align-items: flex-start;
-}
-
-.foot__links a {
-  color: var(--green-700);
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.foot__links a:hover,
-.foot__links a:focus {
-  text-decoration: underline;
-  text-decoration-skip-ink: none;
-}
-
-.foot__links a:focus-visible {
-  outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
-  outline-offset: 2px;
-}
-
-@media (min-width: 769px) {
-  .foot__links {
-    align-items: flex-end;
-  }
-}
 
 @media (min-width: 900px) {
   .section {
