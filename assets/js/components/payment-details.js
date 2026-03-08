@@ -2,6 +2,7 @@
   'use strict';
 
   document.addEventListener('alpine:init', function () {
+    var lastAddAtByRole = {};
     /**
      * Unified IBAN / bank-account management for seller and buyer modals.
      * Usage: x-data="paymentDetails('seller')" or x-data="paymentDetails('buyer')"
@@ -14,6 +15,9 @@
         ibanDebounce: {},
 
         addAccount: function () {
+          var now = Date.now();
+          if (now - (lastAddAtByRole[role] || 0) < 400) return;
+          lastAddAtByRole[role] = now;
           var s = Alpine.store(storeKey);
           if (s.length >= 6) return;
           s.push({
@@ -21,7 +25,7 @@
             bankName: '',
             ibanError: '',
             ibanHint: '',
-            _id: 'iban-' + Date.now() + '-' + Math.random().toString(36).slice(2)
+            _id: 'iban-' + now + '-' + Math.random().toString(36).slice(2)
           });
         },
 

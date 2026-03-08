@@ -89,7 +89,7 @@
   /* Shared button tokens (Figma node 1:4378) */
   --btn-height: 2.5rem;
   --btn-min-width: 5.625rem;
-  --btn-radius: 0.25rem;
+  --btn-radius: 999px;
   --btn-border-width: 0.0625rem;
   --btn-gap: var(--space-md);
   --btn-padding-y: 0.75rem;
@@ -539,7 +539,7 @@ h3{
 }
 
 .btn--icon-only {
-  border-radius: 3rem;
+  border-radius: 999px;
   min-width: var(--btn-height);
   padding: calc((var(--btn-height) - var(--btn-icon-size)) / 2);
   width: var(--btn-height);
@@ -552,7 +552,7 @@ h3{
 }
 
 .btn--pill {
-  border-radius: 999rem;
+  border-radius: 999px;
 }
 
 .btn--full {
@@ -1656,7 +1656,7 @@ input::placeholder {
   align-items: center;
   background: var(--white);
   border: 1px solid var(--grey-200);
-  border-radius: 3rem;
+  border-radius: 999px;
   box-shadow: var(--shadow-input);
   color: var(--green-700);
   cursor: pointer;
