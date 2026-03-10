@@ -256,7 +256,7 @@
   }
 
   function escapeHtml(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   function updateCardSummary(role) {
@@ -282,6 +282,7 @@
     var ibanBlock = null;
     var hintRefs = { reg: null, vat: null, country: null, handler: null };
     var lastTrigger = null;
+    var focusTrapHandler = null;
 
     function cacheElements() {
       form = document.getElementById(role + '-form');
@@ -421,6 +422,31 @@
       updateRegistrationVatHints(role);
 
       bottomSheet.open();
+
+      var modalRoot = document.querySelector('.' + role + '-bottom-sheet');
+      if (modalRoot && !focusTrapHandler) {
+        focusTrapHandler = function (e) {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            close();
+            return;
+          }
+          if (e.key !== 'Tab') return;
+          var focusables = getFocusables();
+          if (!focusables.length) return;
+          var first = focusables[0];
+          var last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        };
+        modalRoot.addEventListener('keydown', focusTrapHandler);
+      }
+
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           var first = getFocusables()[0];
@@ -431,6 +457,11 @@
 
     function close() {
       if (!bottomSheet) return;
+      if (focusTrapHandler) {
+        var modalRoot = document.querySelector('.' + role + '-bottom-sheet');
+        if (modalRoot) modalRoot.removeEventListener('keydown', focusTrapHandler);
+        focusTrapHandler = null;
+      }
       if (hintRefs.reg) {
         hintRefs.reg.removeEventListener('input', hintRefs.handler);
         hintRefs.reg.removeEventListener('blur', hintRefs.handler);

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function () {
+      var path = window.location.pathname || '';
+      if (path.indexOf('/invoice-app') === 0) {
+        var base = document.createElement('base');
+        base.href = '/invoice-app/';
+        document.head.insertBefore(base, document.head.firstChild);
+      }
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self';">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="assets/img/favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="shortcut icon" href="assets/img/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="Invoce">
+  <link rel="manifest" href="assets/img/site.webmanifest">
+  <title>Creating invoice… – Invoce</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,0,0&display=block">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+  <a href="#export-processing-main" class="skip-link">Skip to main content</a>
+  <div class="page-surface export-page">
+    <main class="export-main" id="export-processing-main" role="main">
+      <div class="export-state-content export-processing-content">
+        <a href="index.html" class="export-logo-link" aria-label="Invoce home">
+          <img class="export-logo" src="assets/img/Logotype.svg" alt="Invoce" width="140" height="40">
+        </a>
+        <div class="export-illustration export-illustration--snail" aria-hidden="true">
+          <img src="assets/img/snail-invoices.webp" alt="" width="401" height="267">
+        </div>
+        <h1 class="export-title">Creating invoice<span class="export-loading-dots" aria-hidden="true"><span class="export-loading-dot">.</span><span class="export-loading-dot">.</span><span class="export-loading-dot">.</span></span></h1>
+        <p class="export-subtitle">It can take some time</p>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.0.0/jspdf.umd.min.js" integrity="sha384-Txk19yEeCMkbRY2E0XKauFj7VouwVgj6K4AWVQ6QkUnxsMCBFVW8DKxLFH1350sC" crossorigin="anonymous"></script>
+  <script src="assets/js/state.js"></script>
+  <script src="assets/js/calc.js"></script>
+  <script src="assets/js/validation.js"></script>
+  <script src="assets/js/xml.js"></script>
+  <script src="assets/js/pdf-fonts.js?v=2"></script>
+  <script src="assets/js/pdf.js?v=2"></script>
+  <script src="assets/js/export.js"></script>
+</body>
+</html>
