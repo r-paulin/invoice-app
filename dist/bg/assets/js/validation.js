@@ -1,0 +1,463 @@
+/**
+ * Invio — validation: mandatory/conditional EN 16931-1 + PEPPOL; block export if not compliant
+ */
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const IBAN_STRUCTURE = /^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$/;
+
+/** Per-country IBAN length (ISO 13616-1); used for optional format hint when country is selected. */
+const IBAN_LENGTH_BY_COUNTRY = {
+  AD: 24, AL: 28, AT: 20, AZ: 28, BA: 20, BE: 16, BG: 22, BH: 22, BR: 29, BY: 28, CH: 21, CR: 22, CY: 28, CZ: 24, DE: 22, DK: 18, DO: 28, EE: 20, ES: 24, FI: 18, FO: 18, FR: 27, GB: 22, GE: 22, GI: 23, GL: 18, GR: 27, HR: 21, HU: 28, IE: 22, IL: 23, IS: 26, IT: 27, JO: 30, KW: 30, KZ: 20, LB: 28, LI: 21, LT: 20, LU: 20, LV: 21, MC: 27, MD: 24, ME: 22, MK: 19, MR: 27, MT: 31, MU: 30, NL: 18, NO: 15, PK: 24, PL: 28, PS: 29, PT: 25, QA: 29, RO: 24, RS: 22, SA: 24, SE: 24, SI: 19, SK: 24, SM: 27, TN: 24, TR: 26, UA: 29, VA: 22, VG: 24, XK: 20
+};
+
+const VAT_CATEGORY_CODES = ['S', 'Z', 'E', 'G', 'O', 'K', 'L', 'M', 'N', 'A'];
+const UNIT_CODES = ['C62', 'DAY', 'HUR', 'KGM', 'LTR', 'MTR', 'MTK', 'MTQ', 'PCE', 'KMT'];
+
+/** ISO 4217 currency codes allowed for export (BT-5). Must match app currency dropdown. */
+const ALLOWED_CURRENCY_CODES = [
+  'EUR', 'USD', 'GBP', 'CHF', 'JPY', 'CNY', 'CAD', 'AUD', 'HKD', 'SGD', 'SEK', 'NOK', 'DKK', 'PLN', 'CZK', 'HUF', 'RON', 'BGN', 'ISK', 'HRK', 'RUB', 'TRY', 'INR', 'BRL', 'MXN', 'ZAR', 'KRW',
+  'ALL', 'AMD', 'AZN', 'BAM', 'BYN', 'GEL', 'MDL', 'MKD', 'RSD', 'UAH', 'GIP', 'JEP', 'GGP', 'IMP'
+];
+
+const PEPPOL_PROFILE_ID_PATTERN = /^urn:fdc:peppol\.eu:2017:poacc:billing:\d{2}:1\.0$/;
+
+/** MVP: per-country registration ID regex (alphanumeric + hyphen, reasonable length) */
+const REGISTRATION_REGEX = {
+  LV: /^[0-9]{11}$/,
+  LT: /^[0-9]{9}$/,
+  EE: /^[0-9]{8}$/,
+  DE: /^[A-Z0-9]{1,12}$/i,
+  AT: /^[0-9]{6,9}$/,
+  NL: /^[0-9]{8}$/,
+  BE: /^[0-9]{10}$/,
+  FR: /^[0-9]{9}$/,
+  ES: /^[A-Z0-9]{8,12}$/i,
+  IT: /^[0-9]{11}$/,
+  PL: /^[0-9]{10}$/,
+  CZ: /^[0-9]{8}$/,
+  SK: /^[0-9]{8}$/,
+  HU: /^[0-9]{8}$/,
+  RO: /^[0-9]{2,10}$/,
+  BG: /^[0-9]{9,13}$/,
+  GR: /^[0-9]{9}$/,
+  PT: /^[0-9]{9}$/,
+  SE: /^[0-9]{6}-[0-9]{4}$/,
+  DK: /^[0-9]{8}$/,
+  FI: /^[0-9]{7}-[0-9]{1}$/,
+  IE: /^[0-9]{7}[A-Z]{1,2}$/i,
+  LU: /^[0-9]{8}$/,
+  MT: /^[A-Z0-9]{1,8}$/i,
+  CY: /^[0-9]{8}[A-Z]$/i,
+  SI: /^[0-9]{8}$/,
+  HR: /^[0-9]{11}$/
+};
+
+/** EU VAT: country prefix + digits (MVP simplified) */
+const VAT_REGEX = {
+  LV: /^LV[0-9]{11}$/i,
+  LT: /^LT[0-9]{9,12}$/i,
+  EE: /^EE[0-9]{9}$/i,
+  DE: /^DE[0-9]{9}$/i,
+  AT: /^ATU[0-9]{8}$/i,
+  NL: /^NL[0-9]{9}B[0-9]{2}$/i,
+  BE: /^BE[0-9]{10}$/i,
+  FR: /^FR[A-Z0-9]{2}[0-9]{9}$/i,
+  ES: /^ES[A-Z0-9][0-9]{7}[A-Z0-9]$/i,
+  IT: /^IT[0-9]{11}$/i,
+  PL: /^PL[0-9]{10}$/i,
+  CZ: /^CZ[0-9]{8,10}$/i,
+  SK: /^SK[0-9]{10}$/i,
+  HU: /^HU[0-9]{8}$/i,
+  RO: /^RO[0-9]{2,10}$/i,
+  BG: /^BG[0-9]{9,10}$/i,
+  GR: /^EL[0-9]{9}$/i,
+  PT: /^PT[0-9]{9}$/i,
+  SE: /^SE[0-9]{12}$/i,
+  DK: /^DK[0-9]{8}$/i,
+  FI: /^FI[0-9]{8}$/i,
+  IE: /^IE[0-9][A-Z0-9][0-9]{5}[A-Z]$/i,
+  LU: /^LU[0-9]{8}$/i,
+  MT: /^MT[0-9]{8}$/i,
+  CY: /^CY[0-9]{8}[A-Z]$/i,
+  SI: /^SI[0-9]{8}$/i,
+  HR: /^HR[0-9]{11}$/i
+};
+
+/** Per-country registration number length (min, max) for length-only hint. */
+const REGISTRATION_LENGTH = {
+  LV: { min: 11, max: 11 }, LT: { min: 9, max: 9 }, EE: { min: 8, max: 8 }, DE: { min: 1, max: 12 },
+  AT: { min: 6, max: 9 }, NL: { min: 8, max: 8 }, BE: { min: 10, max: 10 }, FR: { min: 9, max: 9 },
+  ES: { min: 8, max: 12 }, IT: { min: 11, max: 11 }, PL: { min: 10, max: 10 }, CZ: { min: 8, max: 8 },
+  SK: { min: 8, max: 8 }, HU: { min: 8, max: 8 }, RO: { min: 2, max: 10 }, BG: { min: 9, max: 13 },
+  GR: { min: 9, max: 9 }, PT: { min: 9, max: 9 }, SE: { min: 11, max: 11 }, DK: { min: 8, max: 8 },
+  FI: { min: 8, max: 8 }, IE: { min: 8, max: 9 }, LU: { min: 8, max: 8 }, MT: { min: 1, max: 8 },
+  CY: { min: 9, max: 9 }, SI: { min: 8, max: 8 }, HR: { min: 11, max: 11 }
+};
+
+/** Per-country VAT number length (min, max) for length-only hint. */
+const VAT_LENGTH = {
+  LV: { min: 13, max: 13 }, LT: { min: 11, max: 14 }, EE: { min: 11, max: 11 }, DE: { min: 11, max: 11 },
+  AT: { min: 11, max: 11 }, NL: { min: 14, max: 14 }, BE: { min: 12, max: 12 }, FR: { min: 13, max: 13 },
+  ES: { min: 11, max: 11 }, IT: { min: 13, max: 13 }, PL: { min: 12, max: 12 }, CZ: { min: 10, max: 12 },
+  SK: { min: 12, max: 12 }, HU: { min: 10, max: 10 }, RO: { min: 4, max: 12 }, BG: { min: 11, max: 12 },
+  GR: { min: 11, max: 11 }, PT: { min: 11, max: 11 }, SE: { min: 14, max: 14 }, DK: { min: 10, max: 10 },
+  FI: { min: 10, max: 10 }, IE: { min: 9, max: 9 }, LU: { min: 10, max: 10 }, MT: { min: 10, max: 10 },
+  CY: { min: 11, max: 11 }, SI: { min: 10, max: 10 }, HR: { min: 13, max: 13 }
+};
+
+function nonEmpty(s) {
+  return typeof s === 'string' && s.trim().length > 0;
+}
+
+function validIsoDate(s) {
+  return nonEmpty(s) && ISO_DATE.test(s) && !isNaN(Date.parse(s));
+}
+
+function validEmail(s) {
+  if (!s) return true;
+  return typeof s === 'string' && EMAIL.test(s.trim());
+}
+
+const MAX_WEBSITE_LENGTH = 2048;
+
+/**
+ * Returns true if the value is empty or a safe http/https URL. Rejects javascript:, data:, etc.
+ */
+function validWebsite(s) {
+  if (!s || typeof s !== 'string') return true;
+  const trimmed = s.trim();
+  if (!trimmed) return true;
+  if (trimmed.length > MAX_WEBSITE_LENGTH) return false;
+  try {
+    const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : 'https://' + trimmed;
+    const url = new URL(withScheme);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch (_) {
+    return false;
+  }
+}
+
+/**
+ * Returns domain only (hostname) for display on invoice/summary, or '' if invalid.
+ */
+function urlToDisplayDomain(url) {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+  try {
+    const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : 'https://' + trimmed;
+    return new URL(withScheme).hostname;
+  } catch (_) {
+    return '';
+  }
+}
+
+/**
+ * Returns normalized full URL (with scheme) for storage, or null if invalid/empty.
+ */
+function normalizeWebsiteUrl(s) {
+  if (!s || typeof s !== 'string') return null;
+  const trimmed = s.trim();
+  if (!trimmed) return null;
+  if (!validWebsite(trimmed)) return null;
+  try {
+    const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : 'https://' + trimmed;
+    return new URL(withScheme).href;
+  } catch (_) {
+    return null;
+  }
+}
+
+function mod97(str) {
+  let remainder = '';
+  for (let i = 0; i < str.length; i++) {
+    remainder = (remainder + str[i]).replace(/^0+/, '') || '0';
+    if (remainder.length <= 14) continue;
+    const chunk = remainder.slice(0, 12);
+    remainder = (parseInt(chunk, 10) % 97) + remainder.slice(12);
+  }
+  return parseInt(remainder, 10) % 97;
+}
+
+function validIban(s) {
+  if (!s) return true;
+  const normalized = String(s).replace(/\s/g, '').toUpperCase();
+  if (normalized.length < 15 || normalized.length > 34) return false;
+  if (!IBAN_STRUCTURE.test(normalized)) return false;
+  const rearranged = normalized.slice(4) + normalized.slice(0, 4);
+  const numeric = rearranged.replace(/[A-Z]/g, function (c) {
+    return String(c.charCodeAt(0) - 55);
+  });
+  return mod97(numeric) === 1;
+}
+
+/**
+ * Optional format check: when country is selected, IBAN length must match that country.
+ * Does not run MOD-97 or structure; use validIban() for full validation.
+ */
+function validIbanFormatForCountry(iban, countryCode) {
+  if (!iban || typeof iban !== 'string') return true;
+  var normalized = String(iban).replace(/\s/g, '').toUpperCase();
+  if (!countryCode) return true;
+  var len = IBAN_LENGTH_BY_COUNTRY[String(countryCode).toUpperCase()];
+  if (len == null) return true;
+  return normalized.length === len;
+}
+
+function validVatCategory(code) {
+  return code && VAT_CATEGORY_CODES.includes(String(code).toUpperCase());
+}
+
+function validUnitCode(code) {
+  return code && UNIT_CODES.includes(String(code));
+}
+
+function validRegistrationId(value, countryCode) {
+  if (!nonEmpty(value) || !countryCode) return false;
+  var re = REGISTRATION_REGEX[countryCode.toUpperCase()];
+  if (!re) return value.trim().length >= 4 && value.trim().length <= 25;
+  return re.test(value.trim());
+}
+
+function validVatId(value, countryCode) {
+  if (!value || !value.trim()) return true;
+  var re = VAT_REGEX[countryCode.toUpperCase()];
+  if (!re) return value.trim().length >= 10 && value.trim().length <= 20;
+  return re.test(value.trim().replace(/\s/g, ''));
+}
+
+/**
+ * Length-only check for hint: true if value has 6+ chars and length does not match country.
+ * Used for non-blocking UI hint only.
+ */
+function registrationLengthMismatch(value, countryCode) {
+  if (!value || typeof value !== 'string') return false;
+  var trimmed = value.trim();
+  if (trimmed.length < 6) return false;
+  if (!countryCode) return false;
+  var range = REGISTRATION_LENGTH[String(countryCode).toUpperCase()];
+  if (!range) return false;
+  var len = trimmed.length;
+  return len < range.min || len > range.max;
+}
+
+/**
+ * Length-only check for hint: true if normalized IBAN has 6+ chars and length does not match country.
+ * Used for non-blocking UI hint only. Plan uses 20+ chars for IBAN before showing hint.
+ */
+function ibanLengthMismatch(iban, countryCode) {
+  if (!iban || typeof iban !== 'string') return false;
+  var normalized = String(iban).replace(/\s/g, '').toUpperCase();
+  if (normalized.length < 6) return false;
+  if (!countryCode) return false;
+  var expected = IBAN_LENGTH_BY_COUNTRY[String(countryCode).toUpperCase()];
+  if (expected == null) return false;
+  return normalized.length !== expected;
+}
+
+/**
+ * Length-only check for hint: true if value has 6+ chars and length does not match country.
+ * Used for non-blocking UI hint only.
+ */
+function vatLengthMismatch(value, countryCode) {
+  if (!value || typeof value !== 'string') return false;
+  var trimmed = value.trim().replace(/\s/g, '');
+  if (trimmed.length < 6) return false;
+  if (!countryCode) return false;
+  var range = VAT_LENGTH[String(countryCode).toUpperCase()];
+  if (!range) return false;
+  var len = trimmed.length;
+  return len < range.min || len > range.max;
+}
+
+function validPhone(value, dialCode) {
+  if (!value || !value.trim()) return true;
+  var s = value.trim().replace(/[\s\-\(\)]/g, '');
+  var digits = s.replace(/\D/g, '');
+  if (digits.length < 6 || digits.length > 15) return false;
+  if (dialCode) {
+    var prefix = dialCode.replace(/\D/g, '');
+    if (!prefix) return true;
+    return digits.indexOf(prefix) === 0;
+  }
+  return /^\+?[0-9]{6,15}$/.test(s);
+}
+
+/**
+ * Validate draft; returns { valid: boolean, errors: string[] }
+ */
+function validateDraft(draft) {
+  const errors = [];
+
+  if (!draft || typeof draft !== 'object') {
+    return { valid: false, errors: ['Invalid draft'] };
+  }
+
+  const h = draft.header || {};
+  const seller = draft.seller || {};
+  const buyer = draft.buyer || {};
+  const addrS = seller.address || {};
+  const addrB = buyer.address || {};
+  const lines = draft.lines || [];
+  const payment = draft.payment || {};
+
+  // BT-1
+  if (!nonEmpty(h.invoiceNumber)) errors.push('Invoice number is required');
+  // BT-2
+  if (!validIsoDate(h.issueDate)) errors.push('Invoice date must be a valid ISO date (YYYY-MM-DD)');
+  // BT-3
+  if (!nonEmpty(h.typeCode)) errors.push('Invoice type code is required');
+  // BT-5
+  const currencyCode = (h.currencyCode || '').trim().toUpperCase();
+  if (!currencyCode) {
+    errors.push('Currency code is required');
+  } else if (!ALLOWED_CURRENCY_CODES.includes(currencyCode)) {
+    errors.push('Currency code must be a valid ISO 4217 code from the allowed list');
+  }
+
+  // Seller
+  if (!nonEmpty(seller.name)) errors.push('Seller name is required');
+  if (!nonEmpty(addrS.city)) errors.push('Seller city is required');
+  const sellerCountry = (addrS.countryCode || '').trim().toUpperCase();
+  if (!sellerCountry) errors.push('Seller country is required');
+  else if (sellerCountry.length !== 2) errors.push('Seller country must be a 2-letter ISO 3166-1 code');
+
+  // Buyer
+  if (!nonEmpty(buyer.name)) errors.push('Buyer name is required');
+  if (!nonEmpty(addrB.city)) errors.push('Buyer city is required');
+  const buyerCountry = (addrB.countryCode || '').trim().toUpperCase();
+  if (!buyerCountry) errors.push('Buyer country is required');
+  else if (buyerCountry.length !== 2) errors.push('Buyer country must be a 2-letter ISO 3166-1 code');
+
+  // At least one line with item name
+  var hasLineItemError = !lines.length || lines.some(function (line) { return !nonEmpty(line.itemName); });
+  if (hasLineItemError) errors.push('At least one Service or Product is required');
+
+  lines.forEach((line, i) => {
+    const idx = i + 1;
+    if (nonEmpty(line.itemName)) {
+      const q = Number(line.quantity);
+      if (isNaN(q) || q <= 0) errors.push(`Line ${idx}: Quantity must be greater than 0`);
+      if (!validUnitCode(line.unitCode)) errors.push(`Line ${idx}: Unit code must be a valid UN/ECE code (e.g. C62, DAY)`);
+      const p = Number(line.netPrice);
+      if (isNaN(p) || p < 0) errors.push(`Line ${idx}: Net price must be a non-negative number`);
+      if (!validVatCategory(line.vatCategoryCode)) errors.push(`Line ${idx}: VAT category code is required and must be one of: ${VAT_CATEGORY_CODES.join(', ')}`);
+    }
+  });
+
+  if (seller.contact && seller.contact.email && !validEmail(seller.contact.email)) {
+    errors.push('Seller email must be a valid email address');
+  }
+  if (buyer.contact && buyer.contact.email && !validEmail(buyer.contact.email)) {
+    errors.push('Buyer email must be a valid email address');
+  }
+  if (seller.contact && seller.contact.website && !validWebsite(seller.contact.website)) {
+    errors.push('Seller website must be a valid http or https URL');
+  }
+  if (buyer.contact && buyer.contact.website && !validWebsite(buyer.contact.website)) {
+    errors.push('Buyer website must be a valid http or https URL');
+  }
+
+  // Payment: if credit transfer (30), at least one valid IBAN required
+  const meansCode = payment.meansTypeCode || '';
+  if (meansCode === '30') {
+    var accounts = payment.accounts || [];
+    if (accounts.length) {
+      accounts.forEach(function (acc, i) {
+        if (nonEmpty(acc.accountId) && !validIban(acc.accountId)) {
+          errors.push('IBAN #' + (i + 1) + ' must be a valid IBAN');
+        }
+      });
+      if (accounts.every(function (acc) { return !nonEmpty(acc.accountId); })) {
+        errors.push('At least one bank account (IBAN) is required for credit transfer');
+      }
+    } else if (nonEmpty(payment.accountId) && !validIban(payment.accountId)) {
+      errors.push('IBAN must be a valid IBAN when payment is by credit transfer');
+    } else if (!nonEmpty(payment.accountId)) {
+      errors.push('At least one bank account (IBAN) is required for credit transfer');
+    }
+  }
+
+  // Due date if present
+  if (h.dueDate && !validIsoDate(h.dueDate)) errors.push('Due date must be a valid ISO date');
+
+  // Payment reference
+  if (!nonEmpty(payment.paymentId)) errors.push('Payment reference is required');
+
+  return {
+    valid: errors.length === 0,
+    errors
+  };
+}
+
+/**
+ * Run validation and reconciliation; export should call this and block if !result.valid.
+ * Includes Peppol BIS 3.0 fatal checks: ProfileID (BT-23), CustomizationID (BT-24).
+ */
+function validateForExport(draft) {
+  const v = validateDraft(draft);
+  if (!v.valid) return v;
+
+  const errors = [];
+  const h = draft.header || {};
+
+  // Peppol BIS 3.0: ProfileID mandatory
+  const profileId = (h.profileId || '').trim();
+  if (!profileId) errors.push('ProfileID is required for Peppol BIS 3.0 export');
+  else if (!PEPPOL_PROFILE_ID_PATTERN.test(profileId)) errors.push('ProfileID must match format urn:fdc:peppol.eu:2017:poacc:billing:NN:1.0');
+
+  // Peppol BIS 3.0: CustomizationID must have the required value
+  const customizationId = (h.customizationId || h.specificationId || '').trim();
+  if (!customizationId) errors.push('CustomizationID is required for Peppol BIS 3.0 export');
+  else if (customizationId !== PEPPOL_CUSTOMIZATION_ID) errors.push('CustomizationID must be the Peppol BIS Billing 3.0 value for compliant export');
+
+  if (errors.length) return { valid: false, errors };
+
+  if (typeof window !== 'undefined' && window.Invio && window.Invio.euVat) {
+    var scenario = window.Invio.euVat.getVatScenarioFromDraft(draft);
+    if (scenario === 'intra_eu_rc') {
+      var buyer = draft.buyer || {};
+      if (!nonEmpty(buyer.vatId)) errors.push('Buyer VAT ID is required for intra-EU reverse charge');
+    }
+  }
+
+  if (errors.length) return { valid: false, errors };
+
+  if (typeof window !== 'undefined' && window.InvioCalc) {
+    const recon = window.InvioCalc.checkReconciliation(draft);
+    if (!recon.ok) {
+      return {
+        valid: false,
+        errors: ['Calculations mismatch: totals do not reconcile. Review your data.']
+      };
+    }
+  }
+
+  return v;
+}
+
+if (typeof window !== 'undefined') {
+  window.InvioValidation = {
+    validateDraft,
+    validateForExport,
+    validIsoDate,
+    validEmail,
+    validWebsite,
+    urlToDisplayDomain,
+    normalizeWebsiteUrl,
+    validIban,
+    validIbanFormatForCountry,
+    validVatCategory,
+    validUnitCode,
+    validRegistrationId,
+    validVatId,
+    validPhone,
+    registrationLengthMismatch,
+    ibanLengthMismatch,
+    vatLengthMismatch,
+    VAT_CATEGORY_CODES,
+    UNIT_CODES,
+    ALLOWED_CURRENCY_CODES
+  };
+}
