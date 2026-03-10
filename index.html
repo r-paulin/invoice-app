@@ -572,13 +572,13 @@
                 <p class="section-helper form-help" id="invoice-note-hint">Add any free-form text you'd like to display on the invoice, such as payment instructions, a thank-you note, or special terms.</p>
               </div>
               <div class="section-content">
-                <p class="field-helper form-help hint" id="invoice-note-export-hint" aria-live="polite" x-show="$store.euVat && $store.euVat.vatScenario === 'export'" x-cloak x-transition>Zero-rated export (Article 146, EU VAT Directive 2006/112/EC)</p>
                 <div class="form-group form-field">
                   <label for="invoice-note" class="visually-hidden">Note</label>
                   <textarea id="invoice-note" class="note-textarea" :placeholder="notePlaceholder()" x-model="noteText" @input="syncNote()" aria-label="Invoice note" aria-describedby="invoice-note-hint invoice-note-scenario-hint"></textarea>
                   <small class="field-helper form-help" id="invoice-note-scenario-hint" aria-live="polite" x-show="$store.euVat && $store.euVat.vatScenario === 'no_vat_seller'" x-cloak x-transition>Suggestion: No VAT applies because the seller is not VAT registered</small>
                   <small class="field-helper form-help" id="invoice-note-rc-hint" aria-live="polite" x-show="$store.euVat && $store.euVat.vatScenario === 'intra_eu_rc'" x-cloak x-transition>Suggestion: This transaction uses reverse charge. The buyer is responsible for VAT</small>
                   <small class="field-helper form-help" id="invoice-note-b2c-hint" aria-live="polite" x-show="$store.euVat && $store.euVat.vatScenario === 'intra_eu_b2c'" x-cloak x-transition>Suggestion: Local VAT is charged because no VAT ID was provided</small>
+                  <p class="field-helper form-help hint" id="invoice-note-export-hint" aria-live="polite" x-show="$store.euVat && $store.euVat.vatScenario === 'export'" x-cloak x-transition>Zero-rated export (Article 146, EU VAT Directive 2006/112/EC)</p>
                 </div>
               </div>
             </section>

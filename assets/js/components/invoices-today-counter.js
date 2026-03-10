@@ -2,12 +2,11 @@
   'use strict';
 
   var STORAGE_KEY = 'invoicesToday';
-  var MIN_DAILY = 10;
-  var MAX_DAILY = 68;
+  var DAILY_START = 400;
   var FIRST_INCREMENT_MS_MIN = 800;
   var FIRST_INCREMENT_MS_MAX = 2500;
-  var NEXT_INTERVAL_MS_MIN = 24000;
-  var NEXT_INTERVAL_MS_MAX = 24000;
+  var NEXT_INTERVAL_MS_MIN = 3000;
+  var NEXT_INTERVAL_MS_MAX = 6000;
   var ANIMATION_DURATION_MS = 400;
   var EVENT_NAME = 'invoicesToday:increment';
 
@@ -17,16 +16,6 @@
     var m = String(d.getMonth() + 1).padStart(2, '0');
     var day = String(d.getDate()).padStart(2, '0');
     return y + '-' + m + '-' + day;
-  }
-
-  function dailySeedFromDate(dateKey) {
-    var hash = 0;
-    for (var i = 0; i < dateKey.length; i++) {
-      hash = ((hash << 5) - hash) + dateKey.charCodeAt(i);
-      hash = hash & hash;
-    }
-    var range = MAX_DAILY - MIN_DAILY + 1;
-    return MIN_DAILY + (Math.abs(hash) % range);
   }
 
   function loadStored() {
@@ -62,7 +51,7 @@
     } catch (e) { /* ignore */ }
     var value = (data && data.date === todayKey && typeof data.value === 'number')
       ? data.value
-      : dailySeedFromDate(todayKey);
+      : DAILY_START;
     value += 1;
     saveStored(todayKey, value);
     window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: { value: value } }));
@@ -90,7 +79,7 @@
     Alpine.data('invoicesTodayCounter', function () {
       var todayKey = getTodayKey();
       var stored = loadStored();
-      var initial = stored !== null ? stored : dailySeedFromDate(todayKey);
+      var initial = stored !== null ? stored : DAILY_START;
       if (stored === null) {
         saveStored(todayKey, initial);
       }
@@ -115,11 +104,9 @@
             component.count = e.detail.value;
             component.bump();
           }
-          document.addEventListener(EVENT_NAME, onIncrement);
+          window.addEventListener(EVENT_NAME, onIncrement);
 
-          if (stored === null) {
-            startIncrementChain();
-          }
+          startIncrementChain();
         }
       };
     });
