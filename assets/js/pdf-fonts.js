@@ -1,6 +1,6 @@
 /**
  * Source Sans 3 font data for jsPDF embedding.
- * Weights: Regular (400), SemiBold (600), Bold (700).
+ * Weights: Medium (500), Regular (400), SemiBold (600), Bold (700).
  * Load this file before pdf.js.
  */
 (function () {
