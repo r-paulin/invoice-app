@@ -619,46 +619,6 @@
             <section class="section">
               <h2>General</h2>
               <div class="section-content general-settings-content" aria-live="polite" aria-atomic="false">
-                <div class="form-group form-field native-country-select-wrap invoice-language-wrap">
-                  <label for="invoice-language-select"><span class="form-label">Invoice language</span></label>
-                  <div class="country-select-wrapper invoice-language-select-wrapper" id="invoice-language-wrapper">
-                    <span class="country-select-display invoice-language-display" id="invoice-language-display" aria-hidden="true">
-                      <span :class="languageFlagClass" id="invoice-language-flag"></span>
-                      <span class="country-select-name" id="invoice-language-name" x-text="languageDisplayName"></span>
-                    </span>
-                    <span class="select native-select country-select-label">
-                      <select class="form-select native-select__control" name="invoice-language" id="invoice-language-select" x-ref="langSelect" x-model="language" required aria-label="Invoice language" aria-describedby="invoice-language-hint invoice-language-live">
-                        <option value="bg">Български</option>
-                        <option value="hr">Hrvatski</option>
-                        <option value="cs">Čeština</option>
-                        <option value="da">Dansk</option>
-                        <option value="nl">Nederlands</option>
-                        <option value="en" selected>English</option>
-                        <option value="et">Eesti</option>
-                        <option value="fi">Suomi</option>
-                        <option value="fr">Français</option>
-                        <option value="de">Deutsch</option>
-                        <option value="el">Ελληνικά</option>
-                        <option value="hu">Magyar</option>
-                        <option value="ga">Gaeilge</option>
-                        <option value="it">Italiano</option>
-                        <option value="lv">Latviešu</option>
-                        <option value="lt">Lietuvių</option>
-                        <option value="mt">Malti</option>
-                        <option value="pl">Polski</option>
-                        <option value="pt">Português</option>
-                        <option value="ro">Română</option>
-                        <option value="sk">Slovenčina</option>
-                        <option value="sl">Slovenščina</option>
-                        <option value="es">Español</option>
-                        <option value="sv">Svenska</option>
-                      </select>
-                    </span>
-                    <span class="country-select-chevron"><img src="assets/img/chevron-down.svg" alt="" width="20" height="20" aria-hidden="true"></span>
-                  </div>
-                  <small class="field-helper form-help" id="invoice-language-hint">Language for generated XML/PDF labels and static text</small>
-                  <span id="invoice-language-live" class="visually-hidden" aria-live="polite" aria-atomic="true"></span>
-                </div>
                 <div class="form-group form-field">
                   <label for="invoice-currency-select"><span class="form-label">Invoice currency <span class="required-mark">*</span></span></label>
                   <div class="select-icon-wrap">

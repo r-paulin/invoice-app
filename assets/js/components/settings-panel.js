@@ -2,18 +2,7 @@
   'use strict';
 
   document.addEventListener('alpine:init', function () {
-    var LANG_TO_COUNTRY = {
-      bg: 'bg', hr: 'hr', cs: 'cz', da: 'dk', nl: 'nl', en: 'gb', et: 'ee', fi: 'fi', fr: 'fr', de: 'de',
-      el: 'gr', hu: 'hu', ga: 'ie', it: 'it', lv: 'lv', lt: 'lt', mt: 'mt', pl: 'pl', pt: 'pt', ro: 'ro',
-      sk: 'sk', sl: 'si', es: 'es', sv: 'se'
-    };
-    var LANG_NAMES = {
-      bg: 'Български', hr: 'Hrvatski', cs: 'Čeština', da: 'Dansk', nl: 'Nederlands', en: 'English',
-      et: 'Eesti', fi: 'Suomi', fr: 'Français', de: 'Deutsch', el: 'Ελληνικά', hu: 'Magyar',
-      ga: 'Gaeilge', it: 'Italiano', lv: 'Latviešu', lt: 'Lietuvių', mt: 'Malti', pl: 'Polski',
-      pt: 'Português', ro: 'Română', sk: 'Slovenčina', sl: 'Slovenščina', es: 'Español', sv: 'Svenska'
-    };
-    var EU_24 = Object.keys(LANG_TO_COUNTRY);
+    var EU_24 = ['bg', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fi', 'fr', 'de', 'el', 'hu', 'ga', 'it', 'lv', 'lt', 'mt', 'pl', 'pt', 'ro', 'sk', 'sl', 'es', 'sv'];
 
     var CURRENCY_NAMES = {
       EUR: 'Euro', USD: 'US dollar', GBP: 'Pound sterling', CHF: 'Swiss franc', JPY: 'Japanese yen', CNY: 'Chinese yuan',
@@ -41,22 +30,12 @@
 
     Alpine.data('settingsPanel', function () {
       return {
-        language: 'en',
         currency: 'EUR',
         invoiceType: '380',
         paymentType: '30',
         currencies: CURRENCY_LIST.map(function (code) {
           return { value: code, label: code + ' \u2013 ' + (CURRENCY_NAMES[code] || code) };
         }),
-
-        get languageFlagClass() {
-          var cc = LANG_TO_COUNTRY[this.language] || 'gb';
-          return 'country-select-flag fi fi-' + cc.toLowerCase();
-        },
-
-        get languageDisplayName() {
-          return LANG_NAMES[this.language] || 'English';
-        },
 
         get invoiceTypeSubtext() {
           return TYPE_SUBTEXTS[this.invoiceType] || '';
@@ -70,15 +49,11 @@
 
         init: function () {
           var draft = this.$store.draft;
-          var draftLang = (draft.header && draft.header.languageCode) || '';
           var langSelect = document.getElementById('lang-select');
-          var websiteLang = langSelect ? langSelect.value : '';
-          if (draftLang && EU_24.indexOf(draftLang) !== -1) {
-            this.language = draftLang;
-          } else if (websiteLang && EU_24.indexOf(websiteLang) !== -1) {
-            this.language = websiteLang;
+          var websiteLang = (langSelect && langSelect.value) ? langSelect.value : 'en';
+          if (EU_24.indexOf(websiteLang) !== -1) {
+            draft.header.languageCode = websiteLang;
           }
-          draft.header.languageCode = this.language;
           this.currency = (draft.header && draft.header.currencyCode) || 'EUR';
           this.invoiceType = (draft.header && draft.header.typeCode) || '380';
           this.paymentType = (draft.payment && draft.payment.meansTypeCode) ? String(draft.payment.meansTypeCode) : '30';
@@ -86,11 +61,8 @@
           var self = this;
           document.addEventListener('invio:website-language-changed', function (e) {
             if (e.detail && e.detail.language && EU_24.indexOf(e.detail.language) !== -1) {
-              self.language = e.detail.language;
+              self.$store.draft.header.languageCode = e.detail.language;
             }
-          });
-          this.$watch('language', function (val) {
-            self.$store.draft.header.languageCode = val;
           });
           this.$watch('currency', function (val) {
             self.$store.draft.header.currencyCode = val;
