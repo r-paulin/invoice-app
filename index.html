@@ -22,7 +22,7 @@
   <title>Invoce – Online Invoice Generator | Free PDF & E-Invoice Tool</title>
   <meta name="description" content="Create professional PDF invoices and EU-compliant e-invoices in seconds — free, no sign-up, no software. Built for European freelancers, sole traders, and small businesses. VAT-ready, Peppol-compatible.">
   <meta name="keywords" content="invoice generator, free invoice generator, online invoice maker, e-invoice EU, EU compliant e-invoice, PDF invoice creator, VAT invoice, Peppol invoice, electronic invoice Europe, invoice no sign up, free invoice template, billing software small business, freelancer invoice, sole trader invoice, invoice generator Europe">
-  <meta name="author" content="Invoce>
+  <meta name="author" content="Invoce">
   <meta name="robots" content="index, follow">
   <meta property="og:title" content="Invoce – Online Invoice Generator | Free PDF & E-Invoice Tool">
   <meta property="og:description" content="Create professional PDF invoices and EU-compliant e-invoices in seconds — free, no sign-up, no software. Built for European freelancers, sole traders, and small businesses. VAT-ready, Peppol-compatible.">
@@ -52,6 +52,7 @@
     }
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" integrity="sha384-Rpe/8orFUm5Q1GplYBHxbuA8Az8O8C5sAoOsdbRWkqPjKFaxPgGZipj4zeHL7lxX" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
@@ -78,7 +79,6 @@
                 @change="updateWidth()"
                 class="lang-switcher-select"
                 aria-label="Choose language"
-                aria-describedby="lang-switcher-label"
               >
                 <template x-for="opt in options" :key="opt.value">
                   <option :value="opt.value" x-text="opt.label"></option>
@@ -150,7 +150,7 @@
               <h2>Seller</h2>
               <div class="section-content">
                 <div class="card" id="seller-card">
-                    <img src="assets/img/invoice-stack.webp" alt="Seller details illustration" class="card-image" width="248" height="auto">
+                    <img src="assets/img/invoice-stack.webp" alt="Seller details illustration" class="card-image" width="248" height="auto" loading="lazy">
                   <h3 id="seller-card-summary">Enter your business details</h3>
                   <button type="button" class="btn btn--primary" data-seller-modal-trigger><span class="btn__label">Add details</span></button>
                 </div>
@@ -305,7 +305,7 @@
               <h2>Buyer</h2>
               <div class="section-content">
                 <div class="card" id="buyer-card">
-                  <img src="assets/img/invoice-stack-signed.webp" alt="Invoice details artwork" class="card-image" width="248" height="auto">
+                  <img src="assets/img/invoice-stack-signed.webp" alt="Invoice details artwork" class="card-image" width="248" height="auto" loading="lazy">
                   <h3 id="buyer-card-summary">Enter your customers details</h3>
                   <button type="button" class="btn btn--primary" data-buyer-modal-trigger><span class="btn__label">Add details</span></button>
                 </div>
@@ -674,7 +674,7 @@
 
                   <div class="style-logo-row" x-show="!$store.settings.logo" x-cloak @dragover.prevent @drop.prevent="onLogoDrop($event)">
                     <div class="style-logo-container style-logo-container--placeholder" @click="$refs.logoInput.click()">
-                      <img src="assets/img/invoice-sparkle.webp" alt="" class="style-logo-placeholder-img" width="140" height="80">
+                      <img src="assets/img/invoice-sparkle.webp" alt="" class="style-logo-placeholder-img" width="140" height="80" loading="lazy">
                     </div>
                     <div class="style-logo-content">
                       <p class="style-logo-card-prompt">Choose invoice logo</p>
@@ -717,7 +717,7 @@
 
         <footer class="foot" x-data="{ year: new Date().getFullYear() }">
           <div class="foot__inner container">
-            <img class="foot__logo" src="assets/img/Logotype.svg" alt="Invoce" width="140" height="40">
+            <img class="foot__logo" src="assets/img/Logotype.svg" alt="Invoce" width="140" height="40" loading="lazy">
             <div class="foot__row">
               <div class="foot__info">
                 <p class="foot__copyright">© <span x-text="year"></span> All rights reserved</p>
