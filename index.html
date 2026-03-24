@@ -27,30 +27,6 @@
   <meta property="og:title" content="Invoce – Online Invoice Generator | Free PDF & E-Invoice Tool">
   <meta property="og:description" content="Create professional PDF invoices and EU-compliant e-invoices in seconds — free, no sign-up, no software. Built for European freelancers, sole traders, and small businesses. VAT-ready, Peppol-compatible.">
   <meta property="og:image" content="assets/img/Logotype.svg">
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is Invoce and is it really free?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Invoce is a free online invoice generator — a fast, no-fuss tool that lets you create professional PDF invoices and EU-compliant e-invoices directly in your browser. No subscription, no hidden fees, no \"freemium\" catch. Whether you need a simple freelancer invoice, a VAT invoice for a client in another country, or a fully structured Peppol e-invoice for a European public-sector buyer, Invoce handles it all — completely free of charge."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How does Invoce compare to other online invoice generators?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Most online invoice makers require you to register, subscribe, or watermark your documents unless you pay. Invoce is different in four fundamental ways: Truly private — runs entirely in your browser; your invoice data never touches a server. Truly free — no plans, no tiers, no watermarks. Ever. EU e-invoice ready — not just a PDF generator, but a full e-invoice tool supporting Peppol and EN 16931. Zero friction — no sign-up, no app download, no wait. Open the browser tab and go. For small business billing on a zero budget, there really is no closer alternative on the market."
-          }
-        }
-      ]
-    }
-  </script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" integrity="sha384-Rpe/8orFUm5Q1GplYBHxbuA8Az8O8C5sAoOsdbRWkqPjKFaxPgGZipj4zeHL7lxX" crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
@@ -589,30 +565,6 @@
               <p>Invoice all set and ready to go?</p>
               <button type="button" class="btn btn--primary btn--full" id="create-invoice-btn">Create Invoice</button>
             </section>
-
-            <section class="faq" id="faq" aria-labelledby="faq-heading">
-              <h2 id="faq-heading">Frequently asked questions</h2>
-              <details class="faq__item" id="faq-1">
-                <summary class="faq__question">What is Invoce and is it really free?</summary>
-                <div class="faq__answer">
-                  <p>Invoce is a free online invoice generator — a fast, no-fuss tool that lets you create professional PDF invoices and EU-compliant e-invoices directly in your browser. No subscription, no hidden fees, no "freemium" catch.</p>
-                  <p>Whether you need a simple freelancer invoice, a VAT invoice for a client in another country, or a fully structured Peppol e-invoice for a European public-sector buyer, Invoce handles it all — completely free of charge.</p>
-                </div>
-              </details>
-              <details class="faq__item" id="faq-2">
-                <summary class="faq__question">How does Invoce compare to other online invoice generators?</summary>
-                <div class="faq__answer">
-                  <p>Most online invoice makers require you to register, subscribe, or watermark your documents unless you pay. Invoce is different in four fundamental ways:</p>
-                  <ul>
-                    <li>Truly private — runs entirely in your browser; your invoice data never touches a server.</li>
-                    <li>Truly free — no plans, no tiers, no watermarks. Ever.</li>
-                    <li>EU e-invoice ready — not just a PDF generator, but a full e-invoice tool supporting Peppol and EN 16931.</li>
-                    <li>Zero friction — no sign-up, no app download, no wait. Open the browser tab and go.</li>
-                  </ul>
-                  <p>For small business billing on a zero budget, there really is no closer alternative on the market.</p>
-                </div>
-              </details>
-            </section>
           </section>
 
           <section class="panel panel-invoice-settings" id="panel-invoice-settings" role="tabpanel" aria-labelledby="tab-invoice-settings" :aria-hidden="String(!$store.tab.isActive('invoice-settings'))" x-show="$store.tab.isActive('invoice-settings')" data-panel="invoice-settings" x-data="settingsPanel" x-cloak>
@@ -714,6 +666,30 @@
             </section>
           </section>
         </main>
+
+        <section class="faq" id="faq" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Frequently asked questions</h2>
+          <details class="faq__item" id="faq-1">
+            <summary class="faq__question">What is Invoce and is it really free?</summary>
+            <div class="faq__answer">
+              <p>Invoce is a free online invoice generator — a fast, no-fuss tool that lets you create professional PDF invoices and EU-compliant e-invoices directly in your browser. No subscription, no hidden fees, no "freemium" catch.</p>
+              <p>Whether you need a simple freelancer invoice, a VAT invoice for a client in another country, or a fully structured Peppol e-invoice for a European public-sector buyer, Invoce handles it all — completely free of charge.</p>
+            </div>
+          </details>
+          <details class="faq__item" id="faq-2">
+            <summary class="faq__question">How does Invoce compare to other online invoice generators?</summary>
+            <div class="faq__answer">
+              <p>Most online invoice makers require you to register, subscribe, or watermark your documents unless you pay. Invoce is different in four fundamental ways:</p>
+              <ul>
+                <li>Truly private — runs entirely in your browser; your invoice data never touches a server.</li>
+                <li>Truly free — no plans, no tiers, no watermarks. Ever.</li>
+                <li>EU e-invoice ready — not just a PDF generator, but a full e-invoice tool supporting Peppol and EN 16931.</li>
+                <li>Zero friction — no sign-up, no app download, no wait. Open the browser tab and go.</li>
+              </ul>
+              <p>For small business billing on a zero budget, there really is no closer alternative on the market.</p>
+            </div>
+          </details>
+        </section>
 
         <footer class="foot" x-data="{ year: new Date().getFullYear() }">
           <div class="foot__inner container">
